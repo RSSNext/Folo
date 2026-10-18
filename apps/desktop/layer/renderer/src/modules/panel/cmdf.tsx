@@ -15,6 +15,9 @@ import { useDebounceCallback, useEventCallback } from "usehooks-ts"
 import { ipcServices } from "~/lib/client"
 import { observeResize } from "~/lib/observe-resize"
 
+import type { FindDirection } from "./find-in-page-session"
+import { FindInPageSession } from "./find-in-page-session"
+
 // Like browser find bars, the panel starts with the previous search. The clipboard may hold
 // anything, e.g. a password, and must not show up here.
 let lastSearchText = ""
@@ -40,7 +43,34 @@ const CmdFImpl: FC<{
 
   const [isSearching, setIsSearching] = useState(false)
 
-  const searchIdRef = useRef<number>(0)
+  const [findSession] = useState(
+    () =>
+      new FindInPageSession({
+        find: ({ text, direction, findNext }) =>
+          Promise.resolve(
+            ipcServices?.app.search({
+              text,
+              options: {
+                findNext,
+                forward: direction === "forward",
+              },
+            }),
+          ),
+        stop: () => {
+          void Promise.resolve(ipcServices?.app.clearSearch()).catch(() => {})
+        },
+        onPendingChange: (pending) => {
+          const $input = inputRef.current
+          if (pending && $input) setScrollLeft($input.scrollLeft)
+          setIsSearching(pending)
+        },
+        onResult: (result) => {
+          setMatches(result.matches)
+          setActiveMatchOrdinal(result.activeMatchOrdinal)
+        },
+      }),
+  )
+  useEffect(() => () => findSession.dispose(), [findSession])
 
   const { isCompositionRef, ...inputProps } = useInputComposition<HTMLInputElement>({
     onKeyDown: useEventCallback((e) => {
@@ -57,50 +87,15 @@ const CmdFImpl: FC<{
   })
 
   const nativeSearchImpl = useEventCallback(
-    async (
-      text: string,
-
-      dir: "forward" | "backward" = "forward",
-    ) => {
+    (text: string, direction: FindDirection = "forward") => {
       if (isCompositionRef.current) return
-      const $input = inputRef.current
-      if (!$input) return
-      const { scrollLeft } = $input
-      setScrollLeft(scrollLeft)
-
-      setIsSearching(true)
-
-      const searchId = ++searchIdRef.current
-      if (text) lastSearchText = text
-
-      let findNext = true
       if (!text) {
-        Promise.resolve(ipcServices?.app.clearSearch()).finally(() => {
-          if (searchId === searchIdRef.current) {
-            setIsSearching(false)
-          }
-        })
-      } else {
-        Promise.resolve(
-          ipcServices?.app.search({
-            text,
-            options: {
-              findNext,
-              forward: dir === "forward",
-            },
-          }),
-        )
-          .then((result) => {
-            setMatches(result?.matches || 0)
-            setActiveMatchOrdinal(result?.activeMatchOrdinal || 0)
-          })
-          .finally(() => {
-            if (searchId === searchIdRef.current) {
-              setIsSearching(false)
-              findNext = false
-            }
-          })
+        findSession.clear()
+        return
       }
+
+      lastSearchText = text
+      findSession.find({ text, direction })
     },
   )
   const nativeSearch = useDebounceCallback(nativeSearchImpl, 500)
@@ -163,6 +158,8 @@ const CmdFImpl: FC<{
           type="button"
           className="center hover:opacity-90"
           onClick={() => {
+            // A pending search for the same text would take one more step
+            nativeSearch.cancel()
             nativeSearchImpl(value, "backward")
           }}
         >
@@ -172,6 +169,7 @@ const CmdFImpl: FC<{
           type="button"
           className="center hover:opacity-90"
           onClick={() => {
+            nativeSearch.cancel()
             nativeSearchImpl(value, "forward")
           }}
         >
