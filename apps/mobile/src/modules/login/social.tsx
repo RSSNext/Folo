@@ -1,5 +1,6 @@
 import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
+import { getAuthErrorMessageKey } from "@follow/utils/auth-error"
 import * as AppleAuthentication from "expo-apple-authentication"
 import { useColorScheme } from "nativewind"
 import { useState } from "react"
@@ -12,6 +13,7 @@ import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformA
 import { Text } from "@/src/components/ui/typography/Text"
 import type { AuthProvider } from "@/src/lib/auth"
 import { signIn, signInWithSocialProvider, useAuthProviders } from "@/src/lib/auth"
+import { getSocialSignInErrorCode } from "@/src/lib/social-auth"
 import { toast } from "@/src/lib/toast"
 
 import { loginWithSocialProvider } from "./social-login"
@@ -67,6 +69,15 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
       ) : null}
 
       {socialProviders.map(([key, provider]) => {
+        // Says why the server refused the sign-in when it names a reason the app explains
+        const showFailure = (code: string | undefined) => {
+          const messageKey = getAuthErrorMessageKey(code)
+          toast.error(
+            messageKey
+              ? t(messageKey, { ns: "common" })
+              : t("login.social_sign_in_failed", { provider: provider.name }),
+          )
+        }
         return (
           <Pressable
             key={key}
@@ -99,7 +110,9 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                   })
                   // The auth client resolves with the error instead of throwing
                   if (res.error) {
-                    throw new Error(res.error.message || res.error.statusText)
+                    throw Object.assign(new Error(res.error.message || res.error.statusText), {
+                      code: getSocialSignInErrorCode(res.error),
+                    })
                   }
                 },
                 syncSession: async () => {
@@ -116,13 +129,14 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
                 },
                 onError: (error) => {
                   console.error(error)
+                  const code = (error as { code?: string } | null)?.code
                   // Closing the Apple sign-in sheet is not a failure
-                  if ((error as { code?: string } | null)?.code === "ERR_REQUEST_CANCELED") return
-                  toast.error(t("login.social_sign_in_failed", { provider: provider.name }))
+                  if (code === "ERR_REQUEST_CANCELED") return
+                  showFailure(code)
                 },
                 onFailure: (error) => {
                   console.error(`[auth] ${provider.id} sign-in failed: ${error}`)
-                  toast.error(t("login.social_sign_in_failed", { provider: provider.name }))
+                  showFailure(error)
                 },
               })
             }}

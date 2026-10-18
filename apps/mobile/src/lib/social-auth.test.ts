@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { buildAuthorizationProxyURL, parseSocialAuthCallbackURL } from "./social-auth"
+import {
+  buildAuthorizationProxyURL,
+  getSocialSignInErrorCode,
+  parseSocialAuthCallbackURL,
+} from "./social-auth"
 
 describe("parseSocialAuthCallbackURL", () => {
   it("returns the session cookie of a successful callback", () => {
@@ -64,5 +68,21 @@ describe("buildAuthorizationProxyURL", () => {
     )
 
     expect(url.searchParams.has("oauthState")).toBe(false)
+  })
+})
+
+describe("getSocialSignInErrorCode", () => {
+  it("names a refused ID token sign-in as the redirect flow does", () => {
+    expect(
+      getSocialSignInErrorCode({ code: "OAUTH_LINK_ERROR", message: "account not linked" }),
+    ).toBe("account_not_linked")
+  })
+
+  it("keeps any other code", () => {
+    expect(getSocialSignInErrorCode({ code: "INVALID_TOKEN", message: "Invalid token" })).toBe(
+      "INVALID_TOKEN",
+    )
+    expect(getSocialSignInErrorCode({ code: "OAUTH_LINK_ERROR" })).toBe("OAUTH_LINK_ERROR")
+    expect(getSocialSignInErrorCode(null)).toBeUndefined()
   })
 })

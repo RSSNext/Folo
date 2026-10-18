@@ -26,6 +26,18 @@ export const parseSocialAuthCallbackURL = (
     : { result: { type: "error", error: "missing_session_cookie" }, cookie: null }
 }
 
+/**
+ * The code a refused provider sign-in names, the way the redirect flow names it. The ID token
+ * flow, as Sign in with Apple uses, answers OAUTH_LINK_ERROR with the reason as its message,
+ * such as "account not linked", which a redirect passes as account_not_linked.
+ */
+export const getSocialSignInErrorCode = (
+  error: { code?: string; message?: string } | null | undefined,
+) =>
+  error?.code === "OAUTH_LINK_ERROR" && error.message
+    ? error.message.trim().replaceAll(" ", "_")
+    : error?.code
+
 // Mirrors @better-auth/expo: the OAuth state lives in a cookie only when the server uses the
 // cookie state strategy, and the authorization proxy then has to plant it in the browser.
 const getOAuthStateCookieValue = (storedCookie: string | null | undefined) => {
