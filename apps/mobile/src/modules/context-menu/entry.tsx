@@ -84,10 +84,16 @@ export const EntryItemContextMenu = ({
           {() => (
             <PortalProvider>
               <View className="flex-1 bg-system-background">
-                <Text className="mt-5 p-4 text-2xl font-semibold text-label" numberOfLines={2}>
+                <Text
+                  className="mt-5 px-5 py-4 text-2xl font-semibold text-label"
+                  numberOfLines={2}
+                >
                   {entry.title?.trim()}
                 </Text>
-                <EntryContentWebView entryId={id} />
+                {/* The content has no side padding of its own; the entry screen gives it the same */}
+                <View className="px-5">
+                  <EntryContentWebView entryId={id} />
+                </View>
               </View>
             </PortalProvider>
           )}
