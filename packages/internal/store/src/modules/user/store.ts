@@ -246,36 +246,21 @@ class UserSyncService {
     return res
   }
 
+  /**
+   * Asks to move the account to `email`. The address changes only once the change is done: a
+   * verified account approves it with a link sent to its current address and then verifies the
+   * new one, an unverified account verifies the new one. Until then the current address stays.
+   */
   async updateEmail(email: string) {
-    const oldEmail = get().whoami?.email
-    if (!oldEmail) return
-    const tx = createTransaction(oldEmail)
-    tx.store(() => {
-      immerSet((state) => {
-        if (!state.whoami) return
-        state.whoami = { ...state.whoami, email }
-      })
-    })
-    tx.request(async () => {
-      const { whoami } = get()
-      if (!whoami) return
-      const res = await authClient().changeEmail({ newEmail: email })
-      if (res.error) {
-        throw new Error(res.error.message || res.error.statusText)
-      }
-    })
-    tx.rollback(() => {
-      immerSet((state) => {
-        if (!state.whoami) return
-        state.whoami.email = oldEmail
-      })
-    })
-    tx.persist(async () => {
-      const { whoami } = get()
-      if (!whoami) return
-      userActions.upsertMany([{ ...whoami, email } as unknown as UserModel])
-    })
-    await tx.run()
+    if (!get().whoami?.email) return
+    const res = await authClient().changeEmail({ newEmail: email })
+    if (res.error) {
+      throw new UserUpdateError(
+        res.error.message || res.error.statusText,
+        res.error.code,
+        res.error.status,
+      )
+    }
   }
 
   async fetchUser(userId: string | undefined) {

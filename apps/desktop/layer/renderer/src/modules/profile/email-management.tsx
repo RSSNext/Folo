@@ -135,9 +135,14 @@ function EmailManagementForm() {
       }
     },
     onSuccess: () => {
-      // The server keeps the current email until the link sent for the new one is
-      // opened, for verified and unverified accounts alike
-      toast.success(t("profile.email.changed_verification_sent"))
+      // The current email stays until the change is done. A verified account approves it with a
+      // link sent to the current email, and the new email then gets its own link; an unverified
+      // account verifies the new email.
+      toast.success(
+        user?.emailVerified
+          ? t("profile.email.change_approval_sent")
+          : t("profile.email.changed_verification_sent"),
+      )
       dismiss()
     },
     onError: (error) => {

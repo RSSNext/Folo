@@ -47,7 +47,12 @@ export const EditEmailScreen: NavigationControllerView = () => {
       toast.error(error instanceof Error ? error.message : t("profile.email.update_failed"))
     },
     onSuccess: () => {
-      toast.info(t("profile.email.changed_verification_sent"))
+      // A verified account approves the change from its current email first
+      toast.info(
+        isValidate
+          ? t("profile.email.change_approval_sent")
+          : t("profile.email.changed_verification_sent"),
+      )
       navigation.dismiss()
     },
   })
@@ -107,7 +112,7 @@ export const EditEmailScreen: NavigationControllerView = () => {
         <GroupedOutlineDescription
           description={`${t("profile.email.verify_status", {
             status: isValidate ? t("profile.email.verified") : t("profile.email.unverified"),
-          })}\n\n${t("profile.email.change_note")}`}
+          })}\n\n${isValidate ? t("profile.email.change_note_verified") : t("profile.email.change_note")}`}
         />
 
         {/* Buttons */}
