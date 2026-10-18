@@ -126,6 +126,8 @@ Loop until `hasNext` is `false`:
 3. `npx --yes folocli@latest timeline --limit 20 --cursor <nextCursor>`
 4. Repeat
 
+A page can hold fewer entries than `--limit` while more follow, so keep going until `hasNext` is `false`; only the last page is empty. `--limit` is at most 100. `collection list` pages the same way.
+
 ## Command Reference
 
 - `npx --yes folocli@latest login [--timeout <seconds>] [--token <token>]`

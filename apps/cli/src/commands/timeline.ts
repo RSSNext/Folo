@@ -1,9 +1,11 @@
-import type { EntryListRequest } from "@follow-app/client-sdk"
+import type { EntryListRequest, EntryWithFeed } from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
 import { parseISODate, parsePositiveInt, parseView, viewHelp } from "../args"
 import { runCommand } from "../command"
 import { CLIError } from "../output"
+import type { EntryPage } from "../pagination"
+import { fetchEntryPage, MAX_PAGE_SIZE } from "../pagination"
 import { toEntryRow } from "../table-views"
 
 type TimelineQuery = EntryListRequest & {
@@ -25,7 +27,12 @@ export const registerTimelineCommand = (program: Command) => {
     .command("timeline")
     .description("List timeline entries")
     .option("--view <type>", `View type: ${viewHelp}`, parseView)
-    .option("--limit <n>", "Number of entries to fetch", parsePositiveInt, 20)
+    .option(
+      "--limit <n>",
+      `Number of entries to fetch, at most ${MAX_PAGE_SIZE}`,
+      parsePositiveInt,
+      20,
+    )
     .option("--unread-only", "Only unread entries", false)
     .option("--cursor <datetime>", "Pagination cursor (publishedAfter)", parseISODate)
     .option("--feed <feedId>", "Filter timeline by feed")
@@ -34,7 +41,7 @@ export const registerTimelineCommand = (program: Command) => {
     .action(async function (this: Command, options: TimelineOptions) {
       await runCommand(
         this,
-        async ({ client }) => {
+        async ({ client }): Promise<EntryPage<EntryWithFeed>> => {
           const scopedFilters = [options.feed, options.list, options.category].filter(Boolean)
           if (scopedFilters.length > 1) {
             throw new CLIError(
@@ -44,10 +51,8 @@ export const registerTimelineCommand = (program: Command) => {
           }
 
           const query: TimelineQuery = {
-            limit: options.limit,
             read: options.unreadOnly ? false : undefined,
             view: options.view,
-            publishedAfter: options.cursor,
           }
 
           if (options.feed) {
@@ -79,15 +84,13 @@ export const registerTimelineCommand = (program: Command) => {
             query.feedIdList = feedIdList
           }
 
-          const response = await client.api.entries.list(query)
-          const entries = response.data
-          const nextCursor = entries.at(-1)?.entries.publishedAt ?? null
-
-          return {
-            entries,
-            nextCursor,
-            hasNext: Boolean(nextCursor) && entries.length >= options.limit,
-          }
+          return fetchEntryPage({
+            limit: options.limit,
+            cursor: options.cursor,
+            fetchEntries: async (request) =>
+              (await client.api.entries.list({ ...query, ...request })).data,
+            getCursor: (entry) => entry.entries.publishedAt,
+          })
         },
         { table: (result) => ({ ...result, entries: result.entries.map(toEntryRow) }) },
       )
