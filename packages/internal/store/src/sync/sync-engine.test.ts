@@ -1216,6 +1216,57 @@ describe("syncEngine", () => {
     unregister()
   })
 
+  it("does not count a mark again on top of a first snapshot that already contains it", async () => {
+    // A fresh profile replays a mark from its outbox while the engine has no cursor yet.
+    unreadActions.upsertManyInSession([{ id: "feed-1", count: 19 }], { reset: true })
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: { entry1: createEntry("entry1", "feed-1") },
+      entryIdSet: new Set(["entry1"]),
+    }))
+    apiContext.provide({
+      subscriptions: { get: subscriptionsGetMock },
+      reads: {
+        get: readsGetMock,
+        markAsRead: vi.fn(async () => ({ code: 0, lastSyncId: 463 })),
+      },
+    } as unknown as FollowAPI)
+    stateMock.mockResolvedValue({ code: 0, data: { lastSyncId: 457 } })
+    let releaseSubscriptions: () => void = () => {}
+    subscriptionsGetMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releaseSubscriptions = () => resolve({ data: [] })
+        }),
+    )
+    // The server applied the mark before it counted the unread entries.
+    readsGetMock.mockResolvedValue({ data: { "feed-1": 18 }, lastSyncId: 465 })
+
+    const bootstrap = syncEngine.pull("launch")
+    await vi.waitFor(() => expect(subscriptionsGetMock).toHaveBeenCalledTimes(1))
+
+    await unreadSyncService.markEntriesAsRead(["entry1"])
+    await transactionQueue.flush()
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(18)
+
+    releaseSubscriptions()
+    await bootstrap
+    // The snapshot holds the mark already, so the count is the server's at once.
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(18)
+
+    deltaMock.mockResolvedValue(
+      deltaResponse([
+        createAction({
+          id: 463,
+          data: { entryIds: ["entry1"], read: true, isInbox: false, feeds: { "feed-1": 1 } },
+        }),
+      ]),
+    )
+    await syncEngine.pull("ack")
+
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(18)
+  })
+
   it("bootstraps a registered model once and hands it its actions", async () => {
     seedCursor(130)
     const bootstrap = vi.fn(async () => {})

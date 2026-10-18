@@ -367,6 +367,33 @@ describe("transactionQueue", () => {
     stopListening()
   })
 
+  it("stops rebasing an acknowledged transaction that an unread snapshot already counts", async () => {
+    setSyncEngineActive(true)
+    const kind = createCounterKind({
+      execute: vi.fn(async () => ({ lastSyncId: 42 })),
+      syncIdOf: (result) => (result as { lastSyncId?: number }).lastSyncId,
+    })
+
+    await transactionQueue.enqueue(kind, { key: "a", delta: -1 })
+    await vi.advanceTimersByTimeAsync(100)
+    await transactionQueue.whenIdle()
+
+    // A snapshot from before the change does not count it.
+    expect(transactionQueue.markUnreadSnapshot(41)).toBe(false)
+    const before = { a: 5 }
+    transactionQueue.rebaseUnreadCounts(before)
+    expect(before).toEqual({ a: 4 })
+
+    // One that reflects its id does: the change is not taken off it again.
+    expect(transactionQueue.markUnreadSnapshot(45)).toBe(true)
+    const after = { a: 4 }
+    transactionQueue.rebaseUnreadCounts(after)
+    expect(after).toEqual({ a: 4 })
+    // Its overlays wait for the change log as before.
+    expect(transactionQueue.getOverlays().get("counter:a")).toBe(-1)
+    expect(transactionQueue.markUnreadSnapshot(44)).toBe(false)
+  })
+
   it("settles at once when the engine is already past the acknowledged sync id", async () => {
     setSyncEngineActive(true)
     transactionQueue.markSynced(50)

@@ -314,9 +314,15 @@ class UnreadSyncService {
   async resetFromRemote({ fallbackSyncId }: { fallbackSyncId?: number } = {}) {
     const res = await api().reads.get({})
     const snapshotSyncId = readLastSyncId(res) ?? fallbackSyncId
+    // Marks the server numbered up to the snapshot are counted by it, so they are not taken
+    // off it again, as when a replayed mark was acknowledged while the first sync loaded.
+    const countsAcknowledged =
+      snapshotSyncId !== undefined && transactionQueue.markUnreadSnapshot(snapshotSyncId)
 
     if (!unreadActions.isConfirmedEqual(res.data)) {
       await unreadActions.upsertMany(res.data, { reset: true })
+    } else if (countsAcknowledged) {
+      unreadActions.syncDisplayedCounts()
     }
     if (snapshotSyncId !== undefined) {
       await recordUnreadSnapshotThroughEngine(snapshotSyncId)

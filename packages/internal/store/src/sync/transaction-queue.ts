@@ -190,6 +190,8 @@ class TransactionQueue {
   private attempts = 0
   private paused = false
   private syncedThrough = 0
+  /** The last unread snapshot already counts every change the server numbered up to this id. */
+  private unreadSnapshotThrough = 0
   private version = 0
   private overlayCache: { version: number; overlays: Map<string, unknown> } | null = null
   private idleWaiters: Array<() => void> = []
@@ -342,14 +344,14 @@ class TransactionQueue {
   /**
    * Re-apply the unread effects of local transactions onto counts confirmed by the server:
    * everything still queued, plus acknowledged transactions whose real effect has not arrived
-   * through the change log yet. Only keys in `touchedIds` are written back; when omitted
-   * every key may change.
+   * through the change log or an unread snapshot yet. Only keys in `touchedIds` are written
+   * back; when omitted every key may change.
    */
   rebaseUnreadCounts(counts: Record<string, number>, touchedIds?: ReadonlySet<string>) {
     this.pruneAcknowledged()
     const scratch = { ...counts }
     for (const item of this.acknowledged) {
-      if (!item.awaitsSync) continue
+      if (!item.awaitsSync || this.isCountedByUnreadSnapshot(item)) continue
       item.record.definition.rebaseUnread?.(item.record.payload, scratch)
     }
     for (const record of this.queued) {
@@ -406,6 +408,25 @@ class TransactionQueue {
     this.pruneAcknowledged()
   }
 
+  /**
+   * An unread snapshot that reflects the change log up to `syncId` became the confirmed
+   * counts. Acknowledged changes the server numbered up to it are counted by it already, so
+   * they stop being re-applied on top, while their overlays stay until the sync engine applied
+   * them. Returns whether that is new for any of them.
+   */
+  markUnreadSnapshot(syncId: number): boolean {
+    if (syncId <= this.unreadSnapshotThrough) return false
+    const previous = this.unreadSnapshotThrough
+    this.unreadSnapshotThrough = syncId
+    return this.acknowledged.some(
+      (item) =>
+        item.awaitsSync &&
+        item.syncId !== undefined &&
+        item.syncId > previous &&
+        item.syncId <= syncId,
+    )
+  }
+
   onFailure(listener: TransactionFailureListener) {
     this.failureListeners.add(listener)
     return () => {
@@ -453,6 +474,7 @@ class TransactionQueue {
     this.attempts = 0
     this.paused = false
     this.syncedThrough = 0
+    this.unreadSnapshotThrough = 0
     this.touch()
     this.notifyIdleWaiters()
   }
@@ -694,6 +716,10 @@ class TransactionQueue {
         console.error("[transaction-queue] settled listener threw", listenerError)
       }
     }
+  }
+
+  private isCountedByUnreadSnapshot(item: AcknowledgedTransaction) {
+    return item.syncId !== undefined && item.syncId <= this.unreadSnapshotThrough
   }
 
   private isStillQueued(batch: QueuedTransaction[]) {
