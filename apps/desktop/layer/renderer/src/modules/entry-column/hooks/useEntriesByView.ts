@@ -11,7 +11,6 @@ import {
 } from "@follow/store/entry/hooks"
 import { entryActions, entrySyncServices, useEntryStore } from "@follow/store/entry/store"
 import type { UseEntriesReturn } from "@follow/store/entry/types"
-import { fallbackReturn } from "@follow/store/entry/utils"
 import { useFolderFeedsByFeedId } from "@follow/store/subscription/hooks"
 import { unreadSyncService } from "@follow/store/unread/store"
 import { nextFrame } from "@follow/utils"
@@ -31,9 +30,11 @@ import { toastFetchError } from "~/lib/error-parser"
 import { aiTimelineEnabledAtom } from "../atoms/ai-timeline"
 import { getEffectiveRouteEntrySortOrder } from "./entry-sort-order"
 import { getVisibleLocalEntryIds } from "./filter-local-entry-ids"
+import type { RemoteEntriesReturn } from "./remote-entries-fallback"
+import { getRemoteEntriesFallback } from "./remote-entries-fallback"
 import { useIsPreviewFeed } from "./useIsPreviewFeed"
 
-const useRemoteEntries = (): UseEntriesReturn => {
+const useRemoteEntries = (): RemoteEntriesReturn => {
   const { feedId, view, inboxId, listId, isCollection } = useRouteParams()
   const isPreview = useIsPreviewFeed()
 
@@ -119,16 +120,7 @@ const useRemoteEntries = (): UseEntriesReturn => {
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
-    if (query.isError) {
-      return {
-        ...fallbackReturn,
-        refetch,
-        isLoading: query.isFetching,
-        isFetching: query.isFetching,
-        error: query.error,
-      }
-    }
-    return fallbackReturn
+    return getRemoteEntriesFallback(query, refetch)
   }
   return {
     entriesIds: query.entriesIds,
@@ -376,6 +368,7 @@ export const useEntriesByView = ({ onReset }: { onReset?: () => void }) => {
     isFetching: remoteQuery.isFetching,
     isFetchingNextPage: remoteQuery.isFetchingNextPage,
     isLoading: remoteQuery.isLoading,
+    isOffline: remoteQuery.isOffline === true,
     error: remoteQuery.error,
   }
 }

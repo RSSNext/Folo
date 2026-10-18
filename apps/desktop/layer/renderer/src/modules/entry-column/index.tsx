@@ -262,6 +262,7 @@ function EntryColumnContent() {
     >
       {entriesIds.length === 0 &&
         !state.isLoading &&
+        !state.isOffline &&
         !state.error &&
         (!feed || feed?.type === "feed") && <AddFeedHelper />}
 
@@ -283,6 +284,7 @@ function EntryColumnContent() {
           ) : (
             <EntryEmptyList
               error={state.error}
+              offline={state.isOffline}
               isRetrying={state.isFetching}
               onRetry={actions.refetch}
             />

@@ -264,6 +264,7 @@
   "entry_list.already_at_first_entry": "已经是第一个条目了",
   "entry_list.already_at_last_entry": "已经是最后一个条目了",
   "entry_list.load_failed": "加载条目失败",
+  "entry_list.offline": "你已离线，恢复联网后会加载条目。",
   "entry_list.zero_unread": "全部已读",
   "entry_list_header.ai_timeline": "AI 时间线",
   "entry_list_header.ai_timeline_failed": "无法按重要性排序时间线",
