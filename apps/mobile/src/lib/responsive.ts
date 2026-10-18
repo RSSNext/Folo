@@ -10,18 +10,18 @@ const baseWidth = 375
 const baseHeight = 812
 const maxResponsiveHeight = 932
 const tabletMinLength = 744
-const windowDim = Dimensions.get("window")
 
-Dimensions.addEventListener("change", ({ window }) => {
-  Object.assign(windowDim, window)
-})
+// Both read the window on every call. Keeping the window object Dimensions hands out and refreshing
+// it in place broke useWindowDimensions, which compares each change against that same object:
+// components that mounted before the first resize or rotation never saw a later one.
+
 /**
  * This scaleWidth is not responsive, it's just a simple scale util
  * @param size
  * @returns
  */
 export const scaleWidth = (size: number) => {
-  return (size / baseWidth) * windowDim.width
+  return (size / baseWidth) * Dimensions.get("window").width
 }
 /**
  * This scaleHeight is not responsive, it's just a simple scale util
@@ -29,7 +29,7 @@ export const scaleWidth = (size: number) => {
  * @returns
  */
 export const scaleHeight = (size: number) => {
-  return (size / baseHeight) * Math.min(windowDim.height, maxResponsiveHeight)
+  return (size / baseHeight) * Math.min(Dimensions.get("window").height, maxResponsiveHeight)
 }
 export const useScaleWidth = () => {
   const windowDim = useWindowDimensions()
