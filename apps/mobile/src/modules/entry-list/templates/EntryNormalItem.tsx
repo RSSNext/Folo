@@ -227,9 +227,9 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
   if (!image && !audio && !video) return null
   const isSquare = thumbnailRatio === "square"
   return (
-    <View
-      className={cn("relative ml-4 flex h-full w-24 justify-center overflow-hidden rounded-lg")}
-    >
+    // Stretched rather than 100% tall: in the long-press preview of a feed the percentage
+    // resolved against the preview, which spaced the entries far apart
+    <View className="relative ml-4 flex w-24 justify-center self-stretch overflow-hidden rounded-lg">
       {image &&
         !imageError &&
         (isSquare ? (
