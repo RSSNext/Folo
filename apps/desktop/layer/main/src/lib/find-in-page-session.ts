@@ -11,15 +11,16 @@ export interface FindResult {
 }
 
 interface FindInPageSessionOptions {
-  /** Sends one request to the page. `findNext` starts a new find session. */
-  find: (request: FindRequest & { findNext: boolean }) => Promise<FindResult | null | undefined>
+  /**
+   * Sends one request to the page. `findNext` starts a new find session. The signal aborts when
+   * the request is abandoned, e.g. because it was never answered.
+   */
+  find: (
+    request: FindRequest & { findNext: boolean },
+    signal: AbortSignal,
+  ) => Promise<FindResult | null | undefined>
   /** Stops finding in the page and clears the highlights */
   stop: () => void
-  /**
-   * Called synchronously before the first of a run of requests leaves, and after the last one
-   * is answered or abandoned
-   */
-  onPendingChange: (pending: boolean) => void
   onResult: (result: FindResult) => void
   /** Chromium may never answer a request, e.g. when the page reloads meanwhile */
   replyTimeout?: number
@@ -33,9 +34,7 @@ const DEFAULT_REPLY_TIMEOUT = 3000
  * text drops the steps queued for the previous one.
  */
 export class FindInPageSession {
-  /** Changes when the search is cleared or dropped, which abandons a pending reply */
-  private generation = 0
-  private pending = false
+  private pendingRequest: AbortController | null = null
   private queue: FindRequest[] = []
   /**
    * Text of the current find session. Follow-up requests for it move to the next or previous
@@ -46,7 +45,7 @@ export class FindInPageSession {
   constructor(private readonly options: FindInPageSessionOptions) {}
 
   find(request: FindRequest) {
-    if (this.pending) {
+    if (this.pendingRequest) {
       this.queue = [...this.queue.filter((queued) => queued.text === request.text), request]
       return
     }
@@ -55,56 +54,44 @@ export class FindInPageSession {
 
   /** Stops the search in the page. Once stopped, Chromium doesn't answer a pending request. */
   clear() {
-    this.abandon()
+    this.dispose()
     this.options.stop()
   }
 
-  /** Forgets pending and queued requests, e.g. when the find bar unmounts */
+  /** Forgets pending and queued requests */
   dispose() {
-    this.abandon()
-  }
-
-  private abandon() {
-    this.generation++
+    this.pendingRequest?.abort()
+    this.pendingRequest = null
     this.queue = []
     this.sessionText = ""
-    if (this.pending) {
-      this.pending = false
-      this.options.onPendingChange(false)
-    }
   }
 
   private async send(request: FindRequest) {
-    const { generation } = this
-    if (!this.pending) {
-      this.pending = true
-      this.options.onPendingChange(true)
-    }
+    const pendingRequest = new AbortController()
+    this.pendingRequest = pendingRequest
 
     const findNext = request.text !== this.sessionText
     this.sessionText = request.text
     const reply = new Promise<FindResult | null | undefined>((resolve) => {
-      resolve(this.options.find({ ...request, findNext }))
+      resolve(this.options.find({ ...request, findNext }, pendingRequest.signal))
     }).catch(() => null)
-    const result = await new Promise<FindResult | null>((resolve) => {
-      const timer = setTimeout(
-        () => resolve(null),
-        this.options.replyTimeout ?? DEFAULT_REPLY_TIMEOUT,
-      )
-      void reply.then((value) => {
-        clearTimeout(timer)
-        resolve(value ?? null)
-      })
-    })
-    if (generation !== this.generation) return
+    const timer = setTimeout(
+      () => pendingRequest.abort(),
+      this.options.replyTimeout ?? DEFAULT_REPLY_TIMEOUT,
+    )
+    const result = await Promise.race([
+      reply,
+      new Promise<null>((resolve) => {
+        pendingRequest.signal.addEventListener("abort", () => resolve(null), { once: true })
+      }),
+    ])
+    clearTimeout(timer)
+    // Cleared meanwhile
+    if (this.pendingRequest !== pendingRequest) return
+    this.pendingRequest = null
 
     if (result) this.options.onResult(result)
     const next = this.queue.shift()
-    if (next) {
-      void this.send(next)
-      return
-    }
-    this.pending = false
-    this.options.onPendingChange(false)
+    if (next) void this.send(next)
   }
 }

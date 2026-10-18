@@ -27,11 +27,6 @@ interface WindowActionInput {
   action: "close" | "minimize" | "maximum"
 }
 
-interface SearchInput {
-  text: string
-  options: Electron.FindInPageOptions
-}
-
 interface ExportCurrentPageAsPdfInput {
   defaultPath?: string
 }
@@ -164,25 +159,6 @@ export class AppService extends IpcService {
   @IpcMethod()
   readClipboard(): Promise<string> {
     return clipboard.readText()
-  }
-
-  @IpcMethod()
-  async search(input: SearchInput): Promise<Electron.Result | null> {
-    const { sender: webContents } = getIpcContext()
-
-    const { promise, resolve } = Promise.withResolvers<Electron.Result | null>()
-
-    let requestId = -1
-    webContents.once("found-in-page", (_, result) => {
-      resolve(result.requestId === requestId ? result : null)
-    })
-    requestId = webContents.findInPage(input.text, input.options)
-    return promise
-  }
-
-  @IpcMethod()
-  clearSearch(): void {
-    getIpcContext().sender.stopFindInPage("keepSelection")
   }
 
   @IpcMethod()

@@ -3,24 +3,22 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import type { FindRequest, FindResult } from "./find-in-page-session"
 import { FindInPageSession } from "./find-in-page-session"
 
-type SentRequest = FindRequest & { findNext: boolean }
+type SentRequest = FindRequest & { findNext: boolean; signal: AbortSignal }
 
 const createSession = (options: { replyTimeout?: number } = {}) => {
   const sent: SentRequest[] = []
   const replies: Array<(result: FindResult | null) => void> = []
-  const find = vi.fn((request: SentRequest) => {
-    sent.push(request)
+  const find = vi.fn((request: FindRequest & { findNext: boolean }, signal: AbortSignal) => {
+    sent.push({ ...request, signal })
     return new Promise<FindResult | null>((resolve) => {
       replies.push(resolve)
     })
   })
   const stop = vi.fn()
-  const onPendingChange = vi.fn()
   const onResult = vi.fn()
   const session = new FindInPageSession({
     find,
     stop,
-    onPendingChange,
     onResult,
     replyTimeout: options.replyTimeout,
   })
@@ -31,7 +29,7 @@ const createSession = (options: { replyTimeout?: number } = {}) => {
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
 
-  return { session, sent, find, stop, onPendingChange, onResult, reply }
+  return { session, sent, find, stop, onResult, reply }
 }
 
 const result = (activeMatchOrdinal: number, matches = 4): FindResult => ({
@@ -97,28 +95,15 @@ describe("FindInPageSession", () => {
     ])
   })
 
-  it("reports a run of requests as pending until the last one is answered", async () => {
-    const { session, reply, onPendingChange } = createSession()
-
-    session.find({ text: "timeline", direction: "forward" })
-    session.find({ text: "timeline", direction: "forward" })
-    expect(onPendingChange.mock.calls).toEqual([[true]])
-
-    await reply(0, result(1))
-    expect(onPendingChange.mock.calls).toEqual([[true]])
-    await reply(1, result(2))
-    expect(onPendingChange.mock.calls).toEqual([[true], [false]])
-  })
-
-  it("abandons a pending reply when cleared and starts over afterwards", async () => {
-    const { session, sent, reply, stop, onPendingChange, onResult } = createSession()
+  it("abandons a pending request when cleared and starts over afterwards", async () => {
+    const { session, sent, reply, stop, onResult } = createSession()
 
     session.find({ text: "timeline", direction: "forward" })
     session.find({ text: "timeline", direction: "forward" })
     session.clear()
 
     expect(stop).toHaveBeenCalledTimes(1)
-    expect(onPendingChange.mock.calls).toEqual([[true], [false]])
+    expect(sent[0]?.signal.aborted).toBe(true)
 
     await reply(0, result(1))
     expect(onResult).not.toHaveBeenCalled()
@@ -138,25 +123,25 @@ describe("FindInPageSession", () => {
 
     await vi.advanceTimersByTimeAsync(1000)
 
+    expect(sent[0]?.signal.aborted).toBe(true)
     expect(sent).toHaveLength(2)
     expect(sent[1]).toMatchObject({ direction: "backward", findNext: false })
   })
 
   it("treats a failed request like an unanswered one", async () => {
-    const onPendingChange = vi.fn()
     const onResult = vi.fn()
-    const session = new FindInPageSession({
-      find: () => Promise.reject(new Error("The window is gone")),
-      stop: vi.fn(),
-      onPendingChange,
-      onResult,
-    })
+    const find = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("The window is gone"))
+      .mockResolvedValueOnce(result(2))
+    const session = new FindInPageSession({ find, stop: vi.fn(), onResult })
 
+    session.find({ text: "timeline", direction: "forward" })
     session.find({ text: "timeline", direction: "forward" })
 
     await vi.waitFor(() => {
-      expect(onPendingChange.mock.calls).toEqual([[true], [false]])
+      expect(onResult).toHaveBeenCalledWith(result(2))
     })
-    expect(onResult).not.toHaveBeenCalled()
+    expect(find).toHaveBeenCalledTimes(2)
   })
 })

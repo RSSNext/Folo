@@ -32,6 +32,8 @@
   "dialog.yes": "是",
   "download.failed": "下載失敗",
   "download.success": "下載完成",
+  "findBar.next": "下一個相符項目",
+  "findBar.previous": "上一個相符項目",
   "menu.about": "關於 {{name}}",
   "menu.alwaysOnTop": "視窗置頂",
   "menu.checkForUpdates": "檢查更新",

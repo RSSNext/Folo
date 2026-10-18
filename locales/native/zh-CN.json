@@ -32,6 +32,8 @@
   "dialog.yes": "是",
   "download.failed": "下载失败",
   "download.success": "下载完成",
+  "findBar.next": "下一个匹配项",
+  "findBar.previous": "上一个匹配项",
   "menu.about": "关于 {{name}}",
   "menu.alwaysOnTop": "窗口置顶",
   "menu.checkForUpdates": "检查更新",
