@@ -553,6 +553,8 @@ export const PlanScreen: NavigationControllerView = () => {
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
+      // A centred column on iPad, as wide as the other settings screens
+      contentContainerMaxWidth={760}
       Header={
         <NavigationBlurEffectHeaderView
           title={t("titles.subscription.long")}

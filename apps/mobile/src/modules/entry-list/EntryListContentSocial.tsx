@@ -10,6 +10,7 @@ import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { Skeleton, SkeletonPulse } from "@/src/components/ui/skeleton/Skeleton"
+import { useReadableContainerStyle } from "@/src/lib/responsive"
 
 import { useEntries } from "../screen/atoms"
 import { getResetScrollSignalForContent } from "../screen/scroll-reset"
@@ -24,6 +25,19 @@ import {
 } from "./placeholder-animation"
 import { EntrySocialItem } from "./templates/EntrySocialItem"
 import type { EntryExtraData } from "./types"
+
+// The same centred column as the Articles view on iPad, so posts don't run the full screen width
+const READABLE_MAX_WIDTH = 860
+const READABLE_GUTTER = 16
+
+const ReadableItemSeparator = () => {
+  const readableItemStyle = useReadableContainerStyle(READABLE_MAX_WIDTH, READABLE_GUTTER)
+  return (
+    <View style={readableItemStyle}>
+      <ItemSeparatorFullWidth />
+    </View>
+  )
+}
 
 export const EntryListContentSocial = ({
   ref: forwardRef,
@@ -54,15 +68,17 @@ export const EntryListContentSocial = ({
     active,
   })
   const extraData: EntryExtraData = useMemo(() => ({ entryIds }), [entryIds])
+  const readableItemStyle = useReadableContainerStyle(READABLE_MAX_WIDTH, READABLE_GUTTER)
 
   const ref = useRef<FlashListRef<any>>(null)
   useImperativeHandle(forwardRef, () => ref.current!)
-  // eslint-disable-next-line react/no-unnecessary-use-callback
   const renderItem = useCallback(
     ({ item: id, extraData }: ListRenderItemInfo<string>) => (
-      <EntrySocialItem entryId={id} extraData={extraData as EntryExtraData} />
+      <View style={readableItemStyle}>
+        <EntrySocialItem entryId={id} extraData={extraData as EntryExtraData} />
+      </View>
     ),
-    [],
+    [readableItemStyle],
   )
 
   const hasEndSpacer = shouldRenderScrollMarkReadEndSpacer({
@@ -76,19 +92,25 @@ export const EntryListContentSocial = ({
   const ListFooterComponent = useMemo(
     () =>
       hasNextPage ? (
-        <EntryItemSkeleton animated={animateNextPagePlaceholder} />
+        <View style={readableItemStyle}>
+          <EntryItemSkeleton animated={animateNextPagePlaceholder} />
+        </View>
       ) : (
         <View>
           <EntryListFooter fetchedTime={fetchedTime} />
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage, fetchedTime, animateNextPagePlaceholder],
+    [hasEndSpacer, hasNextPage, fetchedTime, animateNextPagePlaceholder, readableItemStyle],
   )
   const animateLoadingPlaceholder = shouldAnimateLoadingPlaceholder({ active })
   const renderLoadingSkeleton = useCallback(
-    () => <EntryItemSkeleton animated={animateLoadingPlaceholder} />,
-    [animateLoadingPlaceholder],
+    () => (
+      <View style={readableItemStyle}>
+        <EntryItemSkeleton animated={animateLoadingPlaceholder} />
+      </View>
+    ),
+    [animateLoadingPlaceholder, readableItemStyle],
   )
 
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
@@ -128,7 +150,7 @@ export const EntryListContentSocial = ({
         data={Array.from({ length: 5 }).map((_, index) => `skeleton-${index}`)}
         keyExtractor={(id) => id}
         renderItem={renderLoadingSkeleton}
-        ItemSeparatorComponent={ItemSeparatorFullWidth}
+        ItemSeparatorComponent={ReadableItemSeparator}
       />
     )
   }
@@ -150,7 +172,7 @@ export const EntryListContentSocial = ({
       onEndReached={fetchNextPage}
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
-      ItemSeparatorComponent={ItemSeparatorFullWidth}
+      ItemSeparatorComponent={ReadableItemSeparator}
       ListFooterComponent={ListFooterComponent}
     />
   )
