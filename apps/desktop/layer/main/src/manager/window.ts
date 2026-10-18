@@ -279,6 +279,12 @@ class WindowManagerStatic {
         this.windows.mainWindow = null
       }
     })
+
+    // Brought back from the Dock, the tray or another launch. The renderer refreshes what went
+    // stale while the window was hidden for long, measured from the close above.
+    window.on("show", () => {
+      callWindowExpose(window).onWindowShow()
+    })
   }
 
   private getPlatformSpecificWindowConfig(): Partial<BrowserWindowConstructorOptions> {
