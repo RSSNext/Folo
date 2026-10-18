@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { logger } from "~/logger"
 
 import { getIconPath } from "../helper"
-import { updateNotificationsToken } from "../lib/user"
+import { ensureNotificationsTokenSent, updateNotificationsToken } from "../lib/user"
 import { AppManager } from "./app"
 
 const credentials = {
@@ -44,6 +44,7 @@ const mocks = vi.hoisted(() => ({
     isPackaged: false,
   },
   connect: vi.fn(),
+  ensureNotificationsTokenSent: vi.fn(),
   firebaseConfig: {
     apiKey: "firebase-api-key-secret",
     appId: "app-id",
@@ -136,6 +137,7 @@ vi.mock("../lib/store", () => ({
 }))
 vi.mock("../lib/tray", () => ({ registerAppTray: vi.fn() }))
 vi.mock("../lib/user", () => ({
+  ensureNotificationsTokenSent: mocks.ensureNotificationsTokenSent,
   updateNotificationsToken: mocks.updateNotificationsToken,
 }))
 vi.mock("../logger", () => ({
@@ -200,6 +202,21 @@ describe("AppManager push notifications", () => {
     ]) {
       expect(serializedLogs).not.toContain(secret)
     }
+  })
+
+  it("sends the stored token again when the push connection is ready", async () => {
+    const registerPushNotifications = Reflect.get(
+      AppManager,
+      "registerPushNotifications",
+    ) as () => Promise<void>
+
+    await registerPushNotifications.call(AppManager)
+    expect(ensureNotificationsTokenSent).not.toHaveBeenCalled()
+
+    mocks.onReady?.()
+    mocks.onReady?.()
+
+    expect(ensureNotificationsTokenSent).toHaveBeenCalledTimes(2)
   })
 
   it("does not log connection error details or report a failed connection as connected", async () => {

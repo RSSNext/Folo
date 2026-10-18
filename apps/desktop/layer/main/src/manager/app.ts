@@ -21,7 +21,7 @@ import { t } from "../lib/i18n"
 import { updateProxy } from "../lib/proxy"
 import { store } from "../lib/store"
 import { registerAppTray } from "../lib/tray"
-import { updateNotificationsToken } from "../lib/user"
+import { ensureNotificationsTokenSent, updateNotificationsToken } from "../lib/user"
 import { logger } from "../logger"
 import { registerAppMenu } from "../menu"
 import { registerUpdater } from "../updater"
@@ -127,6 +127,8 @@ class AppManagerStatic {
 
     instance.onReady(() => {
       logger.info("PushReceiver ready")
+      // At launch and after a reconnect, in case an earlier upload failed
+      void ensureNotificationsTokenSent()
     })
 
     instance.onCredentialsChanged(({ newCredentials }) => {
