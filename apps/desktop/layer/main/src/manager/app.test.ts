@@ -42,9 +42,11 @@ const mocks = vi.hoisted(() => ({
       setIcon: vi.fn(),
     },
     isPackaged: false,
+    setAsDefaultProtocolClient: vi.fn(),
   },
   connect: vi.fn(),
   ensureNotificationsTokenSent: vi.fn(),
+  isTestRun: false,
   firebaseConfig: {
     apiKey: "firebase-api-key-secret",
     appId: "app-id",
@@ -116,6 +118,11 @@ vi.mock("~/manager/window", () => ({
   WindowManager: {},
 }))
 
+vi.mock("../env", () => ({
+  get isTestRun() {
+    return mocks.isTestRun
+  },
+}))
 vi.mock("../helper", () => ({ getIconPath: vi.fn() }))
 vi.mock("../ipc", () => ({ initializeIpcServices: vi.fn() }))
 vi.mock("../ipc/services/integration", () => ({ saveMediaToEagle: vi.fn() }))
@@ -261,5 +268,35 @@ describe("AppManager dock icon", () => {
     setupAppVisuals()
 
     expect(mocks.app.dock.setIcon).toHaveBeenCalledWith("/resources/icon-dev.png")
+  })
+})
+
+describe("AppManager URL schemes", () => {
+  const registerProtocols = () => {
+    const register = Reflect.get(AppManager, "registerProtocols") as () => void
+    register.call(AppManager)
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("registers the app as the handler of its links", () => {
+    mocks.isTestRun = false
+
+    registerProtocols()
+
+    expect(mocks.app.setAsDefaultProtocolClient.mock.calls.map(([scheme]) => scheme)).toEqual([
+      "follow",
+      "folo",
+    ])
+  })
+
+  it("leaves the installed app's links alone in test runs", () => {
+    mocks.isTestRun = true
+
+    registerProtocols()
+
+    expect(mocks.app.setAsDefaultProtocolClient).not.toHaveBeenCalled()
   })
 })

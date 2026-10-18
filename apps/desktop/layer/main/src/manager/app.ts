@@ -8,6 +8,7 @@ import path from "pathe"
 
 import { WindowManager } from "~/manager/window"
 
+import { isTestRun } from "../env"
 import { getIconPath } from "../helper"
 import { initializeIpcServices } from "../ipc"
 import { saveMediaToEagle } from "../ipc/services/integration"
@@ -69,6 +70,9 @@ class AppManagerStatic {
   }
 
   private registerProtocols() {
+    // The links of the installed app, e.g. sign-in callbacks, would open this test build
+    if (isTestRun) return
+
     const protocols = [LEGACY_APP_PROTOCOL, APP_PROTOCOL]
 
     for (const protocolName of protocols) {
