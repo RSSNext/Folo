@@ -1,4 +1,5 @@
 import { invalidateUserSession } from "@follow/store/user/hooks"
+import { jotaiStore } from "@follow/utils"
 import * as Linking from "expo-linking"
 import { useEffect } from "react"
 
@@ -16,7 +17,7 @@ type DeepLinkParams =
   | "refresh"
   | null
 
-const handleIncomingUrl = (
+export const handleIncomingUrl = (
   incomingUrl: string | null,
   navigation: ReturnType<typeof useNavigation>,
 ) => {
@@ -36,6 +37,13 @@ const handleIncomingUrl = (
   if (searchParams === "refresh") {
     invalidateUserSession()
     return
+  }
+
+  // The navigation keeps a screen that is on top already, so the open form would stay, showing
+  // and following the feed of the link before. The new link takes its place.
+  const topRoute = jotaiStore.get(navigation.__dangerous_getCtxValue().routesAtom).at(-1)
+  if (topRoute?.Component === FollowScreen) {
+    navigation.__internal_dismiss(topRoute.id)
   }
 
   navigation.presentControllerView(FollowScreen, {

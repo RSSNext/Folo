@@ -7,18 +7,19 @@ export const FollowScreen: NavigationControllerView<{
   type: "feed" | "list" | "url"
   url?: string
 }> = ({ id, type, url }) => {
+  // Keyed, so a form that another link replaces starts over rather than keeping what was typed
   switch (type) {
     case "feed": {
-      return <FollowFeed id={id as string} />
+      return <FollowFeed key={id} id={id as string} />
     }
     case "list": {
-      return <FollowList id={id as string} />
+      return <FollowList key={id} id={id as string} />
     }
     case "url": {
-      return <FollowUrl url={url as string} />
+      return <FollowUrl key={url} url={url as string} />
     }
     default: {
-      return <FollowFeed id={id as string} />
+      return <FollowFeed key={id} id={id as string} />
     }
   }
 }
