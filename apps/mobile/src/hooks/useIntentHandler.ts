@@ -1,10 +1,13 @@
+import { whoami } from "@follow/store/user/getters"
 import { invalidateUserSession } from "@follow/store/user/hooks"
 import { jotaiStore } from "@follow/utils"
 import * as Linking from "expo-linking"
 import { useEffect } from "react"
 
 import { useNavigation } from "../lib/navigation/hooks"
+import type { Navigation } from "../lib/navigation/Navigation"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
+import { LoginScreen } from "../screens/(modal)/LoginScreen"
 
 // The launch link can be reported both by getInitialURL and as a url event. Only that echo is
 // skipped: opening the same link again later, like a second "Add to Folo" tap, must work.
@@ -17,10 +20,45 @@ type DeepLinkParams =
   | "refresh"
   | null
 
-export const handleIncomingUrl = (
-  incomingUrl: string | null,
-  navigation: ReturnType<typeof useNavigation>,
-) => {
+type FollowScreenProps = {
+  id?: string
+  type: "feed" | "list" | "url"
+  url?: string
+  view?: string
+}
+
+// The follow form of a link that came in while the sign-in screen was up
+let pendingFollowScreen: FollowScreenProps | null = null
+
+const presentFollowScreen = (navigation: Navigation, props: FollowScreenProps) => {
+  // The navigation keeps a screen that is on top already, so the open form would stay, showing
+  // and following the feed of the link before. The new link takes its place.
+  const topRoute = jotaiStore.get(navigation.__dangerous_getCtxValue().routesAtom).at(-1)
+  if (topRoute?.Component === FollowScreen) {
+    navigation.__internal_dismiss(topRoute.id)
+  }
+
+  navigation.presentControllerView(FollowScreen, props)
+}
+
+const presentPendingFollowScreen = (navigation: Navigation) => {
+  if (!pendingFollowScreen || navigation.hasControllerView(LoginScreen)) return
+  const props = pendingFollowScreen
+  pendingFollowScreen = null
+  presentFollowScreen(navigation, props)
+}
+
+/**
+ * Opens the follow form of a link that waited for the sign-in screen, once that screen closed,
+ * whether the user signed in or not. Returns the function that stops watching.
+ */
+export const watchPendingFollowScreen = (navigation: Navigation) =>
+  jotaiStore.sub(navigation.__dangerous_getCtxValue().routesAtom, () => {
+    // Not from within the change of the screens
+    setTimeout(() => presentPendingFollowScreen(navigation), 0)
+  })
+
+export const handleIncomingUrl = (incomingUrl: string | null, navigation: Navigation) => {
   if (!incomingUrl) return
   const now = Date.now()
   if (lastHandledLink?.url === incomingUrl && now - lastHandledLink.at < DUPLICATE_LINK_WINDOW_MS) {
@@ -39,23 +77,27 @@ export const handleIncomingUrl = (
     return
   }
 
-  // The navigation keeps a screen that is on top already, so the open form would stay, showing
-  // and following the feed of the link before. The new link takes its place.
-  const topRoute = jotaiStore.get(navigation.__dangerous_getCtxValue().routesAtom).at(-1)
-  if (topRoute?.Component === FollowScreen) {
-    navigation.__internal_dismiss(topRoute.id)
-  }
-
-  navigation.presentControllerView(FollowScreen, {
+  const props: FollowScreenProps = {
     id: searchParams.id ?? undefined,
     type: searchParams.type,
     url: searchParams.url ?? undefined,
     view: searchParams.view ?? undefined,
-  })
+  }
+
+  // Following takes an account, and the form would cover the sign-in screen, so it waits for
+  // that screen to close.
+  if (!whoami() && navigation.hasControllerView(LoginScreen)) {
+    pendingFollowScreen = props
+    return
+  }
+
+  presentFollowScreen(navigation, props)
 }
 
 export function useIntentHandler() {
   const navigation = useNavigation()
+
+  useEffect(() => watchPendingFollowScreen(navigation), [navigation])
 
   useEffect(() => {
     // The launch link stays the initial URL for the whole session

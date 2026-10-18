@@ -5,11 +5,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { Route } from "../lib/navigation/ChainNavigationContext"
 import { Navigation } from "../lib/navigation/Navigation"
 import { FollowScreen } from "../screens/(modal)/FollowScreen"
-import { handleIncomingUrl } from "./useIntentHandler"
+import { LoginScreen } from "../screens/(modal)/LoginScreen"
+import { handleIncomingUrl, watchPendingFollowScreen } from "./useIntentHandler"
 
-vi.hoisted(() => {
+const mocks = vi.hoisted(() => {
   // Read by the shared constants at import
   vi.stubGlobal("ELECTRON", false)
+  return { whoami: null as { id: string } | null }
 })
 
 vi.mock("expo", () => ({
@@ -26,8 +28,10 @@ vi.mock("expo-linking", () => ({
   addEventListener: () => ({ remove: () => {} }),
 }))
 vi.mock("@follow/store/user/hooks", () => ({ invalidateUserSession: vi.fn() }))
+vi.mock("@follow/store/user/getters", () => ({ whoami: () => mocks.whoami }))
 vi.mock("../lib/navigation/hooks", () => ({ useNavigation: vi.fn() }))
 vi.mock("../screens/(modal)/FollowScreen", () => ({ FollowScreen: () => null }))
+vi.mock("../screens/(modal)/LoginScreen", () => ({ LoginScreen: () => null }))
 
 const createNavigation = () => new Navigation({ routesAtom: atom<Route[]>([]) })
 const routesOf = (navigation: Navigation) =>
@@ -43,6 +47,7 @@ describe("handleIncomingUrl", () => {
     navigation = createNavigation()
     now += 3_600_000
     vi.spyOn(Date, "now").mockImplementation(() => now)
+    mocks.whoami = { id: "user-1" }
   })
 
   it("opens the follow form for a link", () => {
@@ -70,5 +75,48 @@ describe("handleIncomingUrl", () => {
     handleIncomingUrl("folo://add?id=1337497420971380736", navigation)
 
     expect(routesOf(navigation)).toHaveLength(1)
+  })
+
+  describe("signed out", () => {
+    beforeEach(() => {
+      mocks.whoami = null
+    })
+
+    it("opens the follow form of a link from the sign-in screen once it closes", async () => {
+      const stopWatching = watchPendingFollowScreen(navigation)
+      navigation.presentControllerView(LoginScreen)
+
+      handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+      // The form would cover the sign-in screen
+      expect(routesOf(navigation).map((route) => route.Component)).toEqual([LoginScreen])
+
+      // Signing in closes the sign-in screen
+      mocks.whoami = { id: "user-1" }
+      navigation.dismiss()
+      await vi.waitFor(() =>
+        expect(routesOf(navigation).map((route) => route.Component)).toEqual([FollowScreen]),
+      )
+      expect(routesOf(navigation)[0]!.props).toMatchObject({ id: "1337585485484134400" })
+      stopWatching()
+    })
+
+    it("still opens the form when the sign-in screen closes without signing in", async () => {
+      const stopWatching = watchPendingFollowScreen(navigation)
+      navigation.presentControllerView(LoginScreen)
+      handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+
+      navigation.dismiss()
+
+      await vi.waitFor(() =>
+        expect(routesOf(navigation).map((route) => route.Component)).toEqual([FollowScreen]),
+      )
+      stopWatching()
+    })
+
+    it("opens the form at once without a sign-in screen, which the form asks for", () => {
+      handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+
+      expect(routesOf(navigation).map((route) => route.Component)).toEqual([FollowScreen])
+    })
   })
 })

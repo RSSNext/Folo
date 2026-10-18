@@ -1,4 +1,4 @@
-import { FollowAPIError } from "@follow-app/client-sdk"
+import { FollowAPIError, FollowAuthError } from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getFetchErrorMessage, toastFetchError } from "./error-parser"
@@ -16,6 +16,9 @@ vi.mock("i18next", () => ({
     }
     if (key === "errors:3") {
       return "Unprocessable content"
+    }
+    if (key === "errors:1008") {
+      return "Log in to complete this action."
     }
     return key.replace(/^errors:/u, "")
   },
@@ -127,6 +130,20 @@ describe("getFetchErrorMessage", () => {
   })
 })
 
+describe("toastFetchError for a refused session", () => {
+  it("asks to sign in, translated, instead of the server's Unauthorized", () => {
+    mocks.toastError.mockClear()
+    toastFetchError(
+      new FollowAuthError("Unauthorized\nRequest: POST /subscriptions\nArgs: {}", {
+        code: 1000,
+        message: "Unauthorized",
+      }),
+    )
+
+    expect(mocks.toastError).toHaveBeenCalledWith("Log in to complete this action.")
+  })
+})
+
 describe("toastFetchError for unreachable servers", () => {
   it("shows the connection message instead of the native reason", () => {
     mocks.toastError.mockClear()
@@ -145,8 +162,13 @@ describe("getFetchErrorMessage for API errors", () => {
   })
 
   it("keeps the SDK message for a non-numeric code", () => {
-    const error = new FollowAPIError("Authentication required", 401, "AUTH_REQUIRED")
-    expect(getFetchErrorMessage(error)).toBe("Authentication required")
+    const error = new FollowAPIError("Validation error", 400, "VALIDATION_ERROR")
+    expect(getFetchErrorMessage(error)).toBe("Validation error")
+  })
+
+  it("asks to sign in for a refused session instead of the bare status", () => {
+    const error = new FollowAuthError("Unauthorized\nRequest: POST /subscriptions\nArgs: {}")
+    expect(getFetchErrorMessage(error)).toBe("Log in to complete this action.")
   })
 
   it("translates a known API error code", () => {

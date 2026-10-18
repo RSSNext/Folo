@@ -9,6 +9,11 @@ import { sanitizeErrorMessage } from "./error-message"
 import { isConnectionFailure } from "./network-error"
 import { toast } from "./toast"
 
+// The SDK names every refused session AUTH_REQUIRED, without the server's code or a
+// translation, so the reader would see a bare "Unauthorized"
+const SIGN_IN_REQUIRED_MESSAGE_KEY = "errors:1008"
+const isSignInRequired = (error: Error) => error instanceof FollowAPIError && error.status === 401
+
 // i18next answers a missing key with the key without its namespace, such as "1000"
 const translateErrorCode = (code: unknown, fallback: string) => {
   if (code == null) return fallback
@@ -37,6 +42,10 @@ export const getFetchErrorInfo = (
     } catch {
       return { message: sanitizeErrorMessage(error.message) }
     }
+  }
+
+  if (isSignInRequired(error)) {
+    return { message: t(SIGN_IN_REQUIRED_MESSAGE_KEY) }
   }
 
   if (error instanceof FollowAPIError && error.code) {
@@ -130,6 +139,10 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
       }
     } catch {
       message = fallbackMessage
+    }
+
+    if (isSignInRequired(error)) {
+      message = t(SIGN_IN_REQUIRED_MESSAGE_KEY)
     }
   }
 

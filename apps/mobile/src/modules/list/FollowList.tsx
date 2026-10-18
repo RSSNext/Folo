@@ -3,6 +3,7 @@ import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
+import { whoami } from "@follow/store/user/getters"
 import { useUserRole } from "@follow/store/user/hooks"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
@@ -29,6 +30,7 @@ import { IconWithFallback } from "@/src/components/ui/icon/fallback-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Text } from "@/src/components/ui/typography/Text"
 import { toastFetchError } from "@/src/lib/error-parser"
+import { destination } from "@/src/lib/navigation/biz/Destination"
 import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
@@ -110,6 +112,11 @@ const Impl = (props: { id: string }) => {
   const submit = async () => {
     if (!list) return
     if (isLoading) return
+    // A link can open the form signed out; the form stays for after the sign-in
+    if (!whoami()) {
+      destination.Login()
+      return
+    }
     setIsLoading(true)
     const payload = form.getValues()
     try {

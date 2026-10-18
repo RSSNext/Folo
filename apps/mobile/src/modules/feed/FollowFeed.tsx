@@ -8,6 +8,7 @@ import {
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionForm } from "@follow/store/subscription/types"
+import { whoami } from "@follow/store/user/getters"
 import { formatNumber } from "@follow/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useMemo, useState } from "react"
@@ -35,6 +36,7 @@ import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
 import { toastFetchError } from "@/src/lib/error-parser"
+import { destination } from "@/src/lib/navigation/biz/Destination"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
@@ -147,6 +149,11 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const canDismiss = useCanDismiss()
   const submit = async (values: FollowFeedFormOutput) => {
     if (isLoading) return
+    // A link can open the form signed out; the form stays for after the sign-in
+    if (!whoami()) {
+      destination.Login()
+      return
+    }
     setIsLoading(true)
     const body: SubscriptionForm = {
       url: feed?.url,
