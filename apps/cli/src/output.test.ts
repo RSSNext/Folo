@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { CLIError, normalizeError, printFailure, printSuccess } from "./output"
+import {
+  CLIError,
+  describeFetchFailure,
+  normalizeError,
+  printFailure,
+  printSuccess,
+} from "./output"
 
 describe("output helpers", () => {
   beforeEach(() => {
@@ -77,5 +83,35 @@ describe("output helpers", () => {
       code: "UNKNOWN_ERROR",
       message: "generic",
     })
+  })
+
+  it("names the API and the reason when fetch could not reach it", () => {
+    // Node's fetch reports a refused connection as an AggregateError with an empty message
+    const refused = { code: "ECONNREFUSED", message: "" }
+
+    expect(
+      normalizeError(new TypeError("fetch failed", { cause: refused }), {
+        apiUrl: "http://localhost:59999",
+      }),
+    ).toEqual({
+      code: "NETWORK_ERROR",
+      message: "Cannot reach the API at http://localhost:59999 (ECONNREFUSED).",
+    })
+  })
+
+  it("describes why fetch failed", () => {
+    const failure = (cause?: unknown) => new TypeError("fetch failed", { cause })
+    const expired = Object.assign(new Error("certificate has expired"), {
+      code: "CERT_HAS_EXPIRED",
+    })
+    const refused = Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:9"), {
+      code: "ECONNREFUSED",
+    })
+
+    expect(describeFetchFailure(failure(expired))).toBe("CERT_HAS_EXPIRED: certificate has expired")
+    expect(describeFetchFailure(failure(refused))).toBe("connect ECONNREFUSED 127.0.0.1:9")
+    expect(describeFetchFailure(failure())).toBe("network error")
+    expect(describeFetchFailure(new TypeError("Cannot read properties of null"))).toBeUndefined()
+    expect(describeFetchFailure(new Error("fetch failed"))).toBeUndefined()
   })
 })

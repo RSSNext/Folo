@@ -3,7 +3,7 @@ import { createServer } from "node:http"
 import type { AddressInfo } from "node:net"
 
 import { DEFAULT_VALUES } from "../../../packages/internal/shared/src/env.common"
-import { CLIError } from "./output"
+import { CLIError, toNetworkError } from "./output"
 
 const LOCAL_CALLBACK_HOST = "127.0.0.1"
 const LOCAL_CALLBACK_PATH = "/callback"
@@ -179,6 +179,13 @@ const hasValidSessionToken = async (apiUrl: string, token: string): Promise<bool
   return isRecord(data) && Boolean(data.user) && Boolean(data.session)
 }
 
+const toLoginNetworkError = (apiUrl: string, error: unknown, action: string) => {
+  const networkError = toNetworkError(error, apiUrl)
+  return networkError
+    ? new CLIError(networkError.code, networkError.message)
+    : new CLIError("NETWORK_ERROR", `${action}: ${(error as Error).message}`)
+}
+
 export const resolveBrowserLoginToken = async (apiUrl: string, token: string): Promise<string> => {
   const applyUrl = resolveAuthEndpointUrl(apiUrl, ONE_TIME_TOKEN_APPLY_PATH)
   const verifyUrl = resolveAuthEndpointUrl(apiUrl, ONE_TIME_TOKEN_VERIFY_PATH)
@@ -196,10 +203,7 @@ export const resolveBrowserLoginToken = async (apiUrl: string, token: string): P
       body: requestBody,
     })
   } catch (error) {
-    throw new CLIError(
-      "NETWORK_ERROR",
-      `Failed to apply browser login token: ${(error as Error).message}`,
-    )
+    throw toLoginNetworkError(apiUrl, error, "Failed to apply browser login token")
   }
 
   if (response.ok) {
@@ -230,10 +234,7 @@ export const resolveBrowserLoginToken = async (apiUrl: string, token: string): P
         body: requestBody,
       })
     } catch (error) {
-      throw new CLIError(
-        "NETWORK_ERROR",
-        `Failed to verify browser login token: ${(error as Error).message}`,
-      )
+      throw toLoginNetworkError(apiUrl, error, "Failed to verify browser login token")
     }
 
     if (response.ok) {

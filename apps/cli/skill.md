@@ -186,5 +186,8 @@ Loop until `hasNext` is `false`:
 - `HTTP_4xx` / `HTTP_5xx`
   - Retry with `--verbose` for request details
   - Verify `--api-url` if using non-default endpoint
+- `NETWORK_ERROR`
+  - The API could not be reached; the message names its URL and the reason, such as `ECONNREFUSED`
+  - Check the network connection and `--api-url`, then retry
 - `INVALID_ARGUMENT`
   - Run `npx --yes folocli@latest <command> --help` to inspect accepted options

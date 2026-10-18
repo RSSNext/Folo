@@ -1,3 +1,5 @@
+import { setMaxListeners } from "node:events"
+
 import { FollowClient } from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
@@ -44,6 +46,8 @@ export interface CommandContext {
   options: ResolvedGlobalOptions
   config: FoloCLIConfig
   token?: string
+  /** Ends what the command's requests left behind, once the command is done */
+  dispose: () => void
 }
 
 export interface CLIAuthSession {
@@ -191,6 +195,16 @@ export const createCommandContext = async (
     })
   }
 
+  // The SDK clears the 30 s timeout of a request only when fetch answers, so a request that
+  // failed, such as one to an API that refuses connections, kept the process alive for 30 s
+  // after printing the error. It clears the timeout when the request's own signal aborts.
+  const requests = new AbortController()
+  setMaxListeners(0, requests.signal)
+  client.addRequestInterceptor((ctx) => ({
+    url: ctx.url,
+    options: { ...ctx.options, signal: ctx.options.signal ?? requests.signal },
+  }))
+
   if (globalOptions.verbose) {
     setupVerboseLogging(client)
   }
@@ -198,6 +212,7 @@ export const createCommandContext = async (
   return {
     client,
     token,
+    dispose: () => requests.abort(),
     config,
     options: {
       ...globalOptions,

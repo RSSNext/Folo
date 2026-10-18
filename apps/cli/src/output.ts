@@ -157,12 +157,57 @@ const firstLine = (message: string) => {
   return head?.trim() || message
 }
 
-export const normalizeError = (error: unknown, verbose = false): OutputError => {
+/**
+ * Why fetch could not reach a server, such as "ECONNREFUSED" or "CERT_HAS_EXPIRED: certificate
+ * has expired", or undefined for any other error. Node's fetch only says "fetch failed" and
+ * keeps the reason in `cause`.
+ */
+export const describeFetchFailure = (error: unknown): string | undefined => {
+  if (!(error instanceof TypeError) || error.message !== "fetch failed") {
+    return undefined
+  }
+
+  const { cause } = error
+  if (typeof cause !== "object" || cause === null) {
+    return "network error"
+  }
+  const reason = cause as { code?: unknown; message?: unknown }
+  const code = typeof reason.code === "string" ? reason.code : undefined
+  const message = typeof reason.message === "string" && reason.message ? reason.message : undefined
+  if (code && message && !message.includes(code)) {
+    return `${code}: ${message}`
+  }
+  return message ?? code ?? "network error"
+}
+
+/** A NETWORK_ERROR naming the API when fetch could not reach it, undefined for other errors */
+export const toNetworkError = (error: unknown, apiUrl?: string): OutputError | undefined => {
+  const reason = describeFetchFailure(error)
+  if (!reason) {
+    return undefined
+  }
+  return {
+    code: "NETWORK_ERROR",
+    message: apiUrl
+      ? `Cannot reach the API at ${apiUrl} (${reason}).`
+      : `Cannot reach the API (${reason}).`,
+  }
+}
+
+export const normalizeError = (
+  error: unknown,
+  { verbose = false, apiUrl }: { verbose?: boolean; apiUrl?: string } = {},
+): OutputError => {
   if (error instanceof CLIError) {
     return {
       code: error.code,
       message: error.message,
     }
+  }
+
+  const networkError = toNetworkError(error, apiUrl)
+  if (networkError) {
+    return networkError
   }
 
   if (error instanceof FollowAuthError) {

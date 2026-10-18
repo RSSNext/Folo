@@ -36,7 +36,9 @@ export const runCommand = async (
   } catch (error) {
     const format = context?.options.format ?? fallbackOptions.format
     const verbose = context?.options.verbose ?? fallbackOptions.verbose
-    printFailure(format, normalizeError(error, verbose))
+    printFailure(format, normalizeError(error, { verbose, apiUrl: context?.options.apiUrl }))
     process.exitCode = 1
+  } finally {
+    context?.dispose()
   }
 }
