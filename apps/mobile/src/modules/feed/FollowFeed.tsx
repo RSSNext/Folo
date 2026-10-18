@@ -87,7 +87,8 @@ const FeedLoadState = ({
     </FollowStateView>
   )
 }
-export function FollowFeed(props: { id: string }) {
+/** `defaultView` is the view a link asked for, which wins over the one the feed suggests */
+export function FollowFeed(props: { id: string; defaultView?: FeedViewType }) {
   const { id } = props
   const feed = useFeedById(id as string)
   const { data, error, isFetching, refetch } = usePrefetchFeed(id as string)
@@ -96,9 +97,11 @@ export function FollowFeed(props: { id: string }) {
       <FeedLoadState id={id} isFetching={isFetching} error={error} onRetry={() => void refetch()} />
     )
   }
-  return <FollowImpl feedId={id} defaultView={data?.analytics?.view ?? undefined} />
+  return (
+    <FollowImpl feedId={id} defaultView={props.defaultView ?? data?.analytics?.view ?? undefined} />
+  )
 }
-export function FollowUrl(props: { url: string }) {
+export function FollowUrl(props: { url: string; defaultView?: FeedViewType }) {
   const { url } = props
   const { isFetching, data, error, refetch } = usePrefetchFeedByUrl(url)
   // A feed the server had not stored yet is previewed under a nonce id until the feed itself
@@ -115,7 +118,10 @@ export function FollowUrl(props: { url: string }) {
     )
   }
   return (
-    <FollowImpl feedId={feedId} defaultView={data.responseData?.analytics?.view ?? undefined} />
+    <FollowImpl
+      feedId={feedId}
+      defaultView={props.defaultView ?? data.responseData?.analytics?.view ?? undefined}
+    />
   )
 }
 function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
