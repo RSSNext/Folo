@@ -189,7 +189,9 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
 
   if (!_reason) {
     const title = _title || message || "Unknown error"
-    return detail ? toast.error(title, { description: detail }) : toast.error(title)
+    // A title of the caller's own says what failed, so the server's answer still has to say why
+    const description = _title && !detail && message !== _title ? message : detail
+    return description ? toast.error(title, { description }) : toast.error(title)
   } else {
     return toast.error(message || _title || "Unknown error")
   }

@@ -114,6 +114,39 @@ describe("toastFetchError for a rejected request body", () => {
   })
 })
 
+describe("toastFetchError under a title", () => {
+  beforeEach(() => {
+    mocks.toastError.mockClear()
+  })
+
+  it("says what the server answered below the title", () => {
+    toastFetchError(
+      new FollowAPIError("Entry not found\nRequest: POST /collections\nArgs: {}", 404, "4000"),
+      { title: "A change couldn't be saved and was undone" },
+    )
+
+    expect(mocks.toastError).toHaveBeenCalledWith("A change couldn't be saved and was undone", {
+      description: "Entry not found",
+    })
+  })
+
+  it("says the server could not be reached below the title", () => {
+    toastFetchError(new Error("fetch failed: java.net.ConnectException: Failed to connect"), {
+      title: "Failed to save",
+    })
+
+    expect(mocks.toastError).toHaveBeenCalledWith("Failed to save", {
+      description: "common:app.api_unreachable",
+    })
+  })
+
+  it("does not repeat a title the answer says again", () => {
+    toastFetchError(new FollowAPIError("Failed to save", 500, "9999"), { title: "Failed to save" })
+
+    expect(mocks.toastError).toHaveBeenCalledWith("Failed to save")
+  })
+})
+
 describe("getFetchErrorMessage", () => {
   it("describes a request that never reached the server instead of the native reason", () => {
     const error = new Error(
