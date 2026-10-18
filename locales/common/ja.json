@@ -61,6 +61,7 @@
   "retry": "再試行",
   "search.empty.no_results": "結果が見つかりませんでした。",
   "space": "",
+  "sync.change_rejected": "変更を保存できなかったため、元に戻しました",
   "time.duration.days_hours": "{{days}} 日 {{hours}} 時間",
   "time.duration.hours_minutes": "{{hours}} 時間 {{minutes}} 分",
   "time.duration.minutes": "{{minutes}} 分",

@@ -1,7 +1,9 @@
 import { syncEngine } from "@follow/store/sync/sync-engine"
 import { transactionQueue } from "@follow/store/sync/transaction-queue"
+import { t } from "i18next"
 
 import { onApiRecovered } from "~/lib/api-client"
+import { toastFetchError } from "~/lib/error-parser"
 import { settingSyncQueue } from "~/modules/settings/helper/sync-queue"
 
 /**
@@ -14,5 +16,12 @@ export const initSyncTriggers = () => {
     transactionQueue.resume()
     syncEngine.resume()
     settingSyncQueue.resume()
+  })
+
+  // The change was shown as done, so undoing it without a word would look like a glitch.
+  transactionQueue.onFailure(({ error }) => {
+    toastFetchError(error instanceof Error ? error : new Error(String(error)), {
+      title: t("common:sync.change_rejected"),
+    })
   })
 }

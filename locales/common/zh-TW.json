@@ -61,6 +61,7 @@
   "retry": "重試",
   "search.empty.no_results": "搜尋結果為空",
   "space": "",
+  "sync.change_rejected": "有一項變更未能儲存，已復原",
   "time.duration.days_hours": "{{days}} 天 {{hours}} 小時",
   "time.duration.hours_minutes": "{{hours}} 小時 {{minutes}} 分鐘",
   "time.duration.minutes": "{{minutes}} 分鐘",

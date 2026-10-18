@@ -83,8 +83,10 @@ export interface TransactionRecord<P = unknown> {
   userId: string | null
 }
 
+/** The server rejected a batch: its transactions were rolled back and dropped. */
 export interface TransactionFailureEvent {
-  record: TransactionRecord
+  /** The transactions of the batch, in the order they were made. */
+  records: TransactionRecord[]
   error: unknown
 }
 
@@ -614,12 +616,13 @@ class TransactionQueue {
 
     for (const record of batch) {
       record.reject(error)
-      for (const listener of this.failureListeners) {
-        try {
-          listener({ record, error })
-        } catch (listenerError) {
-          console.error("[transaction-queue] failure listener threw", listenerError)
-        }
+    }
+    // Once per batch: the marks of a scroll are one gesture to the user, and one request.
+    for (const listener of this.failureListeners) {
+      try {
+        listener({ records: batch, error })
+      } catch (listenerError) {
+        console.error("[transaction-queue] failure listener threw", listenerError)
       }
     }
   }

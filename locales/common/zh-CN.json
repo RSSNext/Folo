@@ -61,6 +61,7 @@
   "retry": "重试",
   "search.empty.no_results": "搜索结果为空",
   "space": "",
+  "sync.change_rejected": "有一项更改未能保存，已撤销",
   "time.duration.days_hours": "{{days}} 天 {{hours}} 小时",
   "time.duration.hours_minutes": "{{hours}} 小时 {{minutes}} 分钟",
   "time.duration.minutes": "{{minutes}} 分钟",

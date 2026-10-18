@@ -61,6 +61,7 @@
   "retry": "Réessayer",
   "search.empty.no_results": "Aucun résultat trouvé.",
   "space": " ",
+  "sync.change_rejected": "Une modification n'a pas pu être enregistrée et a été annulée",
   "time.duration.days_hours": "{{days}} j {{hours}} h",
   "time.duration.hours_minutes": "{{hours}} h {{minutes}} min",
   "time.duration.minutes": "{{minutes}} min",

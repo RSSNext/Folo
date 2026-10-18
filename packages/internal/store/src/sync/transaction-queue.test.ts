@@ -208,10 +208,13 @@ describe("transactionQueue", () => {
     const execute = vi.fn().mockRejectedValue(new FollowAPIError("nope", 422))
     const kind = createCounterKind({ execute })
     const failures: unknown[] = []
-    const unsubscribe = transactionQueue.onFailure((event) => failures.push(event.record.kind))
+    const unsubscribe = transactionQueue.onFailure((event) =>
+      failures.push(event.records.map((record) => record.payload)),
+    )
 
     await transactionQueue.enqueue(kind, { key: "a", delta: 1 })
-    expect(counters.a).toBe(1)
+    await transactionQueue.enqueue(kind, { key: "a", delta: 2 })
+    expect(counters.a).toBe(3)
 
     await vi.advanceTimersByTimeAsync(100)
     await transactionQueue.whenIdle()
@@ -219,7 +222,13 @@ describe("transactionQueue", () => {
     expect(counters.a).toBe(0)
     expect(persisted.a).toBeUndefined()
     expect(outboxRows).toHaveLength(0)
-    expect(failures).toEqual(["test.counter"])
+    // One report for the batch the server rejected.
+    expect(failures).toEqual([
+      [
+        { key: "a", delta: 1 },
+        { key: "a", delta: 2 },
+      ],
+    ])
     unsubscribe()
   })
 

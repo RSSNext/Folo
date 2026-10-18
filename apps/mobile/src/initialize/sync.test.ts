@@ -5,10 +5,13 @@ const mocks = vi.hoisted(() => {
   const appStateListeners = new Set<(state: AppStateStatus) => void>()
   const networkListeners = new Set<(state: { isConnected?: boolean }) => void>()
   const apiRecoveredListeners = new Set<() => void>()
+  const failureListeners = new Set<(event: { records: unknown[]; error: unknown }) => void>()
   return {
     appStateListeners,
     networkListeners,
     apiRecoveredListeners,
+    failureListeners,
+    toastFetchError: vi.fn(),
     networkState: { isConnected: true as boolean | undefined },
     queueResume: vi.fn(),
     engineResume: vi.fn(),
@@ -34,7 +37,21 @@ vi.mock("expo-network", () => ({
 }))
 
 vi.mock("@follow/store/sync/transaction-queue", () => ({
-  transactionQueue: { resume: mocks.queueResume },
+  transactionQueue: {
+    resume: mocks.queueResume,
+    onFailure: (listener: (event: { records: unknown[]; error: unknown }) => void) => {
+      mocks.failureListeners.add(listener)
+      return () => mocks.failureListeners.delete(listener)
+    },
+  },
+}))
+
+vi.mock("i18next", () => ({
+  t: (key: string) => key,
+}))
+
+vi.mock("../lib/error-parser", () => ({
+  toastFetchError: mocks.toastFetchError,
 }))
 
 vi.mock("@follow/store/sync/sync-engine", () => ({
@@ -62,6 +79,8 @@ describe("initSyncTriggers", () => {
     mocks.appStateListeners.clear()
     mocks.networkListeners.clear()
     mocks.apiRecoveredListeners.clear()
+    mocks.failureListeners.clear()
+    mocks.toastFetchError.mockClear()
     mocks.networkState.isConnected = true
     mocks.queueResume.mockClear()
     mocks.engineResume.mockClear()
@@ -89,6 +108,16 @@ describe("initSyncTriggers", () => {
     expect(mocks.queueResume).toHaveBeenCalledTimes(1)
     expect(mocks.engineResume).toHaveBeenCalledTimes(1)
     expect(mocks.settingsResume).toHaveBeenCalledTimes(1)
+  })
+
+  it("tells the user when the server rejected a change", () => {
+    const error = new Error("Entry not found")
+    for (const listener of mocks.failureListeners) listener({ records: [{}, {}], error })
+
+    expect(mocks.toastFetchError).toHaveBeenCalledTimes(1)
+    expect(mocks.toastFetchError).toHaveBeenCalledWith(error, {
+      title: "common:sync.change_rejected",
+    })
   })
 
   it("resumes once the device is connected again, not on every network change", () => {
