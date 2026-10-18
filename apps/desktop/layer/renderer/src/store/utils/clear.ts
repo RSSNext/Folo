@@ -2,6 +2,7 @@ import { deleteDB } from "@follow/database/db"
 import { clearStorage, getStorageNS } from "@follow/utils/ns"
 
 import { getAuthSessionToken, setAuthSessionToken } from "~/lib/client-session"
+import { reloadAtAppRoot } from "~/lib/reload-at-app-root"
 
 import { clearImageDimensionsDb } from "../image/db"
 
@@ -22,7 +23,7 @@ export const clearLocalDataOfAnotherAccount = async () => {
   // The query cache and every setting of the account before, as a sign-out clears them
   clearStorage()
   if (authSessionToken) setAuthSessionToken(authSessionToken)
-  window.location.reload()
+  reloadAtAppRoot()
 }
 
 const storedUserId = getStorageNS("user_id")

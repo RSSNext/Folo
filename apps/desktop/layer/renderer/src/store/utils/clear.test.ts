@@ -5,26 +5,20 @@ import { clearLocalDataOfAnotherAccount } from "./clear"
 const mocks = vi.hoisted(() => ({
   deleteDB: vi.fn(async () => {}),
   clearImageDimensionsDb: vi.fn(async () => {}),
-  reload: vi.fn(),
+  reloadAtAppRoot: vi.fn(),
 }))
 
 vi.mock("@follow/database/db", () => ({ deleteDB: mocks.deleteDB }))
 vi.mock("../image/db", () => ({ clearImageDimensionsDb: mocks.clearImageDimensionsDb }))
+vi.mock("~/lib/reload-at-app-root", () => ({ reloadAtAppRoot: mocks.reloadAtAppRoot }))
 
 describe("clearLocalDataOfAnotherAccount", () => {
-  const originalLocation = window.location
-
   beforeEach(() => {
     localStorage.clear()
     vi.clearAllMocks()
-    Object.defineProperty(window, "location", {
-      configurable: true,
-      value: { reload: mocks.reload },
-    })
   })
 
   afterEach(() => {
-    Object.defineProperty(window, "location", { configurable: true, value: originalLocation })
     localStorage.clear()
   })
 
@@ -50,7 +44,8 @@ describe("clearLocalDataOfAnotherAccount", () => {
     expect(localStorage.getItem("follow:REACT_QUERY_OFFLINE_CACHE")).toBeNull()
     expect(localStorage.getItem("follow:auth_session_token")).toBe("session-of-b")
     expect(localStorage.getItem("another-app")).toBe("kept")
-    expect(mocks.reload).toHaveBeenCalledTimes(1)
+    // Not on the page the account before had open
+    expect(mocks.reloadAtAppRoot).toHaveBeenCalledTimes(1)
   })
 
   it("keeps no session token when the new session lives in a cookie", async () => {
@@ -60,6 +55,6 @@ describe("clearLocalDataOfAnotherAccount", () => {
 
     expect(localStorage.getItem("follow:general")).toBeNull()
     expect(localStorage.getItem("follow:auth_session_token")).toBeNull()
-    expect(mocks.reload).toHaveBeenCalledTimes(1)
+    expect(mocks.reloadAtAppRoot).toHaveBeenCalledTimes(1)
   })
 })
