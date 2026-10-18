@@ -153,4 +153,19 @@ describe("getFetchErrorMessage for API errors", () => {
     const error = new FollowAPIError("limit", 402, "2012")
     expect(getFetchErrorMessage(error)).toBe("RSSHub feed subscription limit exceeded")
   })
+
+  it("leaves out the request an API error was for, headers included", () => {
+    // How the SDK words an error for a response without a JSON body
+    const error = new FollowAPIError(
+      [
+        "Service Unavailable",
+        "Request: GET /ai/summary (original: /ai/summary)",
+        'Args: { "query": { "id": "1" }, "headers": { "cookie": "[REDACTED]" } }',
+      ].join("\n"),
+      503,
+      "503",
+    )
+
+    expect(getFetchErrorMessage(error)).toBe("Service Unavailable")
+  })
 })
