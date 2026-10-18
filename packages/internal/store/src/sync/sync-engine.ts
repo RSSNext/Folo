@@ -33,7 +33,7 @@ import { whoami } from "../modules/user/getters"
 import { apiMorph } from "../morph/api"
 import { getSyncModelHandler, getSyncModelHandlers } from "./model-registry"
 import { entryReadOverlayKey } from "./overlay-keys"
-import { registerSyncEngine, setSyncEngineActive } from "./sync-status"
+import { registerSyncEngine, setSyncEngineActive, setSyncEngineBootstrapping } from "./sync-status"
 import { isNavigatorOnline, transactionQueue } from "./transaction-queue"
 import type {
   CollectionActionData,
@@ -274,13 +274,21 @@ class SyncEngine implements Resetable {
       throw error
     }
 
-    await subscriptionSyncService.fetch()
-    await this.markCalibrated(SUBSCRIPTIONS_CALIBRATED_AT_KEY)
-    // The snapshot reflects at least the id read above; the response may name a later one.
-    await unreadSyncService.resetFromRemote({ fallbackSyncId: lastSyncId })
-    await this.markCalibrated(UNREAD_CALIBRATED_AT_KEY)
-    await this.bootstrapRegisteredModels({ force: true })
-    await this.setLastSyncId(lastSyncId)
+    // A change acknowledged from now on is after the cursor, so the first pull delivers its
+    // real effect. Committing its own prediction as well would count it twice, as when an
+    // outbox replay on a fresh profile is acknowledged while the snapshots load.
+    setSyncEngineBootstrapping(true)
+    try {
+      await subscriptionSyncService.fetch()
+      await this.markCalibrated(SUBSCRIPTIONS_CALIBRATED_AT_KEY)
+      // The snapshot reflects at least the id read above; the response may name a later one.
+      await unreadSyncService.resetFromRemote({ fallbackSyncId: lastSyncId })
+      await this.markCalibrated(UNREAD_CALIBRATED_AT_KEY)
+      await this.bootstrapRegisteredModels({ force: true })
+      await this.setLastSyncId(lastSyncId)
+    } finally {
+      setSyncEngineBootstrapping(false)
+    }
   }
 
   /**
@@ -386,6 +394,7 @@ class SyncEngine implements Resetable {
     this.pendingNewEntryViews.clear()
     this.pendingNewestEntryAt = 0
     setSyncEngineActive(false)
+    setSyncEngineBootstrapping(false)
   }
 
   private async runPull(reason: SyncPullReason) {

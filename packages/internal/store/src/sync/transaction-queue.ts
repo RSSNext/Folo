@@ -2,7 +2,7 @@ import { SyncTransactionService } from "@follow/database/services/sync-transacti
 import { FollowAPIError } from "@follow-app/client-sdk"
 
 import { getLocalDataOwner, onSessionUserConfirmed, verifySessionUser } from "./account"
-import { isSyncEngineActive } from "./sync-status"
+import { willSyncEngineDeliver } from "./sync-status"
 
 /**
  * A Linear-style transaction queue.
@@ -63,9 +63,10 @@ export type AcknowledgedChangeKind<P> = Pick<TransactionKind<P>, "kind" | "overl
 
 export interface TransactionPersistContext {
   /**
-   * The server numbered the batch and the sync engine is running, so the change log will
-   * deliver what the batch really changed. Server-derived values such as unread counters
-   * must then be left to the change log instead of being guessed from the optimistic effect.
+   * The server numbered the batch and the sync engine is running or bootstrapping, so the
+   * change log will deliver what the batch really changed. Server-derived values such as
+   * unread counters must then be left to the change log instead of being guessed from the
+   * optimistic effect.
    */
   awaitsSync: boolean
 }
@@ -372,7 +373,7 @@ class TransactionQueue {
    * them instead.
    */
   trackAcknowledged<P>(definition: AcknowledgedChangeKind<P>, payload: P, syncId?: number) {
-    const awaitsSync = syncId !== undefined && isSyncEngineActive()
+    const awaitsSync = syncId !== undefined && willSyncEngineDeliver()
     const now = Date.now()
     const record: AcknowledgedRecord = {
       id: createTransactionId(),
@@ -551,7 +552,7 @@ class TransactionQueue {
   private async completeBatch(batch: QueuedTransaction[], result: unknown) {
     const { definition } = batch[0]!
     const syncId = definition.syncIdOf?.(result)
-    const awaitsSync = syncId !== undefined && isSyncEngineActive()
+    const awaitsSync = syncId !== undefined && willSyncEngineDeliver()
     const keepsAcknowledged = !!definition.overlays || !!definition.rebaseUnread
 
     // Hand the batch over from the queue to the acknowledged list in one step, so readers

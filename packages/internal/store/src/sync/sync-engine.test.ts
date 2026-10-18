@@ -1163,6 +1163,59 @@ describe("syncEngine", () => {
     expect(readsGetMock).not.toHaveBeenCalled()
   })
 
+  it("counts a mark acknowledged while the first bootstrap loads its snapshots once", async () => {
+    // A fresh profile replays a mark from its outbox while the engine has no cursor yet.
+    unreadActions.upsertManyInSession([{ id: "feed-1", count: 19 }], { reset: true })
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: { entry1: createEntry("entry1", "feed-1") },
+      entryIdSet: new Set(["entry1"]),
+    }))
+    apiContext.provide({
+      subscriptions: { get: subscriptionsGetMock },
+      reads: {
+        get: readsGetMock,
+        markAsRead: vi.fn(async () => ({ code: 0, lastSyncId: 463 })),
+      },
+    } as unknown as FollowAPI)
+    stateMock.mockResolvedValue({ code: 0, data: { lastSyncId: 457 } })
+    // The snapshot is read before the server applied the mark.
+    readsGetMock.mockResolvedValue({ data: { "feed-1": 19 }, lastSyncId: 457 })
+    let releaseModels: () => void = () => {}
+    const unregister = registerSyncModel("widget", {
+      bootstrap: () =>
+        new Promise<void>((resolve) => {
+          releaseModels = resolve
+        }),
+      apply: vi.fn(),
+    })
+
+    const bootstrap = syncEngine.pull("launch")
+    await vi.waitFor(() => expect(readsGetMock).toHaveBeenCalledTimes(1))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    await unreadSyncService.markEntriesAsRead(["entry1"])
+    await transactionQueue.flush()
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(18)
+
+    releaseModels()
+    await bootstrap
+    deltaMock.mockResolvedValue(
+      deltaResponse([
+        createAction({
+          id: 463,
+          data: { entryIds: ["entry1"], read: true, isInbox: false, feeds: { "feed-1": 1 } },
+        }),
+      ]),
+    )
+    await syncEngine.pull("ack")
+
+    // The server's count: the change log's flip, not that plus the prediction.
+    expect(useUnreadStore.getState().data["feed-1"]).toBe(18)
+    expect(unreadUpsertManyMock).toHaveBeenLastCalledWith([{ id: "feed-1", count: 18 }])
+    unregister()
+  })
+
   it("bootstraps a registered model once and hands it its actions", async () => {
     seedCursor(130)
     const bootstrap = vi.fn(async () => {})
