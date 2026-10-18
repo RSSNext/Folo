@@ -11,10 +11,7 @@ import { handleIncomingUrl, watchPendingFollowScreen } from "./useIntentHandler"
 const mocks = vi.hoisted(() => {
   // Read by the shared constants at import
   vi.stubGlobal("ELECTRON", false)
-  return {
-    whoami: null as { id: string } | null,
-    dismissInAppBrowser: vi.fn(async () => {}),
-  }
+  return { dismissInAppBrowser: vi.fn(async () => {}) }
 })
 
 vi.mock("expo", () => ({
@@ -31,7 +28,6 @@ vi.mock("expo-linking", () => ({
   addEventListener: () => ({ remove: () => {} }),
 }))
 vi.mock("@follow/store/user/hooks", () => ({ invalidateUserSession: vi.fn() }))
-vi.mock("@follow/store/user/getters", () => ({ whoami: () => mocks.whoami }))
 vi.mock("../lib/navigation/hooks", () => ({ useNavigation: vi.fn() }))
 vi.mock("../lib/launch-link", () => ({ getUnhandledLaunchLink: async () => null }))
 vi.mock("../lib/native", () => ({ dismissInAppBrowser: mocks.dismissInAppBrowser }))
@@ -55,7 +51,6 @@ describe("handleIncomingUrl", () => {
     navigation = createNavigation()
     now += 3_600_000
     vi.spyOn(Date, "now").mockImplementation(() => now)
-    mocks.whoami = { id: "user-1" }
     mocks.dismissInAppBrowser.mockClear()
   })
 
@@ -106,11 +101,21 @@ describe("handleIncomingUrl", () => {
     expect(routesOf(navigation)).toHaveLength(1)
   })
 
-  describe("signed out", () => {
-    beforeEach(() => {
-      mocks.whoami = null
-    })
+  it("opens the form of a link that came in just after signing in once the sign-in closed", async () => {
+    const stopWatching = watchPendingFollowScreen(navigation)
+    // Signed in already: the sign-in screen closes itself, and what is over it, a moment later
+    navigation.presentControllerView(LoginScreen)
 
+    handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+    await settle()
+    expect(screensOf(navigation)).toEqual([LoginScreen])
+
+    navigation.dismiss()
+    await vi.waitFor(() => expect(screensOf(navigation)).toEqual([FollowScreen]))
+    stopWatching()
+  })
+
+  describe("signed out", () => {
     it("opens the follow form of a link from the sign-in screen once it closes", async () => {
       const stopWatching = watchPendingFollowScreen(navigation)
       navigation.presentControllerView(LoginScreen)
@@ -121,7 +126,6 @@ describe("handleIncomingUrl", () => {
       expect(screensOf(navigation)).toEqual([LoginScreen])
 
       // Signing in closes the sign-in screen
-      mocks.whoami = { id: "user-1" }
       navigation.dismiss()
       await vi.waitFor(() => expect(screensOf(navigation)).toEqual([FollowScreen]))
       expect(routesOf(navigation)[0]!.props).toMatchObject({ id: "1337585485484134400" })
@@ -144,6 +148,27 @@ describe("handleIncomingUrl", () => {
       await settle()
 
       expect(screensOf(navigation)).toEqual([FollowScreen])
+    })
+
+    it("waits for a sign-in screen that opened while the in-app browser was closing", async () => {
+      const stopWatching = watchPendingFollowScreen(navigation)
+      let closeBrowser!: () => void
+      mocks.dismissInAppBrowser.mockImplementationOnce(
+        () => new Promise<void>((resolve) => (closeBrowser = resolve)),
+      )
+
+      handleIncomingUrl("folo://add?id=1337585485484134400", navigation)
+      await settle()
+      // The launch found no session meanwhile
+      navigation.presentControllerView(LoginScreen)
+      closeBrowser()
+      await settle()
+      // Over the sign-in screen, the form's Follow could not bring it back
+      expect(screensOf(navigation)).toEqual([LoginScreen])
+
+      navigation.dismiss()
+      await vi.waitFor(() => expect(screensOf(navigation)).toEqual([FollowScreen]))
+      stopWatching()
     })
   })
 })

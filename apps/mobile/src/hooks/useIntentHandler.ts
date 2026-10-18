@@ -1,4 +1,3 @@
-import { whoami } from "@follow/store/user/getters"
 import { invalidateUserSession } from "@follow/store/user/hooks"
 import { jotaiStore } from "@follow/utils"
 import * as Linking from "expo-linking"
@@ -36,6 +35,14 @@ const presentFollowScreen = async (navigation: Navigation, props: FollowScreenPr
   // A link opened from a page in the in-app browser, such as "Open in Folo", would open its form
   // under the browser
   await dismissInAppBrowser()
+
+  // Over the sign-in screen, the form would hide it, and Follow could not bring it back. Signing in
+  // also closes what is over that screen, so the form waits for it to close either way. Checked
+  // only now, as the sign-in screen of a launch without a session can open while the browser closes.
+  if (navigation.hasControllerView(LoginScreen)) {
+    pendingFollowScreen = props
+    return
+  }
 
   // The navigation keeps a screen that is on top already, so the open form would stay, showing
   // and following the feed of the link before. The new link takes its place.
@@ -83,21 +90,12 @@ export const handleIncomingUrl = (incomingUrl: string | null, navigation: Naviga
     return
   }
 
-  const props: FollowScreenProps = {
+  void presentFollowScreen(navigation, {
     id: searchParams.id ?? undefined,
     type: searchParams.type,
     url: searchParams.url ?? undefined,
     view: searchParams.view ?? undefined,
-  }
-
-  // Following takes an account, and the form would cover the sign-in screen, so it waits for
-  // that screen to close.
-  if (!whoami() && navigation.hasControllerView(LoginScreen)) {
-    pendingFollowScreen = props
-    return
-  }
-
-  void presentFollowScreen(navigation, props)
+  })
 }
 
 export function useIntentHandler() {
