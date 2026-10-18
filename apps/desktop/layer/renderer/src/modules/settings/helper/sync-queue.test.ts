@@ -349,6 +349,77 @@ describe("desktop spotlight setting sync", () => {
     expect(settingSyncQueue.queue).toEqual([])
   })
 
+  test("a change that failed to send is retried with back-off until it goes through", async () => {
+    vi.useFakeTimers()
+    settingsUpdateMock
+      .mockRejectedValueOnce(new TypeError("Failed to fetch"))
+      .mockRejectedValueOnce(new FollowAPIError("unavailable", 503))
+      .mockResolvedValue({ code: 0 })
+
+    await settingSyncQueue.init()
+    setGeneralSetting("actionLanguage", "fr-FR")
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(1)
+    expect(settingSyncQueue.queue).toHaveLength(1)
+
+    // One second of back-off, then the flush delay
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(2)
+    expect(settingSyncQueue.queue).toHaveLength(1)
+
+    // Two seconds of back-off, then the flush delay
+    await vi.advanceTimersByTimeAsync(3000)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(3)
+    expect(settingsUpdateMock).toHaveBeenLastCalledWith({ tab: "general", actionLanguage: "fr-FR" })
+    expect(settingSyncQueue.queue).toEqual([])
+
+    await vi.advanceTimersByTimeAsync(120_000)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(3)
+  })
+
+  test.each([
+    ["the window gets the focus back", () => window.dispatchEvent(new Event("focus"))],
+    ["the network comes back", () => window.dispatchEvent(new Event("online"))],
+    ["the page becomes visible", () => document.dispatchEvent(new Event("visibilitychange"))],
+  ])("a waiting change is sent at once when %s", async (_, comeBack) => {
+    vi.useFakeTimers()
+    settingsUpdateMock.mockRejectedValue(new TypeError("Failed to fetch"))
+
+    await settingSyncQueue.init()
+    setGeneralSetting("actionLanguage", "fr-FR")
+    // Failures at 1, 3, 6 and 11 s: the next try is eight seconds of back-off away
+    await vi.advanceTimersByTimeAsync(11_000)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(4)
+
+    settingsUpdateMock.mockResolvedValue({ code: 0 })
+    comeBack()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(5)
+    expect(settingSyncQueue.queue).toEqual([])
+  })
+
+  test("a change made while a retry is pending goes out with it", async () => {
+    vi.useFakeTimers()
+    settingsUpdateMock.mockRejectedValueOnce(new TypeError("Failed to fetch"))
+    settingsUpdateMock.mockResolvedValue({ code: 0 })
+
+    await settingSyncQueue.init()
+    setGeneralSetting("actionLanguage", "fr-FR")
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(1)
+
+    setGeneralSetting("actionLanguage", "de-DE")
+    await vi.advanceTimersByTimeAsync(500)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(1)
+
+    await vi.advanceTimersByTimeAsync(1500)
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(2)
+    expect(settingsUpdateMock).toHaveBeenLastCalledWith({ tab: "general", actionLanguage: "de-DE" })
+    expect(settingSyncQueue.queue).toEqual([])
+  })
+
   test("changes left from the last session are sent after a restart", async () => {
     vi.useFakeTimers()
     localStorage.setItem(

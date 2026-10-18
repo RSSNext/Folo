@@ -3,16 +3,19 @@ import { transactionQueue } from "@follow/store/sync/transaction-queue"
 import { AppState } from "react-native"
 
 import { onApiRecovered } from "../lib/api-client"
+import { settingSyncQueue } from "../modules/settings/sync-queue"
 
 const resumeSync = () => {
   transactionQueue.resume()
   syncEngine.resume()
+  settingSyncQueue.resume()
 }
 
 /**
- * Retry pending mutations and pull server changes whenever the app returns to the foreground,
- * the device gets its connection back or the API answers again after an outage. The web build
- * listens to `online`, `focus` and `visibilitychange` on its own; React Native fires none of them.
+ * Retry pending mutations and setting changes and pull server changes whenever the app returns
+ * to the foreground, the device gets its connection back or the API answers again after an
+ * outage. The web build listens to `online`, `focus` and `visibilitychange` on its own; React
+ * Native fires none of them.
  */
 export const initSyncTriggers = () => {
   AppState.addEventListener("change", (state) => {

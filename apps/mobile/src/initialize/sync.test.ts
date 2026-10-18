@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => {
     networkState: { isConnected: true as boolean | undefined },
     queueResume: vi.fn(),
     engineResume: vi.fn(),
+    settingsResume: vi.fn(),
   }
 })
 
@@ -40,6 +41,10 @@ vi.mock("@follow/store/sync/sync-engine", () => ({
   syncEngine: { resume: mocks.engineResume },
 }))
 
+vi.mock("../modules/settings/sync-queue", () => ({
+  settingSyncQueue: { resume: mocks.settingsResume },
+}))
+
 vi.mock("../lib/api-client", () => ({
   onApiRecovered: (listener: () => void) => {
     mocks.apiRecoveredListeners.add(listener)
@@ -60,6 +65,7 @@ describe("initSyncTriggers", () => {
     mocks.networkState.isConnected = true
     mocks.queueResume.mockClear()
     mocks.engineResume.mockClear()
+    mocks.settingsResume.mockClear()
 
     const { initSyncTriggers } = await import("./sync")
     initSyncTriggers()
@@ -75,12 +81,14 @@ describe("initSyncTriggers", () => {
     for (const listener of mocks.appStateListeners) listener("active")
     expect(mocks.queueResume).toHaveBeenCalledTimes(1)
     expect(mocks.engineResume).toHaveBeenCalledTimes(1)
+    expect(mocks.settingsResume).toHaveBeenCalledTimes(1)
   })
 
   it("resumes when the API answers again after an outage", () => {
     for (const listener of mocks.apiRecoveredListeners) listener()
     expect(mocks.queueResume).toHaveBeenCalledTimes(1)
     expect(mocks.engineResume).toHaveBeenCalledTimes(1)
+    expect(mocks.settingsResume).toHaveBeenCalledTimes(1)
   })
 
   it("resumes once the device is connected again, not on every network change", () => {
@@ -92,5 +100,6 @@ describe("initSyncTriggers", () => {
     setNetwork(true)
     expect(mocks.queueResume).toHaveBeenCalledTimes(1)
     expect(mocks.engineResume).toHaveBeenCalledTimes(1)
+    expect(mocks.settingsResume).toHaveBeenCalledTimes(1)
   })
 })
