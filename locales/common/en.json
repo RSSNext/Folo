@@ -1,6 +1,7 @@
 {
   "app.api_unreachable": "Unable to connect to the server. Please check your network connection.",
   "app.copied_to_clipboard": "Copied to clipboard",
+  "app.request_timeout": "The server took too long to respond. Please try again.",
   "discover.category.all": "Popular",
   "discover.category.anime": "ACG",
   "discover.category.bbs": "BBS",

@@ -1,4 +1,4 @@
-import { FollowAPIError } from "@follow-app/client-sdk"
+import { FollowAPIError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { QueryObserver } from "@tanstack/react-query"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
@@ -55,5 +55,23 @@ describe("refetchUnansweredQueries", () => {
     await refetchUnansweredQueries()
 
     expect(offline).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("query retries", () => {
+  const retry = queryClient.getDefaultOptions().queries?.retry as (
+    failureCount: number,
+    error: Error,
+  ) => boolean
+
+  it("does not retry a timeout, which would make the wait a multiple", () => {
+    expect(retry(0, new FollowTimeoutError())).toBe(false)
+  })
+
+  it("retries a failed connection a few times", () => {
+    const error = new Error("fetch failed: java.net.ConnectException: Failed to connect")
+    expect(retry(0, error)).toBe(true)
+    expect(retry(2, error)).toBe(true)
+    expect(retry(3, error)).toBe(false)
   })
 })

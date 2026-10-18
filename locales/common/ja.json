@@ -1,6 +1,7 @@
 {
   "app.api_unreachable": "サーバーに接続できません。ネットワーク接続を確認してください。",
   "app.copied_to_clipboard": "クリップボードにコピーしました",
+  "app.request_timeout": "サーバーの応答に時間がかかりすぎました。しばらくしてからもう一度お試しください。",
   "discover.category.all": "人気",
   "discover.category.anime": "アニメ・マンガ",
   "discover.category.bbs": "掲示板",

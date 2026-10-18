@@ -100,6 +100,14 @@ describe("a feed the server has not stored yet", () => {
     expect(Object.keys(useFeedStore.getState().feeds)).toEqual([second.id])
     expect(second.id).not.toBe(first.id)
   })
+
+  it("waits for the server, which gives the feed's source 70 s, to say why it failed", async () => {
+    getFeed.mockClear()
+    await feedSyncServices.fetchFeedByUrl({ url })
+
+    const [, options] = getFeed.mock.calls[0] as [unknown, { timeout?: number } | undefined]
+    expect(options?.timeout).toBeGreaterThan(70_000)
+  })
 })
 
 describe("a feed the server keeps under another URL than its address", () => {

@@ -7,7 +7,8 @@ import { kv } from "./kv"
 import { isUnansweredRequestError } from "./network-error"
 
 const defaultStaleTime = 600_000 // 10min
-const DO_NOT_RETRY_CODES = new Set([400, 401, 403, 404, 422, 402])
+// A timeout (408) waited the whole time already: each retry would wait as long again, for minutes
+const DO_NOT_RETRY_CODES = new Set([400, 401, 403, 404, 408, 422, 402])
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

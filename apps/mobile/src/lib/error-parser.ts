@@ -1,4 +1,4 @@
-import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
+import { ExceptionCodeMap, FollowAPIError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { t } from "i18next"
 import { FetchError } from "ofetch"
 
@@ -46,6 +46,11 @@ export const getFetchErrorInfo = (
 
   if (isSignInRequired(error)) {
     return { message: t(SIGN_IN_REQUIRED_MESSAGE_KEY) }
+  }
+
+  // The server is reachable but answered too slowly; blaming the network would mislead
+  if (error instanceof FollowTimeoutError) {
+    return { message: t("common:app.request_timeout") }
   }
 
   if (error instanceof FollowAPIError && error.code) {
@@ -143,6 +148,8 @@ export const toastFetchError = (error: Error, { title: _title }: { title?: strin
 
     if (isSignInRequired(error)) {
       message = t(SIGN_IN_REQUIRED_MESSAGE_KEY)
+    } else if (error instanceof FollowTimeoutError) {
+      message = t("common:app.request_timeout")
     }
   }
 

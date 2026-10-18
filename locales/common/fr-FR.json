@@ -1,6 +1,7 @@
 {
   "app.api_unreachable": "Impossible de se connecter au serveur. Veuillez vérifier votre connexion réseau.",
   "app.copied_to_clipboard": "Copié dans le presse-papiers",
+  "app.request_timeout": "Le serveur a mis trop de temps à répondre. Veuillez réessayer.",
   "discover.category.all": "Populaire",
   "discover.category.anime": "Anime / Manga",
   "discover.category.bbs": "Forum",

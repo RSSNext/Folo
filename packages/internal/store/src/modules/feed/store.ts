@@ -30,6 +30,10 @@ const get = useFeedStore.getState
 const set = useFeedStore.setState
 const immerSet = createImmerSetter(useFeedStore)
 
+// The server fetches a feed it has not stored yet and gives its source 70 s before it answers
+// with an error that says so. A shorter timeout here would replace that answer with its own.
+const FEED_LOOKUP_TIMEOUT_MS = 90_000
+
 /**
  * The resolved URLs are kept across launches, so a feed followed by an RSSHub instance address
  * is still found by it. The table belongs to the signed-in account and is cleared with it.
@@ -219,9 +223,7 @@ class FeedSyncServices {
   }
 
   async fetchFeedByUrl({ url }: FeedQueryParams) {
-    const res = await api().feeds.get({
-      url,
-    })
+    const res = await api().feeds.get({ url }, { timeout: FEED_LOOKUP_TIMEOUT_MS })
 
     const nonce = Math.random().toString(36).slice(2, 15)
 

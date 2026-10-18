@@ -1,4 +1,4 @@
-import { FollowAPIError, FollowAuthError } from "@follow-app/client-sdk"
+import { FollowAPIError, FollowAuthError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getFetchErrorMessage, toastFetchError } from "./error-parser"
@@ -121,6 +121,14 @@ describe("getFetchErrorMessage", () => {
     )
 
     expect(getFetchErrorMessage(error)).toBe("common:app.api_unreachable")
+  })
+
+  it("says the server took too long instead of blaming the network", () => {
+    expect(getFetchErrorMessage(new FollowTimeoutError())).toBe("common:app.request_timeout")
+
+    mocks.toastError.mockClear()
+    toastFetchError(new FollowTimeoutError())
+    expect(mocks.toastError).toHaveBeenCalledWith("common:app.request_timeout")
   })
 
   it("keeps the message of a cancelled request", () => {
