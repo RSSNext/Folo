@@ -79,7 +79,9 @@ export const Grid = ({
   }, [children, columns])
 
   return (
-    <View className={cn("w-full flex-1", className)} style={[{ gap }, style]}>
+    // No flex-1: in a parent without a set height, such as scroll content, Yoga kept the zero flex
+    // basis it gave the grid once the window resized, and all its rows dropped to no height
+    <View className={cn("w-full", className)} style={[{ gap }, style]}>
       {rows.map((row) => (
         <View key={row.key} className="flex flex-row" style={{ gap }}>
           {row.cells.map((cell) => (

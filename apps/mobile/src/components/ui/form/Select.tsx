@@ -54,8 +54,10 @@ export function Select<T>({
       <DropdownMenu.Trigger asChild disabled={disabled}>
         <View
           testID={triggerTestID}
+          // grow rather than flex-1: the menu wraps it in a view without a set height, where Yoga
+          // kept the zero flex basis of flex-1 once the window resized and the value disappeared
           className={cn(
-            "min-w-24 flex-1 shrink flex-row items-center rounded-lg pl-3",
+            "min-w-24 shrink grow flex-row items-center rounded-lg pl-3",
             disabled && "opacity-50",
             wrapperClassName,
           )}
