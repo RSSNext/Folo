@@ -239,6 +239,10 @@ export const markAllReadTransaction = defineTransactionKind<
       entryIds: payload.entryIds,
       read: false,
     })
+    // `apply` only changed the displayed counts, and the queue no longer holds this
+    // transaction, so deriving them again from the confirmed ones undoes it. The recount
+    // after it may find the confirmed counts unchanged, or not get an answer at all.
+    unreadActions.syncDisplayedCounts(payload.ids)
     await unreadSyncService.resetFromRemote().catch((error) => {
       console.error(error)
     })

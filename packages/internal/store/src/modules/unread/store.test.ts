@@ -292,6 +292,38 @@ describe("unreadSyncService", () => {
     expect(entryPatchManyMock).not.toHaveBeenCalled()
   })
 
+  it.each([
+    ["rejects it", () => new FollowAPIError("unprocessable", 422)],
+    ["rejects it and the recount fails too", () => new FollowAPIError("bad request", 400)],
+  ])("restores the counts of a mark-all-read when the server %s", async (label, error) => {
+    const entries = {
+      entry1: createEntry("entry1", "feed1"),
+      entry2: createEntry("entry2", "feed1"),
+    }
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: entries,
+      entryIdSet: new Set(Object.keys(entries)),
+    }))
+    seedUnread({ feed1: 17, feed2: 3 })
+    markAllAsReadMock.mockRejectedValue(error())
+    // The recount returns what the client already confirmed, or nothing at all.
+    if (label.includes("recount fails")) {
+      getUnreadMock.mockRejectedValue(new Error("fetch failed: offline"))
+    } else {
+      getUnreadMock.mockResolvedValue({ data: { feed1: 17, feed2: 3 } })
+    }
+
+    await unreadSyncService.markFeedAsRead("feed1")
+    expect(useUnreadStore.getState().data.feed1).toBe(0)
+
+    await flushQueue()
+
+    expect(useUnreadStore.getState().data).toMatchObject({ feed1: 17, feed2: 3 })
+    expect(useEntryStore.getState().data.entry1?.read).toBe(false)
+    expect(useEntryStore.getState().data.entry2?.read).toBe(false)
+  })
+
   it("commits the predicted effect when the server has no change log", async () => {
     const entries = { entry1: createEntry("entry1", "feed1") }
     useEntryStore.setState((state) => ({
