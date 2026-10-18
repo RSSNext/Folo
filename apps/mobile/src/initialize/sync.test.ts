@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => {
     queueResume: vi.fn(),
     engineResume: vi.fn(),
     settingsResume: vi.fn(),
+    refetchUnansweredQueries: vi.fn(async () => {}),
   }
 })
 
@@ -58,6 +59,10 @@ vi.mock("@follow/store/sync/sync-engine", () => ({
   syncEngine: { resume: mocks.engineResume },
 }))
 
+vi.mock("../lib/query-client", () => ({
+  refetchUnansweredQueries: mocks.refetchUnansweredQueries,
+}))
+
 vi.mock("../modules/settings/sync-queue", () => ({
   settingSyncQueue: { resume: mocks.settingsResume },
 }))
@@ -85,6 +90,7 @@ describe("initSyncTriggers", () => {
     mocks.queueResume.mockClear()
     mocks.engineResume.mockClear()
     mocks.settingsResume.mockClear()
+    mocks.refetchUnansweredQueries.mockClear()
 
     const { initSyncTriggers } = await import("./sync")
     initSyncTriggers()
@@ -108,6 +114,8 @@ describe("initSyncTriggers", () => {
     expect(mocks.queueResume).toHaveBeenCalledTimes(1)
     expect(mocks.engineResume).toHaveBeenCalledTimes(1)
     expect(mocks.settingsResume).toHaveBeenCalledTimes(1)
+    // What failed to load during the outage loads again
+    expect(mocks.refetchUnansweredQueries).toHaveBeenCalledTimes(1)
   })
 
   it("tells the user when the server rejected a change", () => {
@@ -130,5 +138,6 @@ describe("initSyncTriggers", () => {
     expect(mocks.queueResume).toHaveBeenCalledTimes(1)
     expect(mocks.engineResume).toHaveBeenCalledTimes(1)
     expect(mocks.settingsResume).toHaveBeenCalledTimes(1)
+    expect(mocks.refetchUnansweredQueries).toHaveBeenCalledTimes(1)
   })
 })

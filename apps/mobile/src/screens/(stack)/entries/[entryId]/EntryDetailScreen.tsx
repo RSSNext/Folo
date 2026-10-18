@@ -177,12 +177,19 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
 
   // Auto toggle readability when content is empty
   const setShowReadability = useSetAtom(showReadabilityAtom)
-  const { isPending } = usePrefetchEntryDetail(entryId)
+  const {
+    isPending,
+    isFetching,
+    isError,
+    refetch: refetchEntryDetail,
+  } = usePrefetchEntryDetail(entryId)
   useEffect(() => {
-    if (!isPending && !entry?.content) {
+    // Only once the server said there is no content; a request that failed, as offline, says
+    // nothing about it
+    if (!isPending && !isError && !entry?.content) {
       setShowReadability(true)
     }
-  }, [isPending, entry?.content, setShowReadability])
+  }, [isPending, isError, entry?.content, setShowReadability])
   const readabilityQuery = useQuery({
     queryKey: ["entry-readability", entryId],
     queryFn: async () => {
@@ -203,12 +210,20 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     }
   }, [externalUrl, showSourceContent])
 
+  const refetchReadability = readabilityQuery.refetch
+  const retryContent = useCallback(() => {
+    void refetchEntryDetail()
+    if (showReadabilityOnce) void refetchReadability()
+  }, [refetchEntryDetail, refetchReadability, showReadabilityOnce])
+
   return (
     <EntryContentWebView
       entryId={entryId}
       showReadability={showReadabilityOnce}
       showTranslation={showTranslation}
-      isContentPending={showReadabilityOnce ? readabilityQuery.isFetching : isPending}
+      // A retry of a failed request keeps its error until it settles, so it counts as pending
+      isContentPending={showReadabilityOnce ? readabilityQuery.isFetching : isPending || isFetching}
+      onRetry={retryContent}
     />
   )
 }

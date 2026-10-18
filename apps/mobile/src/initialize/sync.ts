@@ -5,19 +5,22 @@ import { AppState } from "react-native"
 
 import { onApiRecovered } from "../lib/api-client"
 import { toastFetchError } from "../lib/error-parser"
+import { refetchUnansweredQueries } from "../lib/query-client"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 
 const resumeSync = () => {
   transactionQueue.resume()
   syncEngine.resume()
   settingSyncQueue.resume()
+  // A screen that could not load, such as an entry opened offline, would wait for a retry
+  void refetchUnansweredQueries().catch(() => {})
 }
 
 /**
- * Retry pending mutations and setting changes and pull server changes whenever the app returns
- * to the foreground, the device gets its connection back or the API answers again after an
- * outage. The web build listens to `online`, `focus` and `visibilitychange` on its own; React
- * Native fires none of them.
+ * Retry pending mutations and setting changes, pull server changes and load again what failed to
+ * load whenever the app returns to the foreground, the device gets its connection back or the API
+ * answers again after an outage. The web build listens to `online`, `focus` and
+ * `visibilitychange` on its own; React Native fires none of them.
  */
 export const initSyncTriggers = () => {
   AppState.addEventListener("change", (state) => {

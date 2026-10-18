@@ -6,12 +6,8 @@ import { getIsPaymentEnabled } from "@/src/atoms/server-configs"
 import { showUpgradeRequiredDialog } from "@/src/modules/dialogs/UpgradeRequiredDialog"
 
 import { sanitizeErrorMessage } from "./error-message"
+import { isConnectionFailure } from "./network-error"
 import { toast } from "./toast"
-
-// expo/fetch rejects with "fetch failed: <native reason>" when no response came back, e.g.
-// "java.net.ConnectException: Failed to connect to …", which means nothing to the user
-const isConnectionFailure = (error: Error) =>
-  error.message.startsWith("fetch failed:") && !error.message.includes("aborted")
 
 // i18next answers a missing key with the key without its namespace, such as "1000"
 const translateErrorCode = (code: unknown, fallback: string) => {
