@@ -155,9 +155,41 @@ class WindowManagerStatic {
       await confirmAndOpenExternalProtocol(url)
     }
 
-    // Handle main window external links
+    // The window only shows the app's own pages. Any other page would run with the app's Node
+    // integration, so web pages open in the browser instead.
+    const rendererUrl = this.getRendererUrl()
+    const handleMainFrameNavigation = async (e: Event, url: string) => {
+      let target: URL
+      try {
+        target = new URL(url)
+      } catch {
+        logger.warn("Blocked navigation to an invalid URL", { url })
+        e.preventDefault()
+        return
+      }
+      // E.g. a reload
+      if (target.protocol === rendererUrl.protocol && target.host === rendererUrl.host) return
+
+      const protocol = target.protocol.slice(0, -1)
+      if (protocol === "http" || protocol === "https") {
+        e.preventDefault()
+        void shell.openExternal(url)
+        return
+      }
+      if (protocol === "app" || protocol === "file") {
+        logger.warn("Blocked navigation to a local page", { url })
+        e.preventDefault()
+        return
+      }
+      // Chromium hands deep links and editor links to the system, and the page stays
+      if (isIgnoredProtocol(protocol)) return
+
+      e.preventDefault()
+      await confirmAndOpenExternalProtocol(url)
+    }
+
     window.webContents.on("will-navigate", (e, url) => {
-      void handleExternalProtocol(e, url)
+      void handleMainFrameNavigation(e, url)
     })
 
     // Handle webview external links
@@ -177,6 +209,14 @@ class WindowManagerStatic {
     }
 
     this.bindWindowStateEvents(window)
+  }
+
+  /** Where the app's pages load from: the dev server, or the bundle behind the app protocol */
+  private getRendererUrl() {
+    if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
+      return new URL(process.env["ELECTRON_RENDERER_URL"])
+    }
+    return new URL(filePathToAppUrl("/"))
   }
 
   private setupDevToolsFont(window: BrowserWindow) {
