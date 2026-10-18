@@ -65,7 +65,7 @@ export function SetModalContent({
           isLoading={setRSSHubMutation.isPending}
           onClick={() => preset({ id: instance.id })}
         >
-          {t("rsshub.table.use")}
+          {t("rsshub.table.use_as_fallback")}
         </Button>
       </div>
     </div>
