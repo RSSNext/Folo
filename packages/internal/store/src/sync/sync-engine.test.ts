@@ -359,6 +359,8 @@ describe("syncEngine", () => {
     expect(useSubscriptionStore.getState().data["list-1"]).toBeUndefined()
     expect(listDeleteMock).toHaveBeenCalledWith("list-1")
     expect(subscriptionDeleteMock).toHaveBeenCalledWith(["list/list-1"])
+    // The server took the list's entries out of the timeline, so the counts are fetched again
+    expect(readsGetMock).toHaveBeenCalledTimes(2)
   })
 
   it("applies the inbox lifecycle, new inbox entries and inbox entry deletions", async () => {

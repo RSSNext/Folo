@@ -727,6 +727,8 @@ class SyncEngine implements Resetable {
       }
       listActions.removeInSession(listId)
       await ListService.deleteList(listId)
+      // The server removed the timeline rows the list brought, which only a recount can tell
+      summary.refreshUnread = true
     }
   }
 
