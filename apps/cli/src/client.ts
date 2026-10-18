@@ -6,7 +6,7 @@ import type { Command } from "commander"
 import type { FoloCLIConfig } from "./config"
 import { readConfig } from "./config"
 import type { OutputFormat } from "./output"
-import { CLIError } from "./output"
+import { CLIError, readJSONBody } from "./output"
 
 export const defaultApiURL = "https://api.folo.is"
 
@@ -111,8 +111,9 @@ export const fetchAuthSession = async ({
     )
   }
 
-  // A token the API does not know, or a session signed out elsewhere, is answered with a null body
-  const body = (await response.json().catch(() => null)) as unknown
+  // A token the API does not know, or a session signed out elsewhere, is answered with a null
+  // body. A body that is not JSON comes from something else than the API, not from the token.
+  const body = await readJSONBody(response, apiUrl)
   if (!isRecord(body) || !isRecord(body.user) || !isRecord(body.session)) {
     throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
   }

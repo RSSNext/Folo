@@ -66,6 +66,20 @@ describe("fetchAuthSession", () => {
     },
   )
 
+  it("does not blame the token for an answer that is not JSON", async () => {
+    // Such as the page a web app answers every path with
+    stubFetch(new Response("<!doctype html><title>Folo</title>", { status: 200 }))
+
+    await expect(
+      fetchAuthSession({ apiUrl: "http://web.test", token: "token" }),
+    ).rejects.toThrowError(
+      new CLIError(
+        "INVALID_RESPONSE",
+        "The server at http://web.test answered with something other than JSON. Check --api-url.",
+      ),
+    )
+  })
+
   it("does not blame the token for other failures", async () => {
     stubFetch(new Response("404 Not Found", { status: 404 }))
 

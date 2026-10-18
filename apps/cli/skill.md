@@ -199,6 +199,9 @@ A page can hold fewer entries than `--limit` while more follow, so keep going un
 - `NETWORK_ERROR`
   - The API could not be reached; the message names its URL and the reason, such as `ECONNREFUSED`
   - Check the network connection and `--api-url`, then retry
+- `INVALID_RESPONSE`
+  - The server at the API URL answered as the Folo API never does, such as with a web page; the token is not to blame
+  - Check `--api-url`, or leave it out to use the default API
 - `INVALID_ARGUMENT`
   - Run `npx --yes folocli@latest <command> --help` to inspect accepted options
 - `NOT_FOUND`

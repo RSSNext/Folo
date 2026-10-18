@@ -312,6 +312,26 @@ export const toNetworkError = (error: unknown, apiUrl?: string): OutputError | u
   }
 }
 
+/**
+ * An INVALID_RESPONSE for an answer the Folo API never gives, such as the page a web app
+ * answers every path with: the API URL names something else, and the token is not to blame.
+ */
+export const toInvalidResponseError = (apiUrl: string, answer: string) =>
+  new CLIError("INVALID_RESPONSE", `The server at ${apiUrl} ${answer}. Check --api-url.`)
+
+/**
+ * The JSON body of a successful answer. The API answers its auth endpoints with JSON, even a
+ * session it does not know with `null`.
+ */
+export const readJSONBody = async (response: Response, apiUrl: string): Promise<unknown> => {
+  const text = await response.text()
+  try {
+    return JSON.parse(text) as unknown
+  } catch {
+    throw toInvalidResponseError(apiUrl, "answered with something other than JSON")
+  }
+}
+
 export const normalizeError = (
   error: unknown,
   { verbose = false, apiUrl }: { verbose?: boolean; apiUrl?: string } = {},

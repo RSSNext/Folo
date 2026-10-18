@@ -13,23 +13,29 @@ vi.mock("../config", () => ({
 
 const session = { user: { id: "user1", name: "User" }, session: { id: "session1" } }
 
-/** Runs the CLI against an API that knows the session token "token" */
-const run = async (...args: string[]) => {
+type Answer = (url: URL, init?: RequestInit) => Response
+
+/** The API, which knows the session token "token" */
+const answerAPI: Answer = ({ pathname }, init) => {
+  if (pathname === "/better-auth/get-session") {
+    const known = new Headers(init?.headers).get("authorization") === "Bearer token"
+    // Better Auth answers a token it does not know with 200 and a null body
+    return Response.json(known ? session : null)
+  }
+  if (pathname === "/better-auth/one-time-token/apply") {
+    return Response.json({ message: "Invalid token" }, { status: 400 })
+  }
+  return new Response("404 Not Found", { status: 404 })
+}
+
+/** Runs the CLI against a server that `answer` answers, the API by default */
+const runWith = async (answer: Answer, ...args: string[]) => {
   const requests: string[] = []
   vi.stubGlobal(
     "fetch",
     vi.fn(async (url: string, init?: RequestInit) => {
       requests.push(url)
-      const { pathname } = new URL(url)
-      if (pathname === "/better-auth/get-session") {
-        const known = new Headers(init?.headers).get("authorization") === "Bearer token"
-        // Better Auth answers a token it does not know with 200 and a null body
-        return Response.json(known ? session : null)
-      }
-      if (pathname === "/better-auth/one-time-token/apply") {
-        return Response.json({ message: "Invalid token" }, { status: 400 })
-      }
-      return new Response("404 Not Found", { status: 404 })
+      return answer(new URL(url), init)
     }),
   )
   const stdout = vi.spyOn(console, "info").mockImplementation(() => {})
@@ -44,6 +50,8 @@ const run = async (...args: string[]) => {
     exitCode: process.exitCode,
   }
 }
+
+const run = async (...args: string[]) => runWith(answerAPI, ...args)
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -106,5 +114,69 @@ describe("a token the API does not know", () => {
 
     expect(stdout).toBe("")
     expect(stderr).toBe("[UNAUTHORIZED] Token is invalid or expired.")
+  })
+})
+
+describe("an API URL that names something else", () => {
+  // A web app answers every path with its page
+  const answerPage: Answer = () =>
+    new Response("<!doctype html><title>Folo</title>", { headers: { "content-type": "text/html" } })
+  // A static host refuses to post and answers every page it serves
+  const answerStaticPage: Answer = (_url, init) =>
+    init?.method === "POST" ? new Response("Method Not Allowed", { status: 405 }) : answerPage(_url)
+  const answerNotFound: Answer = () => new Response("404 Not Found", { status: 404 })
+
+  it.each([
+    ["whoami", "a web app", answerPage, ["--token", "token", "whoami"], "INVALID_RESPONSE"],
+    ["login", "a web app", answerPage, ["login", "--token", "token"], "INVALID_RESPONSE"],
+    ["login", "a static host", answerStaticPage, ["login", "--token", "token"], "INVALID_RESPONSE"],
+    [
+      "whoami",
+      "a server without the API",
+      answerNotFound,
+      ["--token", "token", "whoami"],
+      "HTTP_404",
+    ],
+    [
+      "login",
+      "a server without the API",
+      answerNotFound,
+      ["login", "--token", "token"],
+      "HTTP_404",
+    ],
+  ] as const)(
+    "fails `folo %s` at %s without blaming the token",
+    async (_command, _server, answer, args, code) => {
+      const { stdout, stderr, exitCode } = await runWith(
+        answer,
+        "--api-url",
+        "http://web.test",
+        ...args,
+      )
+
+      expect(stdout).toBe("")
+      expect(JSON.parse(stderr)).toMatchObject({ ok: false, data: null, error: { code } })
+      expect(exitCode).toBe(1)
+      expect(updateConfig).not.toHaveBeenCalled()
+    },
+  )
+
+  it("names the URL to check", async () => {
+    const { stderr } = await runWith(
+      answerPage,
+      "--api-url",
+      "http://web.test",
+      "--token",
+      "token",
+      "whoami",
+    )
+
+    expect(JSON.parse(stderr)).toMatchObject({
+      error: {
+        code: "INVALID_RESPONSE",
+        message:
+          "The server at http://web.test answered with something other than JSON. Check --api-url.",
+      },
+    })
   })
 })
