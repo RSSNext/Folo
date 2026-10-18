@@ -181,6 +181,17 @@ const dropUnusedCategory = (
   }
 }
 
+const KNOWN_VIEWS = new Set<number>(
+  Object.values(FeedViewType).filter((value): value is FeedViewType => typeof value === "number"),
+)
+
+/**
+ * Whether the store keeps indexes for a view. A subscription in any other one, such as a row a
+ * server stored before it checked views, would fail every update of the store and empty the app.
+ */
+const isKnownView = (view: unknown): view is FeedViewType =>
+  typeof view === "number" && KNOWN_VIEWS.has(view)
+
 // Put back subscriptions whose unfollow the server refused
 const restoreInSession = (subscriptions: SubscriptionModel[]) => {
   immerSet((draft) => {
@@ -311,6 +322,12 @@ class SubscriptionActions implements Hydratable, Resetable {
   async upsertManyInSession(subscriptions: SubscriptionModel[]) {
     immerSet((draft) => {
       for (const subscription of subscriptions) {
+        if (!isKnownView(subscription.view)) {
+          console.warn(
+            `[subscription] Skipped ${getSubscriptionStoreId(subscription)} in unknown view ${subscription.view}`,
+          )
+          continue
+        }
         const subscriptionSetId = getSubscriptionDBId(subscription)
         const subscriptionStoreId = getSubscriptionStoreId(subscription)
 
@@ -366,7 +383,9 @@ class SubscriptionActions implements Hydratable, Resetable {
       if (!current) return
 
       const definedPatch = Object.fromEntries(
-        Object.entries(patch).filter(([, value]) => value !== undefined),
+        Object.entries(patch).filter(
+          ([key, value]) => value !== undefined && (key !== "view" || isKnownView(value)),
+        ),
       ) as Partial<SubscriptionModel>
       const next: SubscriptionModel = { ...current, ...definedPatch }
 

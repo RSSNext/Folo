@@ -130,6 +130,29 @@ describe("subscriptionSyncService", () => {
     } as unknown as FollowAPI)
   })
 
+  test("skips a subscription in a view the app has no list for, keeping the others", () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {})
+    seed([])
+
+    subscriptionActions.upsertManyInSession([
+      createSubscription("a", FeedViewType.Articles, "Tech"),
+      createSubscription("broken", 99 as FeedViewType, "Tech"),
+      createSubscription("b", FeedViewType.Pictures, null),
+    ])
+
+    const state = useSubscriptionStore.getState()
+    expect(Object.keys(state.data).sort()).toEqual(["a", "b"])
+    expect([...state.feedIdByView[FeedViewType.All]].sort()).toEqual(["a", "b"])
+
+    // A change to such a view keeps the subscription where it is
+    subscriptionActions.patchInSession("a", { view: 99 as FeedViewType, title: "Renamed" })
+    expect(useSubscriptionStore.getState().data.a).toMatchObject({
+      view: FeedViewType.Articles,
+      title: "Renamed",
+    })
+    expect(useSubscriptionStore.getState().feedIdByView[FeedViewType.Articles].has("a")).toBe(true)
+  })
+
   test("takes feeds out of their category when the category is null", async () => {
     seed([
       createSubscription("a", FeedViewType.Articles, "Tech"),

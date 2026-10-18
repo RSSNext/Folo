@@ -100,7 +100,7 @@ class EntryActions implements Hydratable, Resetable {
 
     if (!ignore) {
       if (typeof subscription?.view === "number") {
-        draft.entryIdByView[subscription.view]!.add(entryId)
+        draft.entryIdByView[subscription.view]?.add(entryId)
       }
       draft.entryIdByView[FeedViewType.All]!.add(entryId)
     }
@@ -114,7 +114,7 @@ class EntryActions implements Hydratable, Resetable {
 
       if (!ignore) {
         if (typeof subscription?.view === "number") {
-          draft.entryIdByView[subscription.view]!.add(entryId)
+          draft.entryIdByView[subscription.view]?.add(entryId)
         }
         draft.entryIdByView[FeedViewType.All]!.add(entryId)
       }
