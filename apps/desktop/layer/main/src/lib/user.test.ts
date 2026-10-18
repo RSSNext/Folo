@@ -153,17 +153,19 @@ describe("updateNotificationsToken", () => {
     expect(storeData.has("notifications-token-sent")).toBe(false)
   })
 
-  it("doesn't retry while signed out or when the server rejects the token", async () => {
+  it.each([
+    ["while signed out", new FollowAuthError()],
+    ["when the server rejects the token", new FollowAPIError("Invalid token", 400)],
+  ])("doesn't retry %s", async (_case, error) => {
     vi.useFakeTimers()
-    createTokenMock
-      .mockRejectedValueOnce(new FollowAuthError())
-      .mockRejectedValueOnce(new FollowAPIError("Invalid token", 400))
+    createTokenMock.mockRejectedValue(error)
 
-    await updateNotificationsToken(credentials)
+    // Each case waits on its own: a later call would cancel the retry the first one scheduled
     await updateNotificationsToken(credentials)
     await vi.advanceTimersByTimeAsync(60 * 60_000)
 
-    expect(createTokenMock).toHaveBeenCalledTimes(2)
+    expect(createTokenMock).toHaveBeenCalledTimes(1)
+    expect(storeData.has("notifications-token-sent")).toBe(false)
   })
 
   it("stops retrying once the account signs out", async () => {
