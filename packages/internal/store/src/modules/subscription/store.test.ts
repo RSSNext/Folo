@@ -3,6 +3,8 @@ import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 
 import { apiContext, queryClientContext } from "../../context"
+import type { SyncEngineHandle } from "../../sync/sync-status"
+import { registerSyncEngine } from "../../sync/sync-status"
 import type { FollowAPI } from "../../types"
 import { getFeedByIdOrUrl } from "../feed/getter"
 import { feedSyncServices, useFeedStore } from "../feed/store"
@@ -223,6 +225,95 @@ describe("subscriptionSyncService", () => {
 
     expect(mocks.update).not.toHaveBeenCalled()
     expect(useSubscriptionStore.getState().data.a!.category).toBeNull()
+  })
+
+  test("renames the feeds another device moved into the category since the last pull", async () => {
+    seed([
+      createSubscription("a", FeedViewType.Articles, "CatB2"),
+      createSubscription("b", FeedViewType.Articles, null),
+    ])
+    const catchUp = vi.fn(async () => {
+      // The pull brings the other device's move of "b" into the category.
+      subscriptionActions.patchInSession("b", { category: "CatB2" })
+      return true
+    })
+    registerSyncEngine({ catchUp } as unknown as SyncEngineHandle)
+
+    try {
+      await subscriptionSyncService.renameCategory({
+        lastCategory: "CatB2",
+        newCategory: "CatB3",
+        view: FeedViewType.Articles,
+      })
+    } finally {
+      registerSyncEngine(null)
+    }
+
+    expect(catchUp).toHaveBeenCalledTimes(1)
+    expect(mocks.updateCategory).toHaveBeenCalledWith({
+      feedIdList: ["a", "b"],
+      category: "CatB3",
+    })
+    const state = useSubscriptionStore.getState()
+    expect(state.data.b!.category).toBe("CatB3")
+  })
+
+  test("leaves out a feed another device took out of the category since the last pull", async () => {
+    seed([
+      createSubscription("a", FeedViewType.Articles, "Tech"),
+      createSubscription("c", FeedViewType.Articles, "Tech"),
+    ])
+    registerSyncEngine({
+      catchUp: async () => {
+        subscriptionActions.patchInSession("c", { category: "Other" })
+        return true
+      },
+    } as unknown as SyncEngineHandle)
+
+    try {
+      await subscriptionSyncService.renameCategory({
+        lastCategory: "Tech",
+        newCategory: "Science",
+        view: FeedViewType.Articles,
+      })
+    } finally {
+      registerSyncEngine(null)
+    }
+
+    expect(mocks.updateCategory).toHaveBeenCalledWith({ feedIdList: ["a"], category: "Science" })
+    const state = useSubscriptionStore.getState()
+    expect(state.data.c!.category).toBe("Other")
+    expect(mocks.patchMany).toHaveBeenCalledWith({
+      feedIds: ["a"],
+      data: { category: "Science" },
+    })
+  })
+
+  test("renames at once and does not wait long for the pull on a slow network", async () => {
+    vi.useFakeTimers()
+    seed([createSubscription("a", FeedViewType.Articles, "Tech")])
+    registerSyncEngine({
+      catchUp: () => new Promise<boolean>(() => {}),
+    } as unknown as SyncEngineHandle)
+
+    try {
+      const rename = subscriptionSyncService.renameCategory({
+        lastCategory: "Tech",
+        newCategory: "Science",
+        view: FeedViewType.Articles,
+      })
+      await vi.advanceTimersByTimeAsync(0)
+      expect(useSubscriptionStore.getState().data.a!.category).toBe("Science")
+      expect(mocks.updateCategory).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(2000)
+      await rename
+    } finally {
+      registerSyncEngine(null)
+      vi.useRealTimers()
+    }
+
+    expect(mocks.updateCategory).toHaveBeenCalledWith({ feedIdList: ["a"], category: "Science" })
   })
 
   test("moves a list to its new view when the list is edited", async () => {

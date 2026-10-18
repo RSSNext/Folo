@@ -32,6 +32,21 @@ import { getDefaultCategory, getSubscriptionDBId, getSubscriptionStoreId } from 
 type FeedId = string
 type ListId = string
 
+/** Enough for a delta pull; a slow network does not hold a rename back for longer. */
+const CATCH_UP_BEFORE_RENAME_MS = 2000
+
+/** Pull the change log, but give up waiting for it after a moment. */
+const catchUpBeforeRename = async () => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  await Promise.race([
+    catchUpThroughEngine(0),
+    new Promise<void>((resolve) => {
+      timer = setTimeout(() => resolve(), CATCH_UP_BEFORE_RENAME_MS)
+    }),
+  ])
+  clearTimeout(timer)
+}
+
 export interface SubscriptionState {
   /**
    * Key: FeedId, ListId, `inbox/${inboxId}`
@@ -889,22 +904,28 @@ class SubscriptionSyncService {
     newCategory: string
     view: FeedViewType
   }) {
-    const feedIds = getCategoryFeedIds(lastCategory, view)
+    // Updated once the change log was pulled, below.
+    const feedIds = [...getCategoryFeedIds(lastCategory, view)]
     const categoryViews = getCategoryViews(get(), feedIds, view)
 
-    const tx = createTransaction()
-    tx.store(() => {
+    const renameInSession = (ids: string[], views: Iterable<FeedViewType>) => {
       immerSet((draft) => {
-        for (const id of feedIds) {
+        for (const id of ids) {
           const subscription = draft.data[id]
           if (!subscription) continue
           subscription.category = newCategory
         }
-        for (const categoryView of categoryViews) {
+        for (const categoryView of views) {
           draft.categories[categoryView]!.add(newCategory)
           draft.categories[categoryView]!.delete(lastCategory)
         }
+      })
+    }
 
+    const tx = createTransaction()
+    tx.store(() => {
+      renameInSession(feedIds, categoryViews)
+      immerSet((draft) => {
         const lastCategoryOpenState = draft.categoryOpenStateByView[view]![lastCategory]
         if (typeof lastCategoryOpenState === "boolean") {
           draft.categoryOpenStateByView[view]![newCategory] = lastCategoryOpenState
@@ -914,6 +935,21 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
+      // The server renames only the feeds the request names. Another device may have moved a
+      // feed into the category since the last pull, which would then keep the old name and
+      // split the category, or moved one out of it. Pull first and name the feeds that are in
+      // the category now; only a rename by name on the server closes the gap entirely.
+      await catchUpBeforeRename()
+      const { data } = get()
+      const stillNamedBefore = getCategoryFeedIds(lastCategory, view)
+      const renamed = feedIds.filter((id) => data[id]?.category === newCategory)
+      feedIds.splice(0, feedIds.length, ...new Set([...renamed, ...stillNamedBefore]))
+      if (stillNamedBefore.length > 0) {
+        const views = getCategoryViews(get(), stillNamedBefore, view)
+        for (const categoryView of views) categoryViews.add(categoryView)
+        renameInSession(stillNamedBefore, views)
+      }
+
       await api().categories.update({
         feedIdList: feedIds,
         category: newCategory,
