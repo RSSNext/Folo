@@ -10,7 +10,6 @@ import DeviceInfo from "react-native-device-info"
 
 import { setApiUnreachable } from "@/src/atoms/api-connection"
 
-import { reportAbortsAsAbortError } from "./abort-error"
 import { getAuthStateRevision, getCookie, getLastAuthStateChangeAt } from "./auth"
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
@@ -21,14 +20,12 @@ import { createUnauthorizedSessionCheck } from "./session-check"
 
 // Tracked so a runtime reload can wait for the requests to settle first (see `reload-app.ts`).
 const trackedFetch = trackFetch(fetch)
-// So a request that times out fails as a timeout rather than as a lost connection
-const sdkFetch = reportAbortsAsAbortError(trackedFetch)
 
 export const followClient = new FollowClient({
   credentials: "omit",
   timeout: 60_000,
   baseURL: proxyEnv.API_URL,
-  fetch: async (input, options = {}) => sdkFetch(input.toString(), options as any) as any,
+  fetch: async (input, options = {}) => trackedFetch(input.toString(), options as any) as any,
 })
 
 export const followApi = followClient.api
