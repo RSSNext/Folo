@@ -30,6 +30,7 @@ import {
 } from "../modules/subscription/utils"
 import { unreadActions, unreadSyncService } from "../modules/unread/store"
 import { whoami } from "../modules/user/getters"
+import { useUserStore } from "../modules/user/store"
 import { apiMorph } from "../morph/api"
 import { getSyncModelHandler, getSyncModelHandlers } from "./model-registry"
 import { entryReadOverlayKey } from "./overlay-keys"
@@ -816,6 +817,13 @@ class SyncEngine implements Resetable {
 
     this.detachQueueListener = transactionQueue.onAcknowledged(() => {
       this.schedulePull("ack", ACK_PULL_DELAY_MS)
+    })
+
+    // A launch before anyone is known to be signed in, such as on a fresh profile while the
+    // session check runs, pulls nothing. Pull once someone is, rather than at the next focus
+    // or interval: until then the engine has no cursor, and what relies on it falls short.
+    useUserStore.subscribe((state, previous) => {
+      if (state.whoami && !previous.whoami) this.schedulePull("launch")
     })
 
     this.intervalTimer = setInterval(() => {

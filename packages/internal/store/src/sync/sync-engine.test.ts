@@ -275,6 +275,27 @@ describe("syncEngine", () => {
     expect(isSyncEngineActive()).toBe(true)
   })
 
+  it("bootstraps once someone is signed in after a launch without a session user", async () => {
+    stateMock.mockResolvedValue({ code: 0, data: { lastSyncId: 42 } })
+    // A fresh profile: nobody is known to be signed in until the session check answers
+    useUserStore.setState((state) => ({ ...state, whoami: null }))
+    vi.useFakeTimers()
+    try {
+      await syncEngine.start()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(stateMock).not.toHaveBeenCalled()
+
+      useUserStore.setState((state) => ({ ...state, whoami: { id: "user-1" } as never }))
+      // Well before the next interval pull
+      await vi.advanceTimersByTimeAsync(100)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    expect(stateMock).toHaveBeenCalledTimes(1)
+    expect(syncEngine.getLastSyncId()).toBe(42)
+  })
+
   it("applies list membership changes and list deletion", async () => {
     seedCursor(40)
     const { subscriptionActions } = await import("../modules/subscription/store")
