@@ -14,8 +14,12 @@ export const FindBarChannel = {
   result: "find-bar:result",
 } as const
 
-/** Room around the bar for its shadow, in the page and in the view's bounds */
-export const FIND_BAR_SHADOW_MARGIN = 16
+/**
+ * Room around the bar for its shadow, in the page and in the view's bounds. The view takes the
+ * clicks in it, so the top stays narrow: the shadow falls below the bar, and the buttons of the
+ * page's header reach down to just above it.
+ */
+export const FIND_BAR_SHADOW_MARGIN = { top: 6, side: 16, bottom: 16 } as const
 export const FIND_BAR_WIDTH = 256
 export const FIND_BAR_HEIGHT = 36
 
@@ -171,7 +175,7 @@ export const findBarPage = `<!doctype html>
   }
 }
 html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; }
-body { box-sizing: border-box; padding: ${FIND_BAR_SHADOW_MARGIN}px; font: 15px system-ui, sans-serif; color: var(--text); }
+body { box-sizing: border-box; padding: ${FIND_BAR_SHADOW_MARGIN.top}px ${FIND_BAR_SHADOW_MARGIN.side}px ${FIND_BAR_SHADOW_MARGIN.bottom}px; font: 15px system-ui, sans-serif; color: var(--text); }
 form {
   box-sizing: border-box; display: flex; align-items: center; gap: 4px;
   width: ${FIND_BAR_WIDTH}px; height: ${FIND_BAR_HEIGHT}px; margin: 0; padding: 0 6px 0 12px;

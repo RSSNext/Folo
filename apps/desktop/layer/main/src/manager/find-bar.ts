@@ -197,10 +197,10 @@ class FindBar {
     if (this.window.isDestroyed()) return
     const { width } = this.window.getContentBounds()
     this.view.setBounds({
-      x: Math.max(0, width - BAR_RIGHT - FIND_BAR_WIDTH - FIND_BAR_SHADOW_MARGIN),
-      y: BAR_TOP - FIND_BAR_SHADOW_MARGIN,
-      width: FIND_BAR_WIDTH + FIND_BAR_SHADOW_MARGIN * 2,
-      height: FIND_BAR_HEIGHT + FIND_BAR_SHADOW_MARGIN * 2,
+      x: Math.max(0, width - BAR_RIGHT - FIND_BAR_WIDTH - FIND_BAR_SHADOW_MARGIN.side),
+      y: BAR_TOP - FIND_BAR_SHADOW_MARGIN.top,
+      width: FIND_BAR_WIDTH + FIND_BAR_SHADOW_MARGIN.side * 2,
+      height: FIND_BAR_HEIGHT + FIND_BAR_SHADOW_MARGIN.top + FIND_BAR_SHADOW_MARGIN.bottom,
     })
   }
 }

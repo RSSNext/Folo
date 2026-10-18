@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
     popup: ReturnType<typeof vi.fn>
   }>,
   views: [] as Array<{
+    setBounds: ReturnType<typeof vi.fn>
     setVisible: ReturnType<typeof vi.fn>
     webContents: {
       id: number
@@ -121,6 +122,19 @@ describe("FindBarManager", () => {
       "find-bar:open",
       expect.objectContaining({ accent: "hsl(21.6 100% 50%)" }),
     )
+  })
+
+  it("sits below the page's header buttons, 32 px from the right edge", async () => {
+    const { view } = await openFindBar()
+
+    // The view takes the clicks within its bounds, shadow room included. The header buttons of
+    // the page reach down to 42 px, and the bar itself starts at 48 px.
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: 1200 - 32 - 256 - 16,
+      y: 42,
+      width: 256 + 16 * 2,
+      height: 36 + 6 + 16,
+    })
   })
 
   it("finds in the window's page and steps through the matches", async () => {
