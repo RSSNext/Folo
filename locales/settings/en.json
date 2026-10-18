@@ -781,6 +781,7 @@
   "reviewPrompt.title": "Enjoying Folo?",
   "rsshub.addModal.access_key_label": "Access Key (Optional)",
   "rsshub.addModal.add": "Add",
+  "rsshub.addModal.base_url_invalid": "Enter the instance's http(s) address, without a user name, password, query (?) or fragment (#).",
   "rsshub.addModal.base_url_label": "Base URL",
   "rsshub.addModal.description": "To use your own instance in Folo, you must add the following environment variables to it.",
   "rsshub.add_new_instance": "Add New Instance",

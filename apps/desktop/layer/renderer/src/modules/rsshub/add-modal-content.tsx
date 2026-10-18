@@ -23,6 +23,8 @@ import { useAuthQuery } from "~/hooks/common"
 import { Queries } from "~/queries"
 import { useAddRSSHubMutation } from "~/queries/rsshub"
 
+import { canSaveRSSHubInstanceBaseUrl } from "./instance-url"
+
 export function AddModalContent({
   dismiss,
   instance,
@@ -39,7 +41,13 @@ export function AddModalContent({
   })
 
   const formSchema = z.object({
-    baseUrl: z.string().url(),
+    baseUrl: z
+      .string()
+      .url()
+      // The server refuses any other address, unless an edit sends back the stored one
+      .refine((baseUrl) => canSaveRSSHubInstanceBaseUrl(baseUrl, details.data?.instance.baseUrl), {
+        error: () => t("rsshub.addModal.base_url_invalid"),
+      }),
     accessKey: z.string().optional(),
   })
 

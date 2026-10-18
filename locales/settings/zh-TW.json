@@ -781,6 +781,7 @@
   "reviewPrompt.title": "你喜歡 Folo 嗎？",
   "rsshub.addModal.access_key_label": "存取金鑰（選填）",
   "rsshub.addModal.add": "新增",
+  "rsshub.addModal.base_url_invalid": "請輸入實例的 http(s) 位址，不要包含使用者名稱、密碼、查詢（?）或片段（#）。",
   "rsshub.addModal.base_url_label": "基礎 URL",
   "rsshub.addModal.description": "要在 Folo 中使用自己的 RSSHub 實例伺服器，必須將以下環境變數新增到伺服器中。",
   "rsshub.add_new_instance": "新增 RSSHub 實例伺服器",

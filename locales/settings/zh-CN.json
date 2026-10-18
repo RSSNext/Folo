@@ -781,6 +781,7 @@
   "reviewPrompt.title": "你喜欢 Folo 吗？",
   "rsshub.addModal.access_key_label": "访问密钥（可选）",
   "rsshub.addModal.add": "添加",
+  "rsshub.addModal.base_url_invalid": "请输入实例的 http(s) 地址，不要包含用户名、密码、查询（?）或片段（#）。",
   "rsshub.addModal.base_url_label": "根 URL",
   "rsshub.addModal.description": "要在 Folo 中使用自己的实例，必须将以下环境变量添加到实例。",
   "rsshub.add_new_instance": "添加新实例",

@@ -781,6 +781,7 @@
   "reviewPrompt.title": "Folo を気に入っていますか？",
   "rsshub.addModal.access_key_label": "アクセスキー (オプション)",
   "rsshub.addModal.add": "追加",
+  "rsshub.addModal.base_url_invalid": "インスタンスの http(s) アドレスを入力してください。ユーザー名、パスワード、クエリ（?）、フラグメント（#）は含めないでください。",
   "rsshub.addModal.base_url_label": "ベース URL",
   "rsshub.addModal.description": "Folo であなた所有のインスタンスを使うには、以下の環境変数を追加する必要があります。",
   "rsshub.add_new_instance": "新たなインスタンスを追加",
