@@ -54,6 +54,8 @@ Errors return:
 
 Usage errors, such as an unknown option, a missing argument or an invalid value, use the same envelope with the code `INVALID_ARGUMENT`.
 
+With `--verbose`, an error the API answered with also has `request`: the `method`, `path`, `originalPath`, `query` and `body` of the call, never its headers. The table and plain formats print it below the message.
+
 You can switch output mode:
 
 - `--format json` (default)
@@ -195,7 +197,7 @@ A page can hold fewer entries than `--limit` while more follow, so keep going un
   - or `npx --yes folocli@latest login --token <token>`
   - Or set `FOLO_TOKEN`
 - `HTTP_4xx` / `HTTP_5xx`
-  - Retry with `--verbose` for request details
+  - Retry with `--verbose`: `error.request` says what the call sent
   - Verify `--api-url` if using non-default endpoint
 - `NETWORK_ERROR`
   - The API could not be reached; the message names its URL and the reason, such as `ECONNREFUSED`

@@ -1,4 +1,4 @@
-import { FollowAPIError, FollowTimeoutError } from "@follow-app/client-sdk"
+import { FollowAPIError, FollowAuthError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
@@ -201,26 +201,74 @@ describe("output helpers", () => {
   })
 
   it("names an answer without an error from the API by its HTTP status", () => {
-    const notFound = new FollowAPIError(
-      "Not Found\nRequest: GET /subscriptions (original: /subscriptions)\nArgs: {}",
-      404,
-      "404",
-    )
+    const notFound = new FollowAPIError("Not Found", 404, "404")
 
     expect(normalizeError(notFound)).toEqual({ code: "HTTP_404", message: "Not Found" })
   })
 
   it("keeps the API's own error code", () => {
-    const notFound = new FollowAPIError(
-      "Feed not found\nRequest: GET /feeds (original: /feeds)\nArgs: {}",
-      404,
-      "2001",
-    )
+    const notFound = new FollowAPIError("Feed not found", 404, "2001")
 
     expect(normalizeError(notFound)).toEqual({ code: "2001", message: "Feed not found" })
     expect(normalizeError(new FollowTimeoutError())).toEqual({
       code: "TIMEOUT_ERROR",
       message: "Request timeout",
+    })
+  })
+
+  describe("with --verbose", () => {
+    const request = {
+      method: "POST",
+      path: "/subscriptions",
+      originalPath: "/subscriptions",
+      body: { url: "https://example.com/feed.xml", category: null },
+    }
+
+    it("says what the refused request asked for", () => {
+      const refused = new FollowAPIError("Feed fetch error", 400, "2003", undefined, { request })
+      const unauthorized = new FollowAuthError("Unauthorized", undefined, {
+        request: { method: "GET", path: "/subscriptions", originalPath: "/subscriptions" },
+      })
+
+      expect(normalizeError(refused, { verbose: true })).toEqual({
+        code: "2003",
+        message: "Feed fetch error",
+        request,
+      })
+      expect(normalizeError(unauthorized, { verbose: true })).toEqual({
+        code: "UNAUTHORIZED",
+        message: "Unauthorized",
+        request: { method: "GET", path: "/subscriptions", originalPath: "/subscriptions" },
+      })
+      // Without --verbose the error stays as small as it was
+      expect(normalizeError(refused)).toEqual({ code: "2003", message: "Feed fetch error" })
+    })
+
+    it("prints the request in the JSON envelope and below the message", () => {
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+      const output = normalizeError(
+        new FollowAPIError("Feed fetch error", 400, "2003", undefined, {
+          request: { ...request, path: "/api/subscriptions", query: { t: 1 } },
+        }),
+        { verbose: true },
+      )
+
+      printFailure("json", output)
+      printFailure("plain", output)
+
+      expect(JSON.parse(errorSpy.mock.calls[0]![0] as string).error.request).toEqual({
+        ...request,
+        path: "/api/subscriptions",
+        query: { t: 1 },
+      })
+      expect(errorSpy.mock.calls.slice(1).map(([line]) => line)).toEqual([
+        "[2003] Feed fetch error",
+        [
+          "Request: POST /api/subscriptions (original: /subscriptions)",
+          'Query: {\n  "t": 1\n}',
+          'Body: {\n  "url": "https://example.com/feed.xml",\n  "category": null\n}',
+        ].join("\n"),
+      ])
     })
   })
 

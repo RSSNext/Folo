@@ -1,5 +1,6 @@
 import { inspect } from "node:util"
 
+import type { FollowAPIErrorRequest } from "@follow-app/client-sdk"
 import { FollowAPIError, FollowAuthError } from "@follow-app/client-sdk"
 
 export type OutputFormat = "json" | "table" | "plain"
@@ -7,6 +8,8 @@ export type OutputFormat = "json" | "table" | "plain"
 export interface OutputError {
   code: string
   message: string
+  /** With --verbose, what a request the API refused asked for. It never holds the headers. */
+  request?: FollowAPIErrorRequest
 }
 
 export class CLIError extends Error {
@@ -256,6 +259,20 @@ export const printSuccess = (format: OutputFormat, data: unknown) => {
   renderPlain(data)
 }
 
+/** The request of a failed call as lines of text: its method and path, then what it sent */
+const formatRequest = ({ method, path, originalPath, query, body }: FollowAPIErrorRequest) => {
+  const lines = [
+    `Request: ${method} ${path}${originalPath && originalPath !== path ? ` (original: ${originalPath})` : ""}`,
+  ]
+  if (query !== undefined) {
+    lines.push(`Query: ${stringifyJSON(query)}`)
+  }
+  if (body !== undefined) {
+    lines.push(`Body: ${stringifyJSON(body)}`)
+  }
+  return lines.join("\n")
+}
+
 export const printFailure = (format: OutputFormat, error: OutputError) => {
   if (format === "json") {
     const payload = {
@@ -268,11 +285,9 @@ export const printFailure = (format: OutputFormat, error: OutputError) => {
   }
 
   console.error(`[${error.code}] ${error.message}`)
-}
-
-const firstLine = (message: string) => {
-  const [head] = message.split("\n")
-  return head?.trim() || message
+  if (error.request) {
+    console.error(formatRequest(error.request))
+  }
 }
 
 /**
@@ -356,18 +371,11 @@ export const normalizeError = (
     return networkError
   }
 
-  if (error instanceof FollowAuthError) {
-    return {
-      code: "UNAUTHORIZED",
-      message: verbose ? error.message : firstLine(error.message),
-    }
-  }
-
   if (error instanceof FollowAPIError) {
-    return {
-      code: toAPIErrorCode(error),
-      message: verbose ? error.message : firstLine(error.message),
-    }
+    const code = error instanceof FollowAuthError ? "UNAUTHORIZED" : toAPIErrorCode(error)
+    return verbose && error.request
+      ? { code, message: error.message, request: error.request }
+      : { code, message: error.message }
   }
 
   if (error instanceof Error) {
