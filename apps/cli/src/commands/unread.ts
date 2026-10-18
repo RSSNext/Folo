@@ -2,10 +2,25 @@ import type { Command } from "commander"
 
 import { parseView, viewHelp } from "../args"
 import { runCommand } from "../command"
+import type { AnySubscription } from "../subscriptions"
 import { getSubscriptionTitle, isInboxSubscription, isListSubscription } from "../subscriptions"
 
 interface UnreadListOptions {
   view?: number
+}
+
+/**
+ * Where the unread counts of a subscription are: GET /reads counts unread entries by feed and
+ * by inbox, so a list's are those of its feeds, as the app counts them.
+ */
+const getUnreadKeys = (subscription: AnySubscription): string[] => {
+  if (isInboxSubscription(subscription)) {
+    return [subscription.inboxId]
+  }
+  if (isListSubscription(subscription)) {
+    return subscription.lists.feedIds
+  }
+  return [subscription.feedId]
 }
 
 export const registerUnreadCommand = (program: Command) => {
@@ -33,12 +48,18 @@ export const registerUnreadCommand = (program: Command) => {
         ])
 
         const unreadMap = unreadResponse.data
-        const items = subscriptionsResponse.data
+        const countUnread = (keys: Iterable<string>) => {
+          let count = 0
+          for (const key of keys) {
+            count += unreadMap[key] ?? 0
+          }
+          return count
+        }
+
+        const subscriptions = subscriptionsResponse.data
+        const items = subscriptions
           .map((subscription) => {
-            const unreadKey = isInboxSubscription(subscription)
-              ? subscription.inboxId
-              : subscription.feedId
-            const unreadCount = unreadMap[unreadKey] ?? 0
+            const unreadCount = countUnread(getUnreadKeys(subscription))
 
             return {
               sourceType: isInboxSubscription(subscription)
@@ -63,7 +84,9 @@ export const registerUnreadCommand = (program: Command) => {
           .sort((left, right) => right.unreadCount - left.unreadCount)
 
         return {
-          total: items.reduce((sum, item) => sum + item.unreadCount, 0),
+          // A feed followed both directly and through a list counts in both rows, but its
+          // entries count once in the total, which then agrees with `unread count`
+          total: countUnread(new Set(subscriptions.flatMap(getUnreadKeys))),
           items,
         }
       })
