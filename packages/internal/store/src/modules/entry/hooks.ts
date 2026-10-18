@@ -1,6 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import type { InfiniteData, InfiniteQueryObserver, Query, QueryKey } from "@tanstack/react-query"
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useCallback, useMemo } from "react"
 
 import { FEED_COLLECTION_LIST } from "../../constants/app"
@@ -18,6 +18,7 @@ import {
   getEntryIsInboxSelector,
   getHasEntrySelector,
 } from "./getter"
+import { fetchNextPageAfterRefetch } from "./next-page"
 import { entrySyncServices, useEntryStore } from "./store"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
 import {
@@ -297,10 +298,16 @@ export const useEntriesQuery = (
     subscribed: options?.subscribed,
   })
   const { fetchNextPage: queryFetchNextPage, refetch: queryRefetch } = query
+  // The client the query lives in, to see what it is fetching when the next page is asked for
+  const reactQueryClient = useQueryClient()
   const fetchNextPage = useCallback(
     (options?: Parameters<typeof queryFetchNextPage>[0]) =>
-      queryFetchNextPage({ cancelRefetch: false, ...options }),
-    [queryFetchNextPage],
+      fetchNextPageAfterRefetch(
+        reactQueryClient.getQueryState(queryKey),
+        queryFetchNextPage,
+        options,
+      ),
+    [queryFetchNextPage, queryKey, reactQueryClient],
   )
   // A refresh starts over from the top. Without trimming, the infinite query would request
   // every page the user had scrolled through again, one after another.

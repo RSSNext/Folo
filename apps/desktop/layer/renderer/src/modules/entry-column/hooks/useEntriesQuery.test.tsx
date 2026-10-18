@@ -151,7 +151,7 @@ describe("useEntriesQuery", () => {
     })
   })
 
-  test("reaches the end of a short list again only when asked after a refresh", async () => {
+  test("loads the end page of a short list asked for while it was refreshed", async () => {
     let resolveRefresh: ((value: EntriesResponse) => void) | undefined
     let firstPageRequests = 0
     const fetchEntriesSpy = vi
@@ -224,23 +224,16 @@ describe("useEntriesQuery", () => {
     })
     expect(entriesQuery?.hasNextPage).toBe(true)
 
-    // Asked for meanwhile, the next page joins the refresh and is never requested
+    // Asked for meanwhile, the next page would join the refresh and load nothing. It is asked
+    // for again once the refresh is done, so the list reaches its end.
+    let nextPage: Promise<unknown> | undefined
     await act(async () => {
-      void entriesQuery?.fetchNextPage()
+      nextPage = entriesQuery?.fetchNextPage()
     })
+    expect(nextPageRequests()).toBe(1)
     await act(async () => {
       resolveRefresh?.(createEntriesResponse("entry-1", "2026-05-14T00:00:00.000Z"))
-      await refresh
-    })
-    await vi.waitFor(() => {
-      expect(entriesQuery?.isFetching).toBe(false)
-    })
-    expect(entriesQuery?.hasNextPage).toBe(true)
-    expect(nextPageRequests()).toBe(1)
-
-    // Asked again once the refresh is done, the list reaches its end
-    await act(async () => {
-      await entriesQuery?.fetchNextPage()
+      await Promise.all([refresh, nextPage])
     })
     await vi.waitFor(() => {
       expect(entriesQuery?.hasNextPage).toBe(false)
