@@ -6,11 +6,7 @@ import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createTransaction, createZustandStore } from "../../lib/helper"
 import { collectionOverlayKey, isCollectionOverlayKey } from "../../sync/overlay-keys"
-import {
-  defineTransactionKind,
-  readLastSyncId,
-  transactionQueue,
-} from "../../sync/transaction-queue"
+import { defineTransactionKind, transactionQueue } from "../../sync/transaction-queue"
 import { getEntry } from "../entry/getter"
 import { invalidateEntriesQuery } from "../entry/hooks"
 
@@ -54,7 +50,7 @@ export const starEntryTransaction = defineTransactionKind<CollectionSchema, Sync
   async execute(payloads) {
     const payload = payloads[0]!
     const res = await api().collections.post({ entryId: payload.entryId, view: payload.view })
-    return { lastSyncId: readLastSyncId(res) }
+    return { lastSyncId: res.lastSyncId }
   },
   syncIdOf: (result) => result.lastSyncId,
   async persist(payloads) {
@@ -75,7 +71,7 @@ export const unstarEntryTransaction = defineTransactionKind<UnstarPayload, Synce
   },
   async execute(payloads) {
     const res = await api().collections.delete({ entryId: payloads[0]!.entryId })
-    return { lastSyncId: readLastSyncId(res) }
+    return { lastSyncId: res.lastSyncId }
   },
   syncIdOf: (result) => result.lastSyncId,
   async persist(payloads) {

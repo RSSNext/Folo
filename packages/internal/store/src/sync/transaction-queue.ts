@@ -144,12 +144,6 @@ const RETRYABLE_STATUS = new Set([408, 425, 429])
 
 const noop = () => {}
 
-/** Mutation responses carry the highest sync id they produced. */
-export const readLastSyncId = (response: unknown): number | undefined => {
-  const value = (response as { lastSyncId?: unknown } | null | undefined)?.lastSyncId
-  return typeof value === "number" ? value : undefined
-}
-
 const createTransactionId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 

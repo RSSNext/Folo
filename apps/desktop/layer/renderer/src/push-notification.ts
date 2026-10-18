@@ -1,6 +1,5 @@
 import { env } from "@follow/shared/env.desktop"
 import { actionSyncService, useActionStore } from "@follow/store/action/store"
-import { readLastSyncId } from "@follow/store/sync/transaction-queue"
 import { whoami } from "@follow/store/user/getters"
 import { initializeApp } from "firebase/app"
 import { getMessaging, getToken } from "firebase/messaging"
@@ -64,7 +63,7 @@ export async function registerWebPushNotifications() {
         token,
         channel: WEB_PUSH_CHANNEL,
       })
-      rememberWebPushRegistration({ userId: user.id, token, syncId: readLastSyncId(response) })
+      rememberWebPushRegistration({ userId: user.id, token, syncId: response.lastSyncId })
     }
 
     registerPushNotificationPostMessage()

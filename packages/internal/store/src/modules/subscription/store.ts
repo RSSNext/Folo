@@ -1,6 +1,7 @@
 import { FeedViewType } from "@follow/constants"
 import { SubscriptionService } from "@follow/database/services/subscription"
 import { tracker } from "@follow/tracker"
+import type { WithLastSyncId } from "@follow-app/client-sdk"
 import { omit } from "es-toolkit"
 import { t } from "i18next"
 
@@ -17,7 +18,7 @@ import {
 } from "../../sync/overlay-keys"
 import { catchUpThroughEngine, ensureSyncedThroughEngine } from "../../sync/sync-status"
 import type { AcknowledgedChangeKind } from "../../sync/transaction-queue"
-import { readLastSyncId, transactionQueue } from "../../sync/transaction-queue"
+import { transactionQueue } from "../../sync/transaction-queue"
 import { invalidateEntriesQuery } from "../entry/hooks"
 import { getFeedById, getFeedServerId } from "../feed/getter"
 import { feedActions } from "../feed/store"
@@ -272,10 +273,10 @@ const confirmedSubscriptionChangeKind: AcknowledgedChangeKind<ConfirmedSubscript
 
 const trackConfirmedChanges = (
   changes: ConfirmedSubscriptionChanges["changes"],
-  response: unknown,
+  response: WithLastSyncId,
 ) => {
   if (changes.length === 0) return
-  const syncId = readLastSyncId(response)
+  const syncId = response.lastSyncId
   transactionQueue.trackAcknowledged(confirmedSubscriptionChangeKind, { changes, syncId }, syncId)
 }
 
