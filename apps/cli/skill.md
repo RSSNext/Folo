@@ -106,6 +106,7 @@ Changes the API answers without data, such as `subscription remove`, `collection
 
 - Add: `npx --yes folocli@latest collection add <entryId>`
 - Remove: `npx --yes folocli@latest collection remove <entryId>`
+  - Fails with `NOT_FOUND` for an entry that isn't collected, without changing anything.
 - List: `npx --yes folocli@latest collection list --limit 20`
 
 ### 5. OPML Import / Export

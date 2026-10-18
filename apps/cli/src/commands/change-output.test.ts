@@ -21,6 +21,13 @@ const subscriptions = [
   { feedId: "feed1", view: 0, isPrivate: false, feeds: { id: "feed1", url: "https://f.test/1" } },
 ]
 
+/** What the API answers the lookups that changes make first with */
+const lookups: Record<string, Record<string, unknown>> = {
+  "/subscriptions": { code: 0, data: subscriptions },
+  // Whether the entry is collected, which collection remove checks first
+  "/collections": { code: 0, data: true },
+}
+
 /** Runs a command against an API that answers every change with `body` */
 const runCLI = async (args: string[], body: Record<string, unknown>) => {
   const requests: APIRequest[] = []
@@ -29,10 +36,7 @@ const runCLI = async (args: string[], body: Record<string, unknown>) => {
     vi.fn(async (url: string, init?: RequestInit) => {
       const request = { method: init?.method ?? "GET", path: new URL(url).pathname }
       requests.push(request)
-      const answer =
-        request.method === "GET" && request.path === "/subscriptions"
-          ? { code: 0, data: subscriptions }
-          : body
+      const answer = (request.method === "GET" && lookups[request.path]) || body
       return new Response(JSON.stringify(answer), {
         headers: { "content-type": "application/json" },
       })
@@ -101,6 +105,7 @@ describe("change commands", () => {
     {
       // A change the server recorded no sync action for
       args: ["collection", "remove", "entry1"],
+      lookup: { method: "GET", path: "/collections" },
       request: { method: "DELETE", path: "/collections" },
       response: { code: 0 },
       data: {},

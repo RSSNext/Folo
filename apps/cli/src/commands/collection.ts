@@ -2,6 +2,7 @@ import type { Command } from "commander"
 
 import { parseISODate, parsePositiveInt, parseView, viewHelp } from "../args"
 import { runCommand, toChangeResult } from "../command"
+import { CLIError } from "../output"
 import { fetchEntryPage, MAX_PAGE_SIZE } from "../pagination"
 import { toCollectionRow } from "../table-views"
 
@@ -67,6 +68,13 @@ export const registerCollectionCommand = (program: Command) => {
     .argument("<entryId>", "Entry ID")
     .action(async function (this: Command, entryId: string) {
       await runCommand(this, async ({ client }) => {
+        // The API answers the removal of an entry that is not collected with success, and
+        // records it as a change for the user's other devices to sync, so it is checked first
+        const { data: collected } = await client.api.collections.get({ entryId })
+        if (!collected) {
+          throw new CLIError("NOT_FOUND", `Entry ${entryId} is not in your collection.`)
+        }
+
         const response = await client.api.collections.delete({
           entryId,
         })
