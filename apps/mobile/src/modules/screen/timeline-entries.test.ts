@@ -1,9 +1,9 @@
 import type { UseEntriesReturn } from "@follow/store/entry/types"
 import { fallbackReturn } from "@follow/store/entry/utils"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import type { RemoteTimelineEntries } from "./timeline-entries"
-import { pickTimelineEntries } from "./timeline-entries"
+import { joinRefreshAttempt, pickTimelineEntries } from "./timeline-entries"
 
 const remoteRefetch = async () => {}
 const reportingRefetch = async () => {}
@@ -86,5 +86,25 @@ describe("pickTimelineEntries", () => {
     expect(shown.entriesIds).toEqual([])
     expect(shown.isFetching).toBe(true)
     expect(shown.refetch).toBe(remoteRefetch)
+  })
+})
+
+describe("joinRefreshAttempt", () => {
+  it("joins the refresh under way, so one failed request is told once", async () => {
+    const attempt: { current: Promise<void> | null } = { current: null }
+    let settle!: () => void
+    const refresh = vi.fn(() => new Promise<void>((resolve) => (settle = resolve)))
+
+    // Pulling again while the first page still loads, as the list shows no spinner meanwhile
+    const first = joinRefreshAttempt(attempt, refresh)
+    const second = joinRefreshAttempt(attempt, refresh)
+    expect(second).toBe(first)
+    expect(refresh).toHaveBeenCalledTimes(1)
+
+    settle()
+    await first
+    // A pull after it settled refreshes again
+    void joinRefreshAttempt(attempt, refresh)
+    expect(refresh).toHaveBeenCalledTimes(2)
   })
 })

@@ -7,6 +7,21 @@ export type RemoteTimelineEntries = UseEntriesReturn & {
 }
 
 /**
+ * Runs `refresh` unless one is under way, which the call joins instead. A pull while the first page
+ * still loads joins that request, which the list shows no spinner for, so each further pull would
+ * otherwise tell the same failure once more.
+ */
+export const joinRefreshAttempt = (
+  attempt: { current: Promise<void> | null },
+  refresh: () => Promise<void>,
+): Promise<void> => {
+  attempt.current ??= refresh().finally(() => {
+    attempt.current = null
+  })
+  return attempt.current
+}
+
+/**
  * Pulling to refresh keeps the entries on screen as they were when it fails, which alone would
  * not say that it failed. An empty list says why itself.
  */

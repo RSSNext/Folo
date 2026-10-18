@@ -27,7 +27,16 @@ import { debounce } from "es-toolkit"
 import { atom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import type { ReactNode } from "react"
-import { createContext, createElement, use, useCallback, useEffect, useMemo, useState } from "react"
+import {
+  createContext,
+  createElement,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useTranslation } from "react-i18next"
 import type { SharedValue } from "react-native-reanimated"
 import { makeMutable, useSharedValue } from "react-native-reanimated"
@@ -37,7 +46,7 @@ import { views } from "@/src/constants/views"
 import { toastFetchError } from "@/src/lib/error-parser"
 
 import type { RemoteTimelineEntries } from "./timeline-entries"
-import { pickTimelineEntries } from "./timeline-entries"
+import { joinRefreshAttempt, pickTimelineEntries } from "./timeline-entries"
 
 export type SelectedTimeline = {
   type: "view"
@@ -207,10 +216,15 @@ function useRemoteEntries(props?: UseEntriesProps): RemoteTimelineEntries {
   }, [isFetchingFirstPage])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
-  const refetchReportingFailure = useCallback(async () => {
-    const result = await query.refetch()
-    if (result.isError) toastFetchError(result.error)
-  }, [query])
+  const refreshAttemptRef = useRef<Promise<void> | null>(null)
+  const refetchReportingFailure = useCallback(
+    () =>
+      joinRefreshAttempt(refreshAttemptRef, async () => {
+        const result = await query.refetch()
+        if (result.isError) toastFetchError(result.error)
+      }),
+    [query],
+  )
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
