@@ -44,7 +44,10 @@ const resolveFeed = async (client: FollowClient, url: string) => {
     const response = await client.api.feeds.get({ url })
     return response.data.feed
   } catch (error) {
-    if (error instanceof FollowAPIError) {
+    // The API answers a URL without a feed with 404, or 400 when nothing could be fetched or
+    // parsed there. A timeout or a server error says nothing about the feed, so it is reported
+    // instead of a NOT_FOUND that would tell the user they don't follow it.
+    if (error instanceof FollowAPIError && (error.status === 400 || error.status === 404)) {
       return null
     }
     throw error

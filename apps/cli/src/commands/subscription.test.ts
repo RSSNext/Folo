@@ -206,4 +206,27 @@ describe("subscription remove --target url", () => {
       })
     },
   )
+
+  it("reports a feed lookup the API failed instead of saying the feed isn't followed", async () => {
+    const { requests, stderr, exitCode } = await runCLIWithAPI(
+      [
+        "subscription",
+        "remove",
+        "https://rsshub.app/github/issue/DIYgod/RSSHub",
+        "--target",
+        "url",
+      ],
+      (request) =>
+        request.method === "GET" && request.path === "/feeds"
+          ? new Response("Bad Gateway", { status: 502, statusText: "Bad Gateway" })
+          : answerSubscriptions(request),
+    )
+
+    expect(changes(requests)).toEqual([])
+    expect(parseEnvelope(stderr)).toMatchObject({
+      ok: false,
+      error: { code: "502", message: "Bad Gateway" },
+    })
+    expect(exitCode).toBe(1)
+  })
 })
