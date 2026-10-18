@@ -198,7 +198,7 @@ const AvatarSection: FC<{
   )
 }
 const FieldErrorText: FC<{ message: string | undefined }> = ({ message }) =>
-  message ? <Text className="mx-9 mt-2 text-xs text-red">{message}</Text> : null
+  message ? <GroupedOutlineDescription description={message} isError /> : null
 
 const ProfileForm: FC<{
   whoami: MeModel

@@ -17,7 +17,6 @@ import {
   GroupedOutlineDescription,
   GroupedPlainButtonCell,
 } from "@/src/components/ui/grouped/GroupedList"
-import { Text } from "@/src/components/ui/typography/Text"
 import { useTouchOnTypingPause } from "@/src/hooks/useTouchOnTypingPause"
 import { isValidEmail } from "@/src/lib/email"
 import { useNavigation } from "@/src/lib/navigation/hooks"
@@ -100,9 +99,10 @@ export const EditEmailScreen: NavigationControllerView = () => {
           </GroupedInsetListCell>
         </GroupedInsetListCard>
         {isDirty && isEmailTouched && !!email && !newEmailIsValid && (
-          <Text className="mx-9 mt-2 text-xs text-red">
-            {t("validation.invalid_email", { ns: "common" })}
-          </Text>
+          <GroupedOutlineDescription
+            description={t("validation.invalid_email", { ns: "common" })}
+            isError
+          />
         )}
         <GroupedOutlineDescription
           description={`${t("profile.email.verify_status", {

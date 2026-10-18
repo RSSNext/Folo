@@ -36,6 +36,11 @@ const GROUPED_TABLET_MAX_WIDTH = 760
  */
 const useGroupedTabletColumnStyle = () =>
   useReadableContainerStyle(GROUPED_TABLET_MAX_WIDTH, GROUPED_LIST_MARGIN)
+// Text above and below a card starts where the text in its cells does
+const GROUPED_OUTER_TEXT_INSETS: ViewStyle = {
+  paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
+  marginHorizontal: GROUPED_LIST_MARGIN,
+}
 
 interface GroupedInsetListCardProps {
   showSeparator?: boolean
@@ -49,8 +54,18 @@ interface BaseCellClassNames {
 }
 export const GroupedOutlineDescription: FC<{
   description: string
-}> = ({ description }) => {
-  return <Text className="mx-9 mt-2 text-xs text-secondary-label">{description}</Text>
+  /** Shows it as an error, such as the validation message of the field above */
+  isError?: boolean
+}> = ({ description, isError }) => {
+  // The section header's column and insets, so it lines up with the card on iPad too
+  const tabletColumnStyle = useGroupedTabletColumnStyle()
+  return (
+    <View style={[tabletColumnStyle, GROUPED_OUTER_TEXT_INSETS]}>
+      <Text className={cn("mt-2 text-xs", isError ? "text-red" : "text-secondary-label")}>
+        {description}
+      </Text>
+    </View>
+  )
 }
 export const GroupedInsetListCard: FC<
   PropsWithChildren & ViewProps & GroupedInsetListCardProps
@@ -125,8 +140,7 @@ export const GroupedInsetListSectionHeader: FC<{
   const tabletColumnStyle = useGroupedTabletColumnStyle()
   const sectionStyle: ViewStyle = {
     ...tabletColumnStyle,
-    paddingHorizontal: GROUPED_LIST_ITEM_PADDING,
-    marginHorizontal: GROUPED_LIST_MARGIN,
+    ...GROUPED_OUTER_TEXT_INSETS,
     marginTop:
       marginSize === "normal" ? GROUPED_SECTION_TOP_MARGIN : GROUPED_SECTION_TOP_MARGIN / 2,
     marginBottom: GROUPED_SECTION_BOTTOM_MARGIN,
