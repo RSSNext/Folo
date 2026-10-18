@@ -1,4 +1,9 @@
-import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
+import {
+  ExceptionCodeMap,
+  FollowAPIError,
+  FollowAuthError,
+  FollowValidationError,
+} from "@follow-app/client-sdk"
 import enErrors from "@locales/errors/en.json"
 import frErrors from "@locales/errors/fr-FR.json"
 import jaErrors from "@locales/errors/ja.json"
@@ -139,6 +144,43 @@ describe("getFetchErrorMessage", () => {
     expect(
       getFetchErrorMessage(new FollowAPIError("Authentication required", 401, "AUTH_REQUIRED")),
     ).toBe("Authentication required")
+  })
+})
+
+describe("an error the SDK names its own way", () => {
+  const signIn = "Log in to complete this action."
+
+  beforeAll(async () => {
+    if (!i18next.isInitialized) await i18next.init({ lng: "en", resources: {} })
+    i18next.addResourceBundle("en", "errors", { 3: "Unprocessable content", 1008: signIn }, true)
+  })
+
+  beforeEach(() => {
+    vi.mocked(toast.error).mockClear()
+  })
+
+  test("is translated by the code of the server's answer", () => {
+    // What the server answers a guest who tries to change something
+    const guest = new FollowAuthError(
+      "Cannot complete this operation without login, please log in first.",
+      undefined,
+      { serverCode: 1008 },
+    )
+
+    expect(getFetchErrorMessage(guest)).toBe(signIn)
+    toastFetchError(guest)
+    expect(toast.error).toHaveBeenCalledWith(signIn, expect.anything())
+  })
+
+  test("still names the field a refused request body got wrong", () => {
+    toastFetchError(
+      new FollowValidationError("`url`: Invalid URL", [{ path: ["url"] }], { serverCode: 3 }),
+    )
+
+    expect(toast.error).toHaveBeenCalledWith(
+      "Unprocessable content",
+      expect.objectContaining({ description: "`url`: Invalid URL" }),
+    )
   })
 })
 

@@ -21,6 +21,17 @@ const CONNECTION_FAILURE_MESSAGE =
 export const isConnectionFailure = (error: Error) =>
   !(error instanceof FollowAPIError) && CONNECTION_FAILURE_MESSAGE.test(error.message)
 
+/**
+ * The code of the server's answer, which the error locales translate. `code` names some errors
+ * the SDK's own way, such as AUTH_REQUIRED for a refused session, whose server code is 1000, or
+ * 1008 for a guest who has to sign in first.
+ */
+const getServerCode = (error: FollowAPIError) => {
+  if (error.serverCode !== undefined) return error.serverCode
+  const code = Number(error.code)
+  return error.code && !Number.isNaN(code) ? code : undefined
+}
+
 // i18next answers a missing key with the key without its namespace, such as "1000"
 const translateErrorCode = (code: unknown, fallback: string) => {
   if (code == null) return fallback
@@ -53,13 +64,11 @@ export const getFetchErrorInfo = (
 
   if (error instanceof FollowAPIError) {
     const { message } = error
-    if (!error.code) return { message }
-    // Codes such as "AUTH_REQUIRED" from the SDK are not API error codes
-    const code = Number.isNaN(Number(error.code)) ? undefined : Number(error.code)
+    const code = getServerCode(error)
+    if (code === undefined) return { message }
     try {
-      const i18nMessage = translateErrorCode(code, message)
       return {
-        message: i18nMessage,
+        message: translateErrorCode(code, message),
         code,
       }
     } catch {
@@ -123,13 +132,15 @@ export const toastFetchError = (
   }
 
   if (error instanceof FollowAPIError) {
-    code = error.code ? Number(error.code) : undefined
+    code = getServerCode(error)
     status = error.status ? Number(error.status) : undefined
-    message = error.message
-    serverMessage = message
-  }
-
-  if ("code" in error && error.code) {
+    serverMessage = error.message
+    try {
+      message = translateErrorCode(code, error.message)
+    } catch {
+      message = error.message
+    }
+  } else if ("code" in error && error.code) {
     code = Number(error.code)
     try {
       const tValue = t(`errors:${code}` as any)

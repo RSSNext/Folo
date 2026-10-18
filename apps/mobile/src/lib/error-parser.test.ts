@@ -1,4 +1,9 @@
-import { FollowAPIError, FollowAuthError, FollowTimeoutError } from "@follow-app/client-sdk"
+import {
+  FollowAPIError,
+  FollowAuthError,
+  FollowTimeoutError,
+  FollowValidationError,
+} from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getFetchErrorMessage, isNotFoundError, toastFetchError } from "./error-parser"
@@ -159,6 +164,38 @@ describe("toastFetchError for a refused session", () => {
     )
 
     expect(mocks.toastError).toHaveBeenCalledWith("Log in to complete this action.")
+  })
+})
+
+describe("an error the SDK names its own way", () => {
+  beforeEach(() => {
+    mocks.toastError.mockClear()
+  })
+
+  it("asks a guest to sign in, by the code of the server's answer", () => {
+    const guest = new FollowAuthError(
+      "Cannot complete this operation without login, please log in first.",
+      undefined,
+      { serverCode: 1008 },
+    )
+
+    expect(getFetchErrorMessage(guest)).toBe("Log in to complete this action.")
+  })
+
+  it("translates a refused session the server gave another code by that code", () => {
+    const refused = new FollowAuthError("limit", undefined, { serverCode: 2012 })
+
+    expect(getFetchErrorMessage(refused)).toBe("RSSHub feed subscription limit exceeded")
+  })
+
+  it("names the field a refused request body got wrong under the translated code", () => {
+    toastFetchError(
+      new FollowValidationError("`url`: Invalid URL", [{ path: ["url"] }], { serverCode: 3 }),
+    )
+
+    expect(mocks.toastError).toHaveBeenCalledWith("Unprocessable content", {
+      description: "`url`: Invalid URL",
+    })
   })
 })
 
