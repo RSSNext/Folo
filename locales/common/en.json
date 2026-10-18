@@ -40,6 +40,7 @@
   "feed.actions.followed": "Followed",
   "feed.entry_week_one": "{{count}} entry/week",
   "feed.entry_week_other": "{{count}} entries/week",
+  "feed.follow_failed": "Couldn't follow. Please try again.",
   "feed.follower_one": "follower",
   "feed.follower_other": "followers",
   "feed.powered_by_rsshub": "This feed is powered by RSSHub",

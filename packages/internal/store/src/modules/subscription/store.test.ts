@@ -35,6 +35,11 @@ const mocks = vi.hoisted(() => ({
   create: vi.fn(),
 }))
 
+vi.mock("i18next", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("i18next")>()),
+  t: (key: string) => key,
+}))
+
 vi.mock("@follow/database/services/feed", () => ({
   FEED_EXTRA_DATA_KEYS: [],
   FeedService: {
@@ -506,6 +511,28 @@ describe("subscriptionSyncService", () => {
     // The followed feed takes the place of its preview
     expect(Object.keys(useFeedStore.getState().feeds)).toEqual(["feed-sort"])
     expect(useSubscriptionStore.getState().data["feed-sort"]?.feedId).toBe("feed-sort")
+  })
+
+  test("fails a follow the server answered without what it followed, storing nothing", async () => {
+    const url = "https://example.com/new-feed.xml"
+    seed([])
+    mocks.create.mockResolvedValue({ code: 0, feed: null, list: null, unread: {} })
+
+    await expect(
+      subscriptionSyncService.subscribe({
+        url,
+        feedId: undefined,
+        listId: undefined,
+        view: FeedViewType.Articles,
+        category: null,
+        isPrivate: false,
+        hideFromTimeline: null,
+        title: null,
+      }),
+    ).rejects.toThrow("feed.follow_failed")
+
+    expect(useSubscriptionStore.getState().data).toEqual({})
+    expect(mocks.upsertSubscriptionRows).not.toHaveBeenCalled()
   })
 
   test("finds the subscription of a feed followed by its RSSHub instance address", async () => {

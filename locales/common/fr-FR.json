@@ -40,6 +40,7 @@
   "feed.actions.followed": "Suivi",
   "feed.entry_week_one": "{{count}} article/semaine",
   "feed.entry_week_other": "{{count}} articles/semaine",
+  "feed.follow_failed": "Impossible de suivre. Veuillez réessayer.",
   "feed.follower_one": "abonné",
   "feed.follower_other": "abonnés",
   "feed.powered_by_rsshub": "Ce flux est propulsé par RSSHub",

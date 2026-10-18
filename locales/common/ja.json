@@ -40,6 +40,7 @@
   "feed.actions.followed": "フォロー済み",
   "feed.entry_week_one": "{{count}} エントリー/週",
   "feed.entry_week_other": "{{count}} エントリー/週",
+  "feed.follow_failed": "フォローできませんでした。もう一度お試しください。",
   "feed.follower_one": "フォロワー",
   "feed.follower_other": "フォロワー",
   "feed.powered_by_rsshub": "このフィードは RSSHub を利用しています",

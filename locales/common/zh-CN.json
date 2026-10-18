@@ -40,6 +40,7 @@
   "feed.actions.followed": "已订阅",
   "feed.entry_week_one": "{{count}} 条目/周",
   "feed.entry_week_other": "{{count}} 条目/周",
+  "feed.follow_failed": "订阅失败，请重试。",
   "feed.follower_one": "订阅者",
   "feed.follower_other": "订阅者",
   "feed.powered_by_rsshub": "此订阅源由 RSSHub 提供",

@@ -2,6 +2,7 @@ import { FeedViewType } from "@follow/constants"
 import { SubscriptionService } from "@follow/database/services/subscription"
 import { tracker } from "@follow/tracker"
 import { omit } from "es-toolkit"
+import { t } from "i18next"
 
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -593,6 +594,11 @@ class SubscriptionSyncService {
       feedId: getFeedServerId(subscription.feedId),
     }
     const data = await api().subscriptions.create(body)
+    // The server can answer without following anything, as when two accounts follow the same
+    // new feed at once; a retry follows it
+    if (!data.feed && !data.list) {
+      throw new Error(t("feed.follow_failed", { ns: "common" }))
+    }
 
     if (data.feed) {
       feedActions.upsertMany([data.feed as any])
