@@ -225,7 +225,7 @@ describe("subscription remove --target url", () => {
     expect(changes(requests)).toEqual([])
     expect(parseEnvelope(stderr)).toMatchObject({
       ok: false,
-      error: { code: "502", message: "Bad Gateway" },
+      error: { code: "HTTP_502", message: "Bad Gateway" },
     })
     expect(exitCode).toBe(1)
   })

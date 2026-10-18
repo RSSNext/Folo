@@ -332,6 +332,14 @@ export const readJSONBody = async (response: Response, apiUrl: string): Promise<
   }
 }
 
+/**
+ * Without an error from the API in the body, as from a server that is not the API, the SDK
+ * names the error by its HTTP status. That reads like one of the API's own codes, which are
+ * never HTTP statuses, so it is reported as `HTTP_<status>`, as the session check reports it.
+ */
+const toAPIErrorCode = (error: FollowAPIError) =>
+  !error.code || error.code === String(error.status) ? `HTTP_${error.status}` : error.code
+
 export const normalizeError = (
   error: unknown,
   { verbose = false, apiUrl }: { verbose?: boolean; apiUrl?: string } = {},
@@ -357,7 +365,7 @@ export const normalizeError = (
 
   if (error instanceof FollowAPIError) {
     return {
-      code: error.code ?? `HTTP_${error.status}`,
+      code: toAPIErrorCode(error),
       message: verbose ? error.message : firstLine(error.message),
     }
   }

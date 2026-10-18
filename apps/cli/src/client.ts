@@ -59,16 +59,17 @@ export interface CLIAuthSession {
   rsshubSubscriptionLimit?: unknown
 }
 
+/**
+ * What the API said about a failed session check. Only its JSON says anything: the body of
+ * another server, such as the page a web server answers a missing path with, would fill the
+ * message with HTML.
+ */
 const readSessionErrorMessage = async (response: Response): Promise<string | undefined> => {
   const contentType = response.headers.get("content-type") ?? ""
+  if (!contentType.includes("application/json")) return undefined
 
-  if (contentType.includes("application/json")) {
-    const data = (await response.json().catch(() => null)) as Record<string, unknown> | null
-    return typeof data?.message === "string" ? data.message : undefined
-  }
-
-  const text = await response.text().catch(() => "")
-  return text || undefined
+  const data = (await response.json().catch(() => null)) as Record<string, unknown> | null
+  return typeof data?.message === "string" ? data.message : undefined
 }
 
 export const fetchAuthSession = async ({
@@ -107,7 +108,7 @@ export const fetchAuthSession = async ({
     const message = await readSessionErrorMessage(response)
     throw new CLIError(
       `HTTP_${response.status}`,
-      message || `Session check failed with HTTP ${response.status}.`,
+      message || response.statusText || `Session check failed with HTTP ${response.status}.`,
     )
   }
 

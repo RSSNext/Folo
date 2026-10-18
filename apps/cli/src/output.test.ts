@@ -1,3 +1,4 @@
+import { FollowAPIError, FollowTimeoutError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
@@ -196,6 +197,30 @@ describe("output helpers", () => {
     expect(normalized).toEqual({
       code: "E_CODE",
       message: "message",
+    })
+  })
+
+  it("names an answer without an error from the API by its HTTP status", () => {
+    const notFound = new FollowAPIError(
+      "Not Found\nRequest: GET /subscriptions (original: /subscriptions)\nArgs: {}",
+      404,
+      "404",
+    )
+
+    expect(normalizeError(notFound)).toEqual({ code: "HTTP_404", message: "Not Found" })
+  })
+
+  it("keeps the API's own error code", () => {
+    const notFound = new FollowAPIError(
+      "Feed not found\nRequest: GET /feeds (original: /feeds)\nArgs: {}",
+      404,
+      "2001",
+    )
+
+    expect(normalizeError(notFound)).toEqual({ code: "2001", message: "Feed not found" })
+    expect(normalizeError(new FollowTimeoutError())).toEqual({
+      code: "TIMEOUT_ERROR",
+      message: "Request timeout",
     })
   })
 

@@ -87,6 +87,42 @@ describe("fetchAuthSession", () => {
       (error: unknown) => error,
     )
     expect(error).toBeInstanceOf(CLIError)
-    expect(error).toMatchObject({ code: "HTTP_404", message: "404 Not Found" })
+    expect(error).toMatchObject({
+      code: "HTTP_404",
+      message: "Session check failed with HTTP 404.",
+    })
+  })
+
+  it("leaves the page another server answered with out of the message", async () => {
+    stubFetch(
+      new Response("<!DOCTYPE HTML>\n<html><body><h1>Error response</h1></body></html>", {
+        status: 404,
+        statusText: "Not Found",
+        headers: { "content-type": "text/html" },
+      }),
+    )
+
+    const error = await fetchAuthSession({ apiUrl: "http://web.test", token: "token" }).catch(
+      (error: unknown) => error,
+    )
+    // As the commands that go through the SDK report the same answer
+    expect(error).toMatchObject({ code: "HTTP_404", message: "Not Found" })
+  })
+
+  it("keeps what the API said about a failed session check", async () => {
+    stubFetch(
+      Response.json(
+        { code: 1000, message: "Service unavailable, try again later" },
+        { status: 503 },
+      ),
+    )
+
+    const error = await fetchAuthSession({ apiUrl: "http://api.test", token: "token" }).catch(
+      (error: unknown) => error,
+    )
+    expect(error).toMatchObject({
+      code: "HTTP_503",
+      message: "Service unavailable, try again later",
+    })
   })
 })
