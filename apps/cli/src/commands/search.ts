@@ -1,32 +1,15 @@
 import type { Command } from "commander"
 
-import { parsePositiveInt, parseView, viewHelp } from "../args"
+import { parseChoice, parsePositiveInt, parseView, viewHelp } from "../args"
 import { runCommand } from "../command"
 
 type DiscoverTarget = "feeds" | "lists"
 type TrendingRange = "1d" | "3d" | "7d" | "30d"
 type TrendingLanguage = "eng" | "cmn"
 
-const parseDiscoverTarget = (value: string): DiscoverTarget => {
-  if (value === "feeds" || value === "lists") {
-    return value
-  }
-  throw new Error(`Invalid discover type "${value}". Use feeds or lists.`)
-}
-
-const parseTrendingRange = (value: string): TrendingRange => {
-  if (value === "1d" || value === "3d" || value === "7d" || value === "30d") {
-    return value
-  }
-  throw new Error(`Invalid range "${value}". Use one of 1d, 3d, 7d, 30d.`)
-}
-
-const parseTrendingLanguage = (value: string): TrendingLanguage => {
-  if (value === "eng" || value === "cmn") {
-    return value
-  }
-  throw new Error(`Invalid language "${value}". Use eng or cmn.`)
-}
+const parseDiscoverTarget = parseChoice<DiscoverTarget>("discover type", ["feeds", "lists"])
+const parseTrendingRange = parseChoice<TrendingRange>("range", ["1d", "3d", "7d", "30d"])
+const parseTrendingLanguage = parseChoice<TrendingLanguage>("language", ["eng", "cmn"])
 
 interface SearchDiscoverOptions {
   type?: DiscoverTarget

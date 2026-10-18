@@ -52,6 +52,8 @@ Errors return:
 }
 ```
 
+Usage errors, such as an unknown option, a missing argument or an invalid value, use the same envelope with the code `INVALID_ARGUMENT`.
+
 You can switch output mode:
 
 - `--format json` (default)

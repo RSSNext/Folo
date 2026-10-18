@@ -5,26 +5,15 @@ import type {
 } from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
-import { parseView, viewHelp } from "../args"
+import { parseChoice, parseView, viewHelp } from "../args"
 import { runCommand, toChangeResult } from "../command"
 import { CLIError } from "../output"
 
 type SubscriptionTarget = "feed" | "list" | "url"
 type UpdateTarget = "feed" | "list"
 
-const parseSubscriptionTarget = (value: string): SubscriptionTarget => {
-  if (value === "feed" || value === "list" || value === "url") {
-    return value
-  }
-  throw new Error(`Invalid target "${value}". Use feed, list, or url.`)
-}
-
-const parseUpdateTarget = (value: string): UpdateTarget => {
-  if (value === "feed" || value === "list") {
-    return value
-  }
-  throw new Error(`Invalid target "${value}". Use feed or list.`)
-}
+const parseSubscriptionTarget = parseChoice<SubscriptionTarget>("target", ["feed", "list", "url"])
+const parseUpdateTarget = parseChoice<UpdateTarget>("target", ["feed", "list"])
 
 interface SubscriptionListOptions {
   view?: number
