@@ -12,6 +12,7 @@ import { StyleSheet, View } from "react-native"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { Skeleton, SkeletonPulse } from "@/src/components/ui/skeleton/Skeleton"
 import { useIsTabletLayout } from "@/src/lib/responsive"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
@@ -159,38 +160,26 @@ function EntryPictureItemSkeleton({ variantIndex }: { variantIndex: number }) {
     PICTURE_SKELETON_HEIGHT_STYLES[variantIndex % PICTURE_SKELETON_HEIGHT_STYLES.length]
 
   return (
-    <View className="mx-1 mb-2">
+    <SkeletonPulse className="mx-1 mb-2">
       {/* Image placeholder */}
-      <View className="animate-pulse rounded-md bg-system-fill" style={imageHeightStyle} />
+      <Skeleton className="rounded-md" style={imageHeightStyle} />
 
       {/* Footer content */}
       <View className="gap-2 px-1 py-2">
         {/* Title lines */}
         <View className="gap-1">
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.titleLinePrimary}
-          />
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.titleLineSecondary}
-          />
+          <Skeleton className="h-3 rounded-md" style={styles.titleLinePrimary} />
+          <Skeleton className="h-3 rounded-md" style={styles.titleLineSecondary} />
         </View>
 
         {/* Feed info */}
         <View className="flex-row items-center gap-1.5">
-          <View className="size-3.5 animate-pulse rounded-full bg-system-fill" />
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.feedLinePrimary}
-          />
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.feedLineSecondary}
-          />
+          <Skeleton className="size-3.5 rounded-full" />
+          <Skeleton className="h-3 rounded-md" style={styles.feedLinePrimary} />
+          <Skeleton className="h-3 rounded-md" style={styles.feedLineSecondary} />
         </View>
       </View>
-    </View>
+    </SkeletonPulse>
   )
 }
 

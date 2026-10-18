@@ -10,6 +10,7 @@ import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
+import { Skeleton, SkeletonPulse } from "@/src/components/ui/skeleton/Skeleton"
 import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -156,22 +157,22 @@ const defaultKeyExtractor = (id: string) => id
 
 export function EntryItemSkeleton() {
   return (
-    <View className="flex flex-row items-center bg-system-background p-4">
+    <SkeletonPulse className="flex flex-row items-center bg-system-background p-4">
       <View className="flex flex-1 flex-col gap-2">
         <View className="flex flex-row gap-2">
           {/* Icon skeleton */}
-          <View className="size-4 animate-pulse rounded-full bg-system-fill" />
-          <View className="h-4 w-1/4 animate-pulse rounded-md bg-system-fill" />
+          <Skeleton className="size-4 rounded-full" />
+          <Skeleton className="h-4 w-1/4 rounded-md" />
         </View>
 
         {/* Title skeleton */}
-        <View className="h-4 w-3/4 animate-pulse rounded-md bg-system-fill" />
+        <Skeleton className="h-4 w-3/4 rounded-md" />
         {/* Description skeleton */}
-        <View className="w-full flex-1 animate-pulse rounded-md bg-system-fill" />
+        <Skeleton className="w-full flex-1 rounded-md" />
       </View>
 
       {/* Image skeleton */}
-      <View className="ml-2 size-20 animate-pulse rounded-md bg-system-fill" />
-    </View>
+      <Skeleton className="ml-2 size-20 rounded-md" />
+    </SkeletonPulse>
   )
 }

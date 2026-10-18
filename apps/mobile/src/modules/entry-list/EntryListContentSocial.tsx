@@ -9,6 +9,7 @@ import { useCallback, useImperativeHandle, useMemo, useRef } from "react"
 import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { Skeleton, SkeletonPulse } from "@/src/components/ui/skeleton/Skeleton"
 
 import { useEntries } from "../screen/atoms"
 import { getResetScrollSignalForContent } from "../screen/scroll-reset"
@@ -144,25 +145,25 @@ export const EntryListContentSocial = ({
 
 export function EntryItemSkeleton() {
   return (
-    <View className="flex flex-col gap-2 p-4">
+    <SkeletonPulse className="flex flex-col gap-2 p-4">
       {/* Header row with avatar, author, and date */}
       <View className="flex flex-1 flex-row items-center gap-2">
-        <View className="size-8 animate-pulse rounded-full bg-system-fill" />
-        <View className="h-4 w-24 animate-pulse rounded-md bg-system-fill" />
-        <View className="h-3 w-20 animate-pulse rounded-md bg-system-fill" />
+        <Skeleton className="size-8 rounded-full" />
+        <Skeleton className="h-4 w-24 rounded-md" />
+        <Skeleton className="h-3 w-20 rounded-md" />
       </View>
 
       {/* Description area */}
       <View className="ml-10 space-y-2">
-        <View className="h-4 w-full animate-pulse rounded-md rounded-bl-none bg-system-fill" />
-        <View className="h-4 w-3/4 animate-pulse rounded-md rounded-tl-none bg-system-fill" />
+        <Skeleton className="h-4 w-full rounded-md rounded-bl-none" />
+        <Skeleton className="h-4 w-3/4 rounded-md rounded-tl-none" />
       </View>
 
       {/* Media preview area */}
       <View className="ml-10 flex flex-row gap-2">
-        <View className="size-20 animate-pulse rounded-md bg-system-fill" />
-        <View className="size-20 animate-pulse rounded-md bg-system-fill" />
+        <Skeleton className="size-20 rounded-md" />
+        <Skeleton className="size-20 rounded-md" />
       </View>
-    </View>
+    </SkeletonPulse>
   )
 }
