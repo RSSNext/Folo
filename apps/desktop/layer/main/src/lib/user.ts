@@ -5,6 +5,7 @@ import { isLinux, isMacOS, isWindows } from "~/env"
 import { logger } from "~/logger"
 
 import { apiClient } from "./api-client"
+import { getSessionTokenFromCookies } from "./cli-session-sync"
 import { store } from "./store"
 
 const notificationChannel = isMacOS
@@ -83,6 +84,8 @@ export const updateNotificationsToken = async (newCredentials?: Credentials) => 
 export const ensureNotificationsTokenSent = async () => {
   const token = store.get("notifications-credentials")?.fcm?.token
   if (!token || store.get("notifications-token-sent") === token) return
+  // Signed out, the upload can only fail, at every push connection. Signing in sends the token.
+  if (!(await getSessionTokenFromCookies())) return
   await updateNotificationsToken()
 }
 

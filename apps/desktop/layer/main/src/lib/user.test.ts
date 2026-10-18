@@ -12,8 +12,9 @@ import {
   updateNotificationsToken,
 } from "./user"
 
-const { createTokenMock, storeData } = vi.hoisted(() => ({
+const { createTokenMock, getSessionTokenMock, storeData } = vi.hoisted(() => ({
   createTokenMock: vi.fn(),
+  getSessionTokenMock: vi.fn(),
   storeData: new Map<string, unknown>(),
 }))
 
@@ -24,6 +25,10 @@ vi.mock("./api-client", () => ({
       deleteToken: vi.fn(),
     },
   },
+}))
+
+vi.mock("./cli-session-sync", () => ({
+  getSessionTokenFromCookies: getSessionTokenMock,
 }))
 
 vi.mock("./store", () => ({
@@ -185,6 +190,7 @@ describe("ensureNotificationsTokenSent", () => {
     vi.clearAllMocks()
     storeData.clear()
     createTokenMock.mockResolvedValue(undefined)
+    getSessionTokenMock.mockResolvedValue("session-token")
   })
 
   it("sends a stored token the server didn't get", async () => {
@@ -209,6 +215,16 @@ describe("ensureNotificationsTokenSent", () => {
   })
 
   it("does nothing before the push service handed out a token", async () => {
+    await ensureNotificationsTokenSent()
+
+    expect(createTokenMock).not.toHaveBeenCalled()
+  })
+
+  it("waits for a sign-in instead of asking at every push connection while signed out", async () => {
+    storeData.set("notifications-credentials", credentials)
+    getSessionTokenMock.mockResolvedValue(undefined)
+
+    await ensureNotificationsTokenSent()
     await ensureNotificationsTokenSent()
 
     expect(createTokenMock).not.toHaveBeenCalled()
