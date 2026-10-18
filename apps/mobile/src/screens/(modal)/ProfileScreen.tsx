@@ -8,7 +8,7 @@ import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hook
 import { Image as ExpoImage } from "expo-image"
 import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, FlatList, Platform, Share, View } from "react-native"
+import { Alert, FlatList, Platform, Share, StyleSheet, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -55,7 +55,6 @@ import { BannerStatusBar } from "@/src/modules/settings/BannerStatusBar"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
 import { isUserHeaderGradientLight } from "@/src/modules/settings/layout"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
-import { ItemSeparator } from "@/src/modules/subscription/ItemSeparator"
 import { useColor } from "@/src/theme/colors"
 
 import { FeedScreen } from "../(stack)/feeds/[feedId]/FeedScreen"
@@ -269,7 +268,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
               scrollEnabled={false}
               data={lists}
               renderItem={renderListItems}
-              ItemSeparatorComponent={ItemSeparator}
+              ItemSeparatorComponent={CardRowSeparator}
             />
           </GroupedInsetListCard>
         </Fragment>
@@ -285,7 +284,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
                   scrollEnabled={false}
                   data={feeds}
                   renderItem={renderFeedItems}
-                  ItemSeparatorComponent={ItemSeparator}
+                  ItemSeparatorComponent={CardRowSeparator}
                 />
               </GroupedInsetListCard>
             </Fragment>
@@ -302,7 +301,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
                   scrollEnabled={false}
                   data={feeds}
                   renderItem={renderFeedItems}
-                  ItemSeparatorComponent={ItemSeparator}
+                  ItemSeparatorComponent={CardRowSeparator}
                 />
               </GroupedInsetListCard>
             </>
@@ -312,6 +311,18 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
     </View>
   )
 }
+const ROW_ICON_SIZE = 24
+const styles = StyleSheet.create({
+  // The rows sit in a grouped card, which already has the column width and the side margins, so
+  // the line only starts where the row titles do
+  cardRowSeparator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: GROUPED_LIST_ITEM_PADDING + ROW_ICON_SIZE + GROUPED_ICON_TEXT_GAP,
+  },
+})
+const CardRowSeparator = () => (
+  <View className="bg-opaque-separator/70" style={styles.cardRowSeparator} />
+)
 const renderListItems = ({ item }: { item: PickedListModel }) => (
   <ItemPressable
     className="flex h-12 flex-row items-center bg-secondary-system-grouped-background"
@@ -343,7 +354,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
           className="size-6"
         />
       )}
-      {!item.image && <FallbackIcon title={item.title} size={24} />}
+      {!item.image && <FallbackIcon title={item.title} size={ROW_ICON_SIZE} />}
     </View>
 
     <Text
@@ -390,7 +401,7 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
               siteUrl: item.siteUrl || "",
             } as FeedIconRequiredFeed
           }
-          size={24}
+          size={ROW_ICON_SIZE}
         />
       </View>
       <Text

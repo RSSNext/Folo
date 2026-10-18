@@ -10,8 +10,9 @@ export const ItemSeparator = () => {
       className="bg-secondary-system-grouped-background"
       style={[readableContainerStyle, { marginHorizontal: GROUPED_LIST_MARGIN }]}
     >
+      {/* No flex-1: once a list appended rows, Yoga kept its zero flex basis and the line vanished */}
       <View
-        className="ml-12 h-px flex-1 bg-opaque-separator/70"
+        className="ml-12 h-px bg-opaque-separator/70"
         collapsable={false}
         style={{ transform: [{ scaleY: 0.5 }] }}
       />
@@ -27,7 +28,7 @@ export const SecondaryItemSeparator = () => {
       style={[readableContainerStyle, { marginHorizontal: GROUPED_LIST_MARGIN }]}
     >
       <View
-        className="ml-16 h-px flex-1 bg-opaque-separator/70"
+        className="ml-16 h-px bg-opaque-separator/70"
         collapsable={false}
         style={{ transform: [{ scaleY: 0.5 }] }}
       />
