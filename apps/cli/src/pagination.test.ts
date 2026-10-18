@@ -29,13 +29,14 @@ const createRows = (count: number, onboarding: number[] = []): TimelineRow[] =>
   }))
 
 /**
- * POST /entries as the API answers it: at most 100 rows before the cursor, and the rows of the
- * onboarding feed left out after the query was limited
+ * POST /entries as the API answers it: at most 100 rows between the times asked for, and the
+ * rows of the onboarding feed left out after the query was limited
  */
 const answerEntries = (rows: TimelineRow[]) => (request: APIRequest) => {
-  const body = request.body as { limit?: number; publishedAfter?: string }
+  const body = request.body as { limit?: number; publishedAfter?: string; publishedBefore?: string }
   const data = rows
     .filter((row) => !body.publishedAfter || row.publishedAt < body.publishedAfter)
+    .filter((row) => !body.publishedBefore || row.publishedAt > body.publishedBefore)
     .slice(0, Math.min(body.limit ?? 20, 100))
     .filter((row) => !row.onboarding)
     .map((row) => ({
@@ -90,7 +91,7 @@ describe.each([[["timeline"]], [["collection", "list"]]])("%s pages", (command) 
     )
 
     // Asked again for as many entries as the API returns, in case it left all out
-    expect(requests.map((request) => (request.body as { limit: number }).limit)).toEqual([20, 100])
+    expect(requests.map((request) => (request.body as { limit: number }).limit)).toEqual([21, 100])
     expect(parseEnvelope(stdout)).toEqual({
       ok: true,
       data: { entries: [], nextCursor: null, hasNext: false },
@@ -106,10 +107,41 @@ describe.each([[["timeline"]], [["collection", "list"]]])("%s pages", (command) 
       answerEntries(rows),
     )
 
-    expect(requests).toMatchObject([{ method: "POST", path: "/entries", body: { limit: 100 } }])
+    expect(requests[0]).toMatchObject({ method: "POST", path: "/entries", body: { limit: 100 } })
     const envelope = parseEnvelope<PageData>(stdout)
     expect(envelope.ok && envelope.data.entries).toHaveLength(100)
     expect(envelope.ok && envelope.data.hasNext).toBe(true)
     expect(await readAllPages([...command, "--limit", "150"], rows)).toHaveLength(130)
+  })
+
+  it("return every entry of the time the page ends with", async () => {
+    // Feed items dated in the future all get the time they were fetched at
+    const future = minute(-10).toISOString()
+    const rows: TimelineRow[] = [
+      { id: "future2", publishedAt: future },
+      { id: "future1", publishedAt: future },
+      { id: "future0", publishedAt: future },
+      ...createRows(3),
+    ]
+
+    for (const limit of ["1", "2", "3", "4"]) {
+      const ids = await readAllPages([...command, "--limit", limit], rows)
+
+      expect(ids, `--limit ${limit}`).toEqual(rows.map((row) => row.id))
+    }
+  })
+
+  it("ask once per page when no time continues past it", async () => {
+    const { requests, stdout } = await runCLIWithAPI(
+      [...command, "--limit", "2"],
+      answerEntries(createRows(5)),
+    )
+
+    expect(requests.map((request) => (request.body as { limit: number }).limit)).toEqual([3])
+    const envelope = parseEnvelope<PageData>(stdout)
+    expect(envelope.ok && envelope.data.entries.map((entry) => entry.entries.id)).toEqual([
+      "e0",
+      "e1",
+    ])
   })
 })

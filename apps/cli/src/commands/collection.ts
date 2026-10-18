@@ -40,6 +40,7 @@ export const registerCollectionCommand = (program: Command) => {
             // The SDK types the time as a Date while the JSON holds its ISO string.
             getCursor: (entry) =>
               entry.collections ? String(entry.collections.createdAt) : entry.entries.publishedAt,
+            getId: (entry) => entry.entries.id,
           }),
         { table: (result) => ({ ...result, entries: result.entries.map(toCollectionRow) }) },
       )

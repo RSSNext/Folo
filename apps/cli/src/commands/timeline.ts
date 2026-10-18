@@ -90,6 +90,7 @@ export const registerTimelineCommand = (program: Command) => {
             fetchEntries: async (request) =>
               (await client.api.entries.list({ ...query, ...request })).data,
             getCursor: (entry) => entry.entries.publishedAt,
+            getId: (entry) => entry.entries.id,
           })
         },
         { table: (result) => ({ ...result, entries: result.entries.map(toEntryRow) }) },
