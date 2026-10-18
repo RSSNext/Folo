@@ -1,15 +1,16 @@
 import { FeedViewType } from "@follow/constants"
 import { useEntriesQuery, useEntryIdsByFeedId } from "@follow/store/entry/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
+import { useFeedById } from "@follow/store/feed/hooks"
 import { getSubscriptionById } from "@follow/store/subscription/getter"
-import { getSubscriptionCategory } from "@follow/store/subscription/hooks"
+import { useCategories } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { unreadSyncService } from "@follow/store/unread/store"
 import dayjs from "dayjs"
 import { setStringAsync } from "expo-clipboard"
 import { t } from "i18next"
 import type { CSSProperties, FC, PropsWithChildren } from "react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ListRenderItemInfo } from "react-native"
 import { Alert, FlatList, View } from "react-native"
@@ -28,7 +29,7 @@ import { FeedScreen } from "@/src/screens/(stack)/feeds/[feedId]/FeedScreen"
 
 import { ItemSeparator } from "../entry-list/ItemSeparator"
 import { EntryNormalItem } from "../entry-list/templates/EntryNormalItem"
-import { getSelectedView, selectFeed } from "../screen/atoms"
+import { getSelectedView, selectFeed, useSelectedView } from "../screen/atoms"
 
 export const SubscriptionFeedItemContextMenu: FC<
   PropsWithChildren & {
@@ -36,31 +37,34 @@ export const SubscriptionFeedItemContextMenu: FC<
   }
 > = ({ id, children }) => {
   const navigation = useNavigation()
-  const [open, setOpen] = useState(false)
-  const [Content, setContent] = useState<React.ReactNode>(() =>
-    generateSubscriptionContextMenu(navigation, id),
+  // Built from the current state on every change. Rebuilding it when the menu opens comes too
+  // late on Android, whose native menu is already showing the items it had.
+  const view = useSelectedView()
+  const allCategories = useCategories(view)
+  const feedErrorAt = useFeedById(id, (feed) => feed.errorAt)
+  const content = useMemo(
+    () => generateSubscriptionContextMenu(navigation, id, view, allCategories),
+    // The menu reads the feed's error when it is built.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [navigation, id, view, allCategories, feedErrorAt],
   )
 
-  useEffect(() => {
-    if (open) {
-      setContent(generateSubscriptionContextMenu(navigation, id))
-    }
-  }, [id, navigation, open])
-
   return (
-    <ContextMenu.Root onOpenChange={setOpen}>
+    <ContextMenu.Root>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
 
-      {Content}
+      {content}
     </ContextMenu.Root>
   )
 }
 
-const generateSubscriptionContextMenu = (navigation: Navigation, id: string) => {
-  const view = getSelectedView()
-
+const generateSubscriptionContextMenu = (
+  navigation: Navigation,
+  id: string,
+  view: FeedViewType,
+  allCategories: string[],
+) => {
   const feed = getFeedById(id)
-  const allCategories = getSubscriptionCategory(view)
 
   return (
     <ContextMenu.Content>

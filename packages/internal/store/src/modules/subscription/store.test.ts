@@ -316,6 +316,43 @@ describe("subscriptionSyncService", () => {
     expect(mocks.updateCategory).toHaveBeenCalledWith({ feedIdList: ["a"], category: "Science" })
   })
 
+  test("forgets a category renamed on another device once no feed uses it", () => {
+    seed([
+      createSubscription("a", FeedViewType.Articles, "CatB4"),
+      createSubscription("b", FeedViewType.Articles, "CatB4"),
+      createSubscription("c", FeedViewType.Pictures, "CatB4"),
+    ])
+
+    // The change log delivers the rename as one category change per feed.
+    subscriptionActions.patchInSession("a", { category: "CatB5" })
+    let { categories } = useSubscriptionStore.getState()
+    expect(categories[FeedViewType.Articles].has("CatB4")).toBe(true)
+
+    subscriptionActions.patchInSession("b", { category: "CatB5" })
+    categories = useSubscriptionStore.getState().categories
+    expect([...categories[FeedViewType.Articles]]).toEqual(["CatB5"])
+    // Another view still has a folder of that name.
+    expect(categories[FeedViewType.Pictures].has("CatB4")).toBe(true)
+    expect(categories[FeedViewType.All].has("CatB4")).toBe(true)
+
+    subscriptionActions.patchInSession("c", { category: "CatB5" })
+    categories = useSubscriptionStore.getState().categories
+    expect(categories[FeedViewType.All].has("CatB4")).toBe(false)
+  })
+
+  test("forgets the category a feed left when it was moved to another one", async () => {
+    seed([createSubscription("a", FeedViewType.Articles, "News")])
+
+    await subscriptionSyncService.edit({
+      ...createSubscription("a", FeedViewType.Articles, "News"),
+      category: "Blogs",
+    })
+
+    expect([...useSubscriptionStore.getState().categories[FeedViewType.Articles]]).toEqual([
+      "Blogs",
+    ])
+  })
+
   test("moves a list to its new view when the list is edited", async () => {
     const list: SubscriptionModel = {
       ...createSubscription("", FeedViewType.Articles, null),

@@ -159,6 +159,26 @@ const clearUnreadOfFeedsOnlyInLists = (unfollowedLists: SubscriptionModel[]) => 
   }
 }
 
+/**
+ * Forget a category name no subscription uses any more: in its view once no subscription there
+ * has it, and in the All view, which lists every view's folders, once none has it at all.
+ * Menus such as "Move to Category" list these names, so a renamed-away one would come back.
+ */
+const dropUnusedCategory = (
+  draft: SubscriptionState,
+  category: string | null | undefined,
+  view: FeedViewType,
+) => {
+  if (!category) return
+  const subscriptions = Object.values(draft.data)
+  if (!subscriptions.some((s) => s.view === view && s.category === category)) {
+    draft.categories[view]?.delete(category)
+  }
+  if (!subscriptions.some((s) => s.category === category)) {
+    draft.categories[FeedViewType.All]?.delete(category)
+  }
+}
+
 // Put back subscriptions whose unfollow the server refused
 const restoreInSession = (subscriptions: SubscriptionModel[]) => {
   immerSet((draft) => {
@@ -369,6 +389,10 @@ class SubscriptionActions implements Hydratable, Resetable {
       }
 
       draft.data[storeId] = next
+      // A rename made on another device arrives as a category change of each of its feeds.
+      if (current.category !== next.category || current.view !== next.view) {
+        dropUnusedCategory(draft, current.category, current.view)
+      }
     })
   }
 
@@ -519,12 +543,18 @@ class SubscriptionSyncService {
         }
 
         draft.data[subscriptionId] = next
+        if (current.category !== next.category || current.view !== next.view) {
+          dropUnusedCategory(draft, current.category, current.view)
+        }
       })
     })
     tx.rollback((current) => {
       immerSet((draft) => {
         if (addNewCategory && next.category) {
           draft.categories[next.view]!.delete(next.category)
+        }
+        if (current.category) {
+          draft.categories[current.view]!.add(current.category)
         }
 
         if (next.type === "feed") {
