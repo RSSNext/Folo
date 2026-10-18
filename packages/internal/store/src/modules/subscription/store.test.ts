@@ -179,6 +179,52 @@ describe("subscriptionSyncService", () => {
     })
   })
 
+  test("sends only the fields an edit changed, so another device's edit is kept", async () => {
+    // The local copy still has the category another device just changed.
+    seed([{ ...createSubscription("a", FeedViewType.Articles, "World"), title: null }])
+
+    await subscriptionSyncService.edit({
+      ...createSubscription("a", FeedViewType.Articles, "World"),
+      title: "BBC W",
+    })
+
+    expect(mocks.update).toHaveBeenCalledTimes(1)
+    expect(mocks.update).toHaveBeenCalledWith({ title: "BBC W", feedId: "a", listId: undefined })
+    expect(useSubscriptionStore.getState().data.a).toMatchObject({
+      title: "BBC W",
+      category: "World",
+    })
+  })
+
+  test("moves a feed to another category with only that field", async () => {
+    seed([createSubscription("a", FeedViewType.Articles, "News")])
+
+    await subscriptionSyncService.edit({
+      ...createSubscription("a", FeedViewType.Articles, "News"),
+      category: "Blogs",
+    })
+
+    expect(mocks.update).toHaveBeenCalledWith({ category: "Blogs", feedId: "a", listId: undefined })
+    const state = useSubscriptionStore.getState()
+    expect(state.data.a!.category).toBe("Blogs")
+    expect(state.categories[FeedViewType.Articles].has("Blogs")).toBe(true)
+  })
+
+  test("sends nothing when a form only spells the same values differently", async () => {
+    seed([createSubscription("a", FeedViewType.Articles, null)])
+
+    await subscriptionSyncService.edit({
+      ...createSubscription("a", FeedViewType.Articles, null),
+      category: "",
+      title: "",
+      hideFromTimeline: undefined,
+      isPrivate: false,
+    })
+
+    expect(mocks.update).not.toHaveBeenCalled()
+    expect(useSubscriptionStore.getState().data.a!.category).toBeNull()
+  })
+
   test("moves a list to its new view when the list is edited", async () => {
     const list: SubscriptionModel = {
       ...createSubscription("", FeedViewType.Articles, null),

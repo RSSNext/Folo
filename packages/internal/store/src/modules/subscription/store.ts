@@ -167,6 +167,39 @@ const restoreInSession = (subscriptions: SubscriptionModel[]) => {
   })
 }
 
+type EditableSubscriptionField = "view" | "category" | "isPrivate" | "hideFromTimeline" | "title"
+
+/**
+ * How each editable field is compared. Forms write "no value" in their own ways: an empty
+ * string or `null` for no category or title, `undefined` or `false` for an unset flag.
+ */
+const editableSubscriptionFields: Record<
+  EditableSubscriptionField,
+  (value: SubscriptionModel[EditableSubscriptionField]) => unknown
+> = {
+  view: (value) => value,
+  category: (value) => value || null,
+  title: (value) => value || null,
+  isPrivate: (value) => !!value,
+  hideFromTimeline: (value) => !!value,
+}
+
+/**
+ * The fields an edit really changes. A form fills every field from the local copy, which can
+ * be a pull behind an edit made on another device, so sending the fields the user left alone
+ * would write their old values back over that edit.
+ */
+export const getSubscriptionChanges = (current: SubscriptionModel, next: SubscriptionModel) => {
+  const changes: Partial<Record<EditableSubscriptionField, unknown>> = {}
+  for (const field of Object.keys(editableSubscriptionFields) as EditableSubscriptionField[]) {
+    const normalize = editableSubscriptionFields[field]
+    if (normalize(next[field]) !== normalize(current[field])) {
+      changes[field] = next[field]
+    }
+  }
+  return changes as Partial<Pick<SubscriptionModel, EditableSubscriptionField>>
+}
+
 /** A body of DELETE /subscriptions that the server handles, and the subscriptions it unfollows */
 interface UnfollowRequest {
   subscriptions: SubscriptionModel[]
@@ -446,43 +479,45 @@ class SubscriptionSyncService {
     if (!current) {
       return
     }
+    const changes = getSubscriptionChanges(current, subscription)
+    if (Object.keys(changes).length === 0) {
+      return
+    }
+    const next: SubscriptionModel = { ...current, ...changes }
     const tx = createTransaction(current)
 
     let addNewCategory = false
     tx.store(() => {
       immerSet((draft) => {
-        if (
-          subscription.category &&
-          !draft.categories[subscription.view]!.has(subscription.category)
-        ) {
+        if (next.category && !draft.categories[next.view]!.has(next.category)) {
           addNewCategory = true
-          draft.categories[subscription.view]!.add(subscription.category)
+          draft.categories[next.view]!.add(next.category)
         }
 
-        if (subscription.type === "feed") {
+        if (next.type === "feed") {
           draft.feedIdByView[current.view]!.delete(current.feedId!)
-          draft.feedIdByView[subscription.view]!.add(subscription.feedId!)
+          draft.feedIdByView[next.view]!.add(next.feedId!)
         }
-        if (subscription.type === "list") {
+        if (next.type === "list") {
           draft.listIdByView[current.view]!.delete(current.listId!)
-          draft.listIdByView[subscription.view]!.add(subscription.listId!)
+          draft.listIdByView[next.view]!.add(next.listId!)
         }
 
-        draft.data[subscriptionId] = subscription
+        draft.data[subscriptionId] = next
       })
     })
     tx.rollback((current) => {
       immerSet((draft) => {
-        if (addNewCategory && subscription.category) {
-          draft.categories[subscription.view]!.delete(subscription.category)
+        if (addNewCategory && next.category) {
+          draft.categories[next.view]!.delete(next.category)
         }
 
-        if (subscription.type === "feed") {
-          draft.feedIdByView[subscription.view]!.delete(subscription.feedId!)
+        if (next.type === "feed") {
+          draft.feedIdByView[next.view]!.delete(next.feedId!)
           draft.feedIdByView[current.view]!.add(current.feedId!)
         }
-        if (subscription.type === "list") {
-          draft.listIdByView[subscription.view]!.delete(subscription.listId!)
+        if (next.type === "list") {
+          draft.listIdByView[next.view]!.delete(next.listId!)
           draft.listIdByView[current.view]!.add(current.listId!)
         }
 
@@ -491,19 +526,19 @@ class SubscriptionSyncService {
     })
     tx.request(async () => {
       await api().subscriptions.update({
-        ...subscription,
-        feedId: subscription.feedId ?? undefined,
-        listId: subscription.listId ?? undefined,
+        ...changes,
+        feedId: current.feedId ?? undefined,
+        listId: current.listId ?? undefined,
       })
     })
 
     tx.persist(() => {
-      return SubscriptionService.patch(storeDbMorph.toSubscriptionSchema(subscription))
+      return SubscriptionService.patch(storeDbMorph.toSubscriptionSchema(next))
     })
 
     await tx.run()
 
-    invalidateViews(current.view, subscription.view)
+    invalidateViews(current.view, next.view)
   }
 
   async subscribe(subscription: SubscriptionForm) {
