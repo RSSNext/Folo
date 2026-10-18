@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next"
 import { Alert, Clipboard } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
@@ -60,8 +61,13 @@ export const SubscriptionListItemContextMenu: FC<
               {
                 text: t("operation.unfollow"),
                 style: "destructive",
-                onPress: () => {
-                  subscriptionSyncService.unsubscribe(id)
+                onPress: async () => {
+                  try {
+                    await subscriptionSyncService.unsubscribe(id)
+                  } catch (error) {
+                    // The store puts the list back, which alone would not say why
+                    toastFetchError(error instanceof Error ? error : new Error(String(error)))
+                  }
                 },
               },
             ])

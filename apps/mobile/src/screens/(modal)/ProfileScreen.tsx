@@ -42,6 +42,7 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { followClient } from "@/src/lib/api-client"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useCanBack, useCanDismiss } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
@@ -423,9 +424,15 @@ const MaybeSwipeable = ({ id, children }: { id: string; children: React.ReactNod
               {
                 text: t("operation.unfollow"),
                 style: "destructive",
-                onPress: () => {
-                  subscriptionSyncService.unsubscribe(id)
-                  removeItemById(id)
+                onPress: async () => {
+                  try {
+                    await subscriptionSyncService.unsubscribe(id)
+                    // Only once the server unfollowed it, or the profile would hide a feed
+                    // still followed
+                    removeItemById(id)
+                  } catch (error) {
+                    toastFetchError(error instanceof Error ? error : new Error(String(error)))
+                  }
                 },
               },
             ])

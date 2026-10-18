@@ -20,6 +20,7 @@ import { ContextMenu } from "@/src/components/ui/context-menu"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { modalPrompt } from "@/src/components/ui/modal/imperative-modal"
 import { views } from "@/src/constants/views"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { Navigation } from "@/src/lib/navigation/Navigation"
 import { isIOS } from "@/src/lib/platform"
@@ -252,8 +253,13 @@ const generateSubscriptionContextMenu = (
             {
               text: t("operation.unfollow"),
               style: "destructive",
-              onPress: () => {
-                subscriptionSyncService.unsubscribe(id)
+              onPress: async () => {
+                try {
+                  await subscriptionSyncService.unsubscribe(id)
+                } catch (error) {
+                  // The store puts the feed back, which alone would not say why
+                  toastFetchError(error instanceof Error ? error : new Error(String(error)))
+                }
               },
             },
           ])
