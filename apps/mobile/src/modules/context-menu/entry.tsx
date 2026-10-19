@@ -23,6 +23,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
+import { useEntryExternalUrl } from "@/src/modules/entry-content/external-url"
 import { playEntryTts } from "@/src/modules/player/entry-tts"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
@@ -55,8 +56,9 @@ export const EntryItemContextMenu = ({
     feedId: state.feedId,
     title: state.title,
     publishedAt: state.publishedAt,
-    url: state.url,
   }))
+  // Onboarding entries have no link outside the app, and relative links resolve first
+  const externalUrl = useEntryExternalUrl(id)
   const feedId = entry?.feedId
   const isEntryStarred = useIsEntryStarred(id)
   const navigation = useNavigation()
@@ -82,10 +84,16 @@ export const EntryItemContextMenu = ({
           {() => (
             <PortalProvider>
               <View className="flex-1 bg-system-background">
-                <Text className="mt-5 p-4 text-2xl font-semibold text-label" numberOfLines={2}>
+                <Text
+                  className="mt-5 px-5 py-4 text-2xl font-semibold text-label"
+                  numberOfLines={2}
+                >
                   {entry.title?.trim()}
                 </Text>
-                <EntryContentWebView entryId={id} />
+                {/* The content has no side padding of its own; the entry screen gives it the same */}
+                <View className="px-5">
+                  <EntryContentWebView entryId={id} />
+                </View>
               </View>
             </PortalProvider>
           )}
@@ -216,16 +224,15 @@ export const EntryItemContextMenu = ({
           <ContextMenu.ItemTitle>{t("entry_content.header.play_tts")}</ContextMenu.ItemTitle>
         </ContextMenu.Item>
 
-        {entry.url && (
+        {externalUrl && (
           <ContextMenu.Item
             key="Share"
             onSelect={async () => {
-              if (!entry.url) return
               await Share.share(
                 createLinkShareContent({
                   platform: Platform.OS,
                   title: entry.title || t("operation.share_title.link"),
-                  url: entry.url,
+                  url: externalUrl,
                 }),
               )
             }}

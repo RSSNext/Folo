@@ -19,6 +19,7 @@ import {
 import { ipcServices } from "~/lib/client"
 import { clearAuthSessionToken, getAuthSessionToken } from "~/lib/client-session"
 import { defineQuery } from "~/lib/defineQuery"
+import { reloadAtAppRoot } from "~/lib/reload-at-app-root"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
 const sessionCookieRefreshInterval = 1000 * 60 * 60 * 12
@@ -214,7 +215,7 @@ export const signOut = async () => {
     await tracker.manager.clear()
   }
 
-  window.location.reload()
+  reloadAtAppRoot()
 }
 
 export const deleteUser = async ({ TOTPCode }: { TOTPCode?: string }) => {

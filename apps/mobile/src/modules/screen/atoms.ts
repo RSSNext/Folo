@@ -27,13 +27,26 @@ import { debounce } from "es-toolkit"
 import { atom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import type { ReactNode } from "react"
-import { createContext, createElement, use, useCallback, useEffect, useMemo, useState } from "react"
+import {
+  createContext,
+  createElement,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useTranslation } from "react-i18next"
 import type { SharedValue } from "react-native-reanimated"
 import { makeMutable, useSharedValue } from "react-native-reanimated"
 
 import { useFetchEntriesSettings } from "@/src/atoms/settings/general"
 import { views } from "@/src/constants/views"
+import { toastFetchError } from "@/src/lib/error-parser"
+
+import type { RemoteTimelineEntries } from "./timeline-entries"
+import { joinRefreshAttempt, pickTimelineEntries } from "./timeline-entries"
 
 export type SelectedTimeline = {
   type: "view"
@@ -168,7 +181,7 @@ export function useIsTimelineEntrySource() {
   return !entryListContext.isPreview && payload !== null && isTimelineEntriesSource(payload)
 }
 
-function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
+function useRemoteEntries(props?: UseEntriesProps): RemoteTimelineEntries {
   const entryListContext = useEntryListContext()
   const selectedFeed = useSelectedFeed()
   const selectedView = useSelectedView()
@@ -203,6 +216,15 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
   }, [isFetchingFirstPage])
 
   const refetch = useCallback(async () => void query.refetch(), [query])
+  const refreshAttemptRef = useRef<Promise<void> | null>(null)
+  const refetchReportingFailure = useCallback(
+    () =>
+      joinRefreshAttempt(refreshAttemptRef, async () => {
+        const result = await query.refetch()
+        if (result.isError) toastFetchError(result.error)
+      }),
+    [query],
+  )
   const fetchNextPage = useCallback(async () => void query.fetchNextPage(), [query])
 
   if (!query.data || query.isLoading) {
@@ -211,6 +233,7 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
     return {
       ...fallbackReturn,
       refetch,
+      refetchReportingFailure,
       fetchNextPage,
       isLoading: !query.isError,
       isRefetching: query.isRefetching,
@@ -223,6 +246,7 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
     entriesIds: query.entriesIds,
     hasNext: query.hasNextPage,
     refetch,
+    refetchReportingFailure,
     fetchNextPage,
     isLoading: query.isFetching,
     isRefetching: query.isRefetching,
@@ -369,30 +393,7 @@ export function useEntries(props?: UseEntriesProps): UseEntriesReturn {
   const isTimelineViewQuery = entryListContext.type === "timeline" && selectedFeed?.type === "view"
 
   if (isTimelineViewQuery) {
-    if (remoteQuery.isReady) {
-      return remoteQuery
-    }
-
-    if (remoteQuery.error) {
-      return {
-        ...localQuery,
-        // Pulling to refresh retries the server rather than the stored entries
-        refetch: remoteQuery.refetch,
-        isFetching: remoteQuery.isFetching,
-        isRefetching: remoteQuery.isRefetching,
-        error: remoteQuery.error,
-        isReady: true,
-      }
-    }
-
-    return {
-      ...fallbackReturn,
-      refetch: remoteQuery.refetch,
-      fetchNextPage: remoteQuery.fetchNextPage,
-      isLoading: remoteQuery.isLoading,
-      isFetching: remoteQuery.isFetching,
-      isRefetching: remoteQuery.isRefetching,
-    }
+    return pickTimelineEntries(remoteQuery, localQuery)
   }
 
   const query = remoteQuery.isReady ? remoteQuery : localQuery

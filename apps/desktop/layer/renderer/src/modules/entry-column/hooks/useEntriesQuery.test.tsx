@@ -1,4 +1,5 @@
 import { FeedViewType } from "@follow/constants"
+import { queryClientContext } from "@follow/store/context"
 import { useEntriesQuery } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -148,6 +149,96 @@ describe("useEntriesQuery", () => {
       pendingPageResolvers[1]?.(createEntriesResponse("entry-3", "2026-05-12T00:00:00.000Z"))
       await Promise.allSettled([firstFetch, secondFetch])
     })
+  })
+
+  test("loads the end page of a short list asked for while it was refreshed", async () => {
+    let resolveRefresh: ((value: EntriesResponse) => void) | undefined
+    let firstPageRequests = 0
+    const fetchEntriesSpy = vi
+      .spyOn(entrySyncServices, "fetchEntries")
+      .mockImplementation(async (props) => {
+        if (props.pageParam) {
+          return { data: [] } as unknown as EntriesResponse
+        }
+
+        firstPageRequests++
+        if (firstPageRequests === 1) {
+          return createEntriesResponse("entry-1", "2026-05-14T00:00:00.000Z")
+        }
+        return new Promise<EntriesResponse>((resolve) => {
+          resolveRefresh = resolve
+        })
+      })
+    const nextPageRequests = () =>
+      fetchEntriesSpy.mock.calls.filter(([props]) => props.pageParam).length
+
+    let entriesQuery: ReturnType<typeof useEntriesQuery> | undefined
+    const EntriesQueryConsumer = () => {
+      entriesQuery = useEntriesQuery({
+        feedId: "feed-1",
+        view: FeedViewType.Articles,
+      })
+
+      return null
+    }
+
+    container = document.createElement("div")
+    document.body.append(container)
+    root = createRoot(container)
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+    queryClientContext.provide(queryClient)
+
+    await act(async () => {
+      root?.render(
+        <QueryClientProvider client={queryClient!}>
+          <EntriesQueryConsumer />
+        </QueryClientProvider>,
+      )
+    })
+    await vi.waitFor(() => {
+      expect(entriesQuery?.isSuccess).toBe(true)
+    })
+
+    // A short list ends with an empty page
+    await act(async () => {
+      await entriesQuery?.fetchNextPage()
+    })
+    await vi.waitFor(() => {
+      expect(entriesQuery?.hasNextPage).toBe(false)
+    })
+    expect(nextPageRequests()).toBe(1)
+
+    // A refresh starts over from the first page, which has a next page again
+    let refresh: Promise<unknown> | undefined
+    await act(async () => {
+      refresh = entriesQuery?.refetch()
+    })
+    await vi.waitFor(() => {
+      expect(entriesQuery?.isFetching).toBe(true)
+    })
+    expect(entriesQuery?.hasNextPage).toBe(true)
+
+    // Asked for meanwhile, the next page would join the refresh and load nothing. It is asked
+    // for again once the refresh is done, so the list reaches its end.
+    let nextPage: Promise<unknown> | undefined
+    await act(async () => {
+      nextPage = entriesQuery?.fetchNextPage()
+    })
+    expect(nextPageRequests()).toBe(1)
+    await act(async () => {
+      resolveRefresh?.(createEntriesResponse("entry-1", "2026-05-14T00:00:00.000Z"))
+      await Promise.all([refresh, nextPage])
+    })
+    await vi.waitFor(() => {
+      expect(entriesQuery?.hasNextPage).toBe(false)
+    })
+    expect(nextPageRequests()).toBe(2)
   })
 
   test("uses collection created time as next-page cursor for starred entries", async () => {

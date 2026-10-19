@@ -8,6 +8,7 @@ import {
 import { useSubscriptionByFeedId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import type { SubscriptionForm } from "@follow/store/subscription/types"
+import { whoami } from "@follow/store/user/getters"
 import { formatNumber } from "@follow/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useMemo, useState } from "react"
@@ -34,7 +35,8 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
-import { toastFetchError } from "@/src/lib/error-parser"
+import { isNotFoundError, toastFetchError } from "@/src/lib/error-parser"
+import { destination } from "@/src/lib/navigation/biz/Destination"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
@@ -77,15 +79,17 @@ const FeedLoadState = ({
     <FollowStateView>
       {isFetching ? (
         <LoadingIndicator />
-      ) : error ? (
+      ) : error && !isNotFoundError(error) ? (
         <ListErrorView error={error} resetError={onRetry} description={t("feed.fetch_failed")} />
       ) : (
+        // Also for a feed the server does not have, which no retry would find
         <FeedNotFound id={id} />
       )}
     </FollowStateView>
   )
 }
-export function FollowFeed(props: { id: string }) {
+/** `defaultView` is the view a link asked for, which wins over the one the feed suggests */
+export function FollowFeed(props: { id: string; defaultView?: FeedViewType }) {
   const { id } = props
   const feed = useFeedById(id as string)
   const { data, error, isFetching, refetch } = usePrefetchFeed(id as string)
@@ -94,9 +98,11 @@ export function FollowFeed(props: { id: string }) {
       <FeedLoadState id={id} isFetching={isFetching} error={error} onRetry={() => void refetch()} />
     )
   }
-  return <FollowImpl feedId={id} defaultView={data?.analytics?.view ?? undefined} />
+  return (
+    <FollowImpl feedId={id} defaultView={props.defaultView ?? data?.analytics?.view ?? undefined} />
+  )
 }
-export function FollowUrl(props: { url: string }) {
+export function FollowUrl(props: { url: string; defaultView?: FeedViewType }) {
   const { url } = props
   const { isFetching, data, error, refetch } = usePrefetchFeedByUrl(url)
   // A feed the server had not stored yet is previewed under a nonce id until the feed itself
@@ -113,7 +119,10 @@ export function FollowUrl(props: { url: string }) {
     )
   }
   return (
-    <FollowImpl feedId={feedId} defaultView={data.responseData?.analytics?.view ?? undefined} />
+    <FollowImpl
+      feedId={feedId}
+      defaultView={props.defaultView ?? data.responseData?.analytics?.view ?? undefined}
+    />
   )
 }
 function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
@@ -147,6 +156,11 @@ function FollowImpl(props: { feedId: string; defaultView?: FeedViewType }) {
   const canDismiss = useCanDismiss()
   const submit = async (values: FollowFeedFormOutput) => {
     if (isLoading) return
+    // A link can open the form signed out; the form stays for after the sign-in
+    if (!whoami()) {
+      destination.Login()
+      return
+    }
     setIsLoading(true)
     const body: SubscriptionForm = {
       url: feed?.url,

@@ -1,4 +1,3 @@
-import { env } from "@follow/shared/env.rn"
 import { getListById } from "@follow/store/list/getters"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { unreadSyncService } from "@follow/store/unread/store"
@@ -8,8 +7,10 @@ import { useTranslation } from "react-i18next"
 import { Alert, Clipboard } from "react-native"
 
 import { ContextMenu } from "@/src/components/ui/context-menu"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { toast } from "@/src/lib/toast"
+import { UrlBuilder } from "@/src/lib/url-builder"
 import { FollowScreen } from "@/src/screens/(modal)/FollowScreen"
 
 export const SubscriptionListItemContextMenu: FC<
@@ -45,7 +46,8 @@ export const SubscriptionListItemContextMenu: FC<
             const list = getListById(id)
             if (!list) return
             toast.success(t("operation.copy_which_success", { which: t("operation.copy.link") }))
-            Clipboard.setString(`${env.WEB_URL}/share/lists/${list.id}`)
+            // On the web app of the environment the list is in, as a feed's share link is
+            Clipboard.setString(UrlBuilder.shareList(list.id))
           },
         },
         {
@@ -60,8 +62,13 @@ export const SubscriptionListItemContextMenu: FC<
               {
                 text: t("operation.unfollow"),
                 style: "destructive",
-                onPress: () => {
-                  subscriptionSyncService.unsubscribe(id)
+                onPress: async () => {
+                  try {
+                    await subscriptionSyncService.unsubscribe(id)
+                  } catch (error) {
+                    // The store puts the list back, which alone would not say why
+                    toastFetchError(error instanceof Error ? error : new Error(String(error)))
+                  }
                 },
               },
             ])

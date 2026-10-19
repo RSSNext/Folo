@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { logger } from "~/logger"
 
 import { getIconPath } from "../helper"
-import { updateNotificationsToken } from "../lib/user"
+import { ensureNotificationsTokenSent, updateNotificationsToken } from "../lib/user"
 import { AppManager } from "./app"
 
 const credentials = {
@@ -42,8 +42,11 @@ const mocks = vi.hoisted(() => ({
       setIcon: vi.fn(),
     },
     isPackaged: false,
+    setAsDefaultProtocolClient: vi.fn(),
   },
   connect: vi.fn(),
+  ensureNotificationsTokenSent: vi.fn(),
+  isTestRun: false,
   firebaseConfig: {
     apiKey: "firebase-api-key-secret",
     appId: "app-id",
@@ -115,6 +118,11 @@ vi.mock("~/manager/window", () => ({
   WindowManager: {},
 }))
 
+vi.mock("../env", () => ({
+  get isTestRun() {
+    return mocks.isTestRun
+  },
+}))
 vi.mock("../helper", () => ({ getIconPath: vi.fn() }))
 vi.mock("../ipc", () => ({ initializeIpcServices: vi.fn() }))
 vi.mock("../ipc/services/integration", () => ({ saveMediaToEagle: vi.fn() }))
@@ -136,6 +144,7 @@ vi.mock("../lib/store", () => ({
 }))
 vi.mock("../lib/tray", () => ({ registerAppTray: vi.fn() }))
 vi.mock("../lib/user", () => ({
+  ensureNotificationsTokenSent: mocks.ensureNotificationsTokenSent,
   updateNotificationsToken: mocks.updateNotificationsToken,
 }))
 vi.mock("../logger", () => ({
@@ -202,6 +211,21 @@ describe("AppManager push notifications", () => {
     }
   })
 
+  it("sends the stored token again when the push connection is ready", async () => {
+    const registerPushNotifications = Reflect.get(
+      AppManager,
+      "registerPushNotifications",
+    ) as () => Promise<void>
+
+    await registerPushNotifications.call(AppManager)
+    expect(ensureNotificationsTokenSent).not.toHaveBeenCalled()
+
+    mocks.onReady?.()
+    mocks.onReady?.()
+
+    expect(ensureNotificationsTokenSent).toHaveBeenCalledTimes(2)
+  })
+
   it("does not log connection error details or report a failed connection as connected", async () => {
     mocks.connect.mockRejectedValueOnce(
       new Error(`connection failed with ${credentials.fcm.token}`),
@@ -244,5 +268,35 @@ describe("AppManager dock icon", () => {
     setupAppVisuals()
 
     expect(mocks.app.dock.setIcon).toHaveBeenCalledWith("/resources/icon-dev.png")
+  })
+})
+
+describe("AppManager URL schemes", () => {
+  const registerProtocols = () => {
+    const register = Reflect.get(AppManager, "registerProtocols") as () => void
+    register.call(AppManager)
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("registers the app as the handler of its links", () => {
+    mocks.isTestRun = false
+
+    registerProtocols()
+
+    expect(mocks.app.setAsDefaultProtocolClient.mock.calls.map(([scheme]) => scheme)).toEqual([
+      "follow",
+      "folo",
+    ])
+  })
+
+  it("leaves the installed app's links alone in test runs", () => {
+    mocks.isTestRun = true
+
+    registerProtocols()
+
+    expect(mocks.app.setAsDefaultProtocolClient).not.toHaveBeenCalled()
   })
 })

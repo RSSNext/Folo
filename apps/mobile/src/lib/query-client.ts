@@ -4,9 +4,11 @@ import { QueryClient } from "@tanstack/react-query"
 import { FetchError } from "ofetch"
 
 import { kv } from "./kv"
+import { isUnansweredRequestError } from "./network-error"
 
 const defaultStaleTime = 600_000 // 10min
-const DO_NOT_RETRY_CODES = new Set([400, 401, 403, 404, 422, 402])
+// A timeout (408) waited the whole time already: each retry would wait as long again, for minutes
+const DO_NOT_RETRY_CODES = new Set([400, 401, 403, 404, 408, 422, 402])
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -32,6 +34,18 @@ export const queryClient = new QueryClient({
     },
   },
 })
+
+/**
+ * Fetch again what is on screen but failed for want of an answer, once the connection may be
+ * back. React Native tells TanStack Query nothing about the network, so its own refetch on
+ * reconnect never runs. A request the server answered with an error would fail the same way.
+ */
+export const refetchUnansweredQueries = () =>
+  queryClient.refetchQueries({
+    type: "active",
+    predicate: (query) =>
+      query.state.status === "error" && isUnansweredRequestError(query.state.error),
+  })
 
 export const kvStoragePersister = createSyncStoragePersister({
   storage: {

@@ -32,6 +32,8 @@
   "dialog.yes": "Oui",
   "download.failed": "Échec du téléchargement",
   "download.success": "Téléchargement terminé",
+  "findBar.next": "Occurrence suivante",
+  "findBar.previous": "Occurrence précédente",
   "menu.about": "À propos de {{name}}",
   "menu.alwaysOnTop": "Toujours au premier plan",
   "menu.checkForUpdates": "Vérifier les mises à jour",

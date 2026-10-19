@@ -5,7 +5,6 @@ import {
   useActionRules,
   useIsActionDataDirty,
   usePrefetchActions,
-  useUpdateActionsMutation,
 } from "@follow/store/action/hooks"
 import type { ActionItem } from "@follow/store/action/store"
 import { actionActions, useActionStore } from "@follow/store/action/store"
@@ -33,7 +32,6 @@ import { useDialog } from "~/components/ui/modal/stacked/hooks"
 import { useContextMenu } from "~/hooks/common/useContextMenu"
 import { getI18n } from "~/i18n"
 import { ClipboardError, copyToClipboard, readFromClipboard } from "~/lib/clipboard"
-import { toastFetchError } from "~/lib/error-parser"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { RuleCard } from "~/modules/action/rule-card"
 import {
@@ -43,6 +41,7 @@ import {
 } from "~/modules/action/rule-summary"
 
 import { useSetSubViewRightView } from "../app-layout/subview/hooks"
+import { useSaveActionRules } from "./use-save-action-rules"
 import { findRuleIndexWithInvalidRegex, generateExportFilename } from "./utils"
 
 const EmptyActionPlaceholder = ({ onCreateRule }: { onCreateRule: () => void }) => {
@@ -319,7 +318,7 @@ const RuleList = ({
   const rules = useActionRules()
   const { t } = useTranslation("settings")
   const ruleCount = useActionRules((s) => s.length)
-  const mutation = useUpdateActionsMutation()
+  const mutation = useSaveActionRules()
   const { ask } = useDialog()
   const showContextMenu = useShowContextMenu()
 
@@ -433,15 +432,12 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
 
   useUnSavedBlocker(isDirty)
 
-  const mutation = useUpdateActionsMutation({
+  const mutation = useSaveActionRules({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["entries"],
       })
       toast(t("actions.saveSuccess"))
-    },
-    onError: (error) => {
-      toastFetchError(error)
     },
   })
 
@@ -452,7 +448,7 @@ const ActionButtonGroup = ({ onCreateRule }: { onCreateRule: () => void }) => {
   const save = useEventCallback(() => {
     if (isSavingRef.current) return
     const { rules } = useActionStore.getState()
-    const invalidIndex = findRuleIndexWithInvalidRegex(rules)
+    const invalidIndex = findRuleIndexWithInvalidRegex(rules, actionActions.getLoadedRules())
     if (invalidIndex !== -1) {
       toast.error(
         t("actions.save_invalid_regex", {

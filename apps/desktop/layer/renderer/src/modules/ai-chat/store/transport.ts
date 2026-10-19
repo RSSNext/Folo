@@ -5,12 +5,9 @@ import { t } from "i18next"
 
 import { getAIModelState } from "../atoms/session"
 import { AIPersistService } from "../services"
+import { createChatStreamTimeout } from "../utils/chat-stream-timeout"
 import { withInactivityTimeout } from "../utils/stream-timeout"
 import type { BizUIMessage } from "./types"
-
-// Nothing is streamed while a tool runs, so allow long pauses. This only ends a reply that
-// stopped arriving, which would otherwise stay on "Thinking..." until the user stops it.
-const STREAM_INACTIVITY_TIMEOUT = 2 * 60 * 1000
 
 type TitleHandlerPersistOption = boolean | ((title: string) => void | Promise<void>)
 
@@ -109,12 +106,8 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
   ): ReadableStream<UIMessageChunk> {
     const { onValue } = this.options || {}
     const handleGeneratedTitle = this.handleGeneratedTitle.bind(this)
-    return parseJsonEventStream({
-      stream: withInactivityTimeout(
-        stream,
-        STREAM_INACTIVITY_TIMEOUT,
-        () => new Error(t("chat.error.stream_timeout", { ns: "ai" })),
-      ),
+    const chunks = parseJsonEventStream({
+      stream,
       schema: uiMessageChunkSchema,
     }).pipeThrough(
       new TransformStream<UIMessageChunkParseResult, UIMessageChunk>({
@@ -129,6 +122,14 @@ class ExtendChatTransport extends HttpChatTransport<BizUIMessage> {
           controller.enqueue(parsedChunk)
         },
       }),
+    )
+
+    // The server ends a stalled reply with an error chunk that says why; this only ends a reply
+    // whose connection died, which would otherwise stay on "Thinking..." until the user stops it.
+    return withInactivityTimeout(
+      chunks,
+      createChatStreamTimeout(),
+      () => new Error(t("chat.error.stream_timeout", { ns: "ai" })),
     )
   }
 

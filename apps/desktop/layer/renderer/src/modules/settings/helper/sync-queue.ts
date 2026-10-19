@@ -251,6 +251,11 @@ interface PersistedSettingSyncQueue {
   queue: SettingSyncQueueItem[]
 }
 
+const BASE_RETRY_DELAY_MS = 1000
+const MAX_RETRY_DELAY_MS = 60_000
+/** Past this many failures in a row the retry delay stays at its maximum. */
+const MAX_BACKOFF_EXPONENT = 16
+
 class SettingSyncQueue {
   queue: SettingSyncQueueItem[] = []
   private ownerUserId: string | null = null
@@ -305,10 +310,19 @@ class SettingSyncQueue {
       if (isEmptyObject(nextPayload)) return
       this.enqueue(tab, nextPayload)
     })
-    const onlineHandler = () => (this.chain = this.chain.finally(() => this.flush()))
-
-    window.addEventListener("online", onlineHandler)
-    const d2 = () => window.removeEventListener("online", onlineHandler)
+    // Coming back to the app or the network retries a change that failed to send at once.
+    const resumeHandler = () => this.resume()
+    const visibilityHandler = () => {
+      if (!document.hidden) this.resume()
+    }
+    window.addEventListener("online", resumeHandler)
+    window.addEventListener("focus", resumeHandler)
+    document.addEventListener("visibilitychange", visibilityHandler)
+    const d2 = () => {
+      window.removeEventListener("online", resumeHandler)
+      window.removeEventListener("focus", resumeHandler)
+      document.removeEventListener("visibilitychange", visibilityHandler)
+    }
 
     const unloadHandler = () => this.persist()
 
@@ -322,8 +336,23 @@ class SettingSyncQueue {
     for (const disposer of this.disposers) {
       disposer()
     }
+    this.disposers = []
+    this.clearRetryTimer()
+    this.retryAttempts = 0
     this.queue = []
     this.ownerUserId = null
+  }
+
+  /**
+   * The network, the API or the app came back: send what is waiting now instead of at the
+   * end of the back-off, which starts over.
+   */
+  resume() {
+    this.retryAttempts = 0
+    this.clearRetryTimer()
+    if (this.queue.length > 0 && this.getCurrentUserId()) {
+      this.scheduleFlush()
+    }
   }
 
   private readonly storageKey = getStorageNS("setting_sync_queue")
@@ -384,6 +413,9 @@ class SettingSyncQueue {
 
   private threshold = 1000
   private flushScheduled = false
+  private retryTimer: ReturnType<typeof setTimeout> | null = null
+  /** Failed flushes in a row; they set the delay before the next try. */
+  private retryAttempts = 0
 
   private pendingPromise: Promise<RemoteSettingsResponse> | null = null
 
@@ -441,7 +473,8 @@ class SettingSyncQueue {
   }
 
   private scheduleFlush() {
-    if (this.flushScheduled) {
+    // A pending retry sends every change made until then; it is brought forward by `resume`.
+    if (this.flushScheduled || this.retryTimer) {
       return
     }
 
@@ -450,29 +483,55 @@ class SettingSyncQueue {
       .finally(() => sleep(this.threshold))
       .finally(async () => {
         const flushedItems = new Set(this.queue)
+        let sent = false
         try {
-          await this.flush()
+          sent = await this.flush()
         } finally {
           this.flushScheduled = false
           // A change made while the flush awaited the server was not part of it, and its
           // enqueue skipped scheduling because this flush was still pending
           if (this.queue.some((item) => !flushedItems.has(item))) {
             this.scheduleFlush()
+          } else if (!sent && this.queue.length > 0) {
+            this.scheduleRetry()
           }
         }
       })
   }
 
-  private async flush() {
+  /** Try a failed flush again later, waiting longer after each failure in a row. */
+  private scheduleRetry() {
+    this.clearRetryTimer()
+    this.retryAttempts += 1
+    const exponent = Math.min(MAX_BACKOFF_EXPONENT, this.retryAttempts - 1)
+    const delay = Math.min(MAX_RETRY_DELAY_MS, BASE_RETRY_DELAY_MS * 2 ** exponent)
+    this.retryTimer = setTimeout(() => {
+      this.retryTimer = null
+      this.scheduleFlush()
+    }, delay)
+  }
+
+  private clearRetryTimer() {
+    if (!this.retryTimer) return
+    clearTimeout(this.retryTimer)
+    this.retryTimer = null
+  }
+
+  /**
+   * Send the queued changes. Resolves to `false` when a request failed and the changes are
+   * still waiting, so the caller tries again later; anything else needs no retry.
+   */
+  private async flush(): Promise<boolean> {
     const currentUserId = this.getCurrentUserId()
     if (!currentUserId) {
-      return
+      return true
     }
 
     this.bindQueueOwner(currentUserId)
 
+    // The `online` event resumes the queue.
     if (navigator.onLine === false) {
-      return
+      return true
     }
 
     const changedDomainsByRemoteTab = {} as Partial<Record<RemoteSettingsTab, Set<SettingDomain>>>
@@ -500,11 +559,11 @@ class SettingSyncQueue {
         if (isUnauthorizedError(error)) {
           this.queue = []
           this.ownerUserId = currentUserId
-          return
+          return true
         }
 
         this.reportSyncError("flush", error)
-        return
+        return false
       }
     }
 
@@ -542,20 +601,23 @@ class SettingSyncQueue {
             }
           }
         })
-      // TODO rollback or retry
+      // A tab that failed stays queued and is sent again by the retry
       promises.push(promise)
     }
 
     try {
       await Promise.all(promises)
+      this.retryAttempts = 0
+      return true
     } catch (error) {
       if (isUnauthorizedError(error)) {
         this.queue = []
         this.ownerUserId = currentUserId
-        return
+        return true
       }
 
       this.reportSyncError("flush", error)
+      return false
     }
   }
 

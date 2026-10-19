@@ -52,10 +52,14 @@ Errors return:
 }
 ```
 
+Usage errors, such as an unknown option, a missing argument or an invalid value, use the same envelope with the code `INVALID_ARGUMENT`.
+
+With `--verbose`, an error the API answered with also has `request`: the `method`, `path`, `originalPath`, `query` and `body` of the call, never its headers. The table and plain formats print it below the message.
+
 You can switch output mode:
 
 - `--format json` (default)
-- `--format table`
+- `--format table` (for people: a row per item with the main fields, long values cut to one line)
 - `--format plain`
 
 Changes the API answers without data, such as `subscription remove`, `collection add`, `entry mark-read` or `list delete`, return the fields it sends: `{ "lastSyncId": 42 }` when the change was recorded for sync, otherwise `{}`. `subscription add` returns `feed`, `list`, `unread` and `lastSyncId`.
@@ -70,6 +74,7 @@ Changes the API answers without data, such as `subscription remove`, `collection
    - `npx --yes folocli@latest entry get <entryId>`
 3. Get readability content:
    - `npx --yes folocli@latest entry read <entryId>`
+   - `--format plain` prints the content itself, ready to pipe or save
 
 ### 2. Subscription Management
 
@@ -80,6 +85,11 @@ Changes the API answers without data, such as `subscription remove`, `collection
    - or `npx --yes folocli@latest subscription add --list <listId>`
 3. List subscriptions:
    - `npx --yes folocli@latest subscription list`
+4. Update or remove one by the feed ID, list ID or feed URL it lists:
+   - `npx --yes folocli@latest subscription update <id> --category <name>`
+   - `npx --yes folocli@latest subscription remove <id>`
+   - Both fail with `NOT_FOUND` for anything you don't follow, without changing anything.
+   - Feeds of RSSHub instances are listed with `rsshub://` URLs; `remove <url> --target url` and `feed get <url>` take that URL or the one the feed was followed with.
 
 ### 3. Unread Processing
 
@@ -87,6 +97,8 @@ Changes the API answers without data, such as `subscription remove`, `collection
    - `npx --yes folocli@latest unread count`
 2. List unread subscriptions:
    - `npx --yes folocli@latest unread list`
+   - A list counts the unread entries of all its feeds, as the app shows it, so a feed you also follow directly counts in both rows; `total` counts each entry once.
+   - `total` also counts the unread entries of inboxes, which `unread count` leaves out.
 3. Read unread entries:
    - `npx --yes folocli@latest timeline --unread-only --limit 20`
 4. Mark read:
@@ -97,6 +109,7 @@ Changes the API answers without data, such as `subscription remove`, `collection
 
 - Add: `npx --yes folocli@latest collection add <entryId>`
 - Remove: `npx --yes folocli@latest collection remove <entryId>`
+  - Fails with `NOT_FOUND` for an entry that isn't collected, without changing anything.
 - List: `npx --yes folocli@latest collection list --limit 20`
 
 ### 5. OPML Import / Export
@@ -122,6 +135,8 @@ Loop until `hasNext` is `false`:
 2. Read `nextCursor`
 3. `npx --yes folocli@latest timeline --limit 20 --cursor <nextCursor>`
 4. Repeat
+
+A page can hold fewer entries than `--limit` while more follow, so keep going until `hasNext` is `false`; only the last page is empty. It can also hold more when several entries share the time of its last one, so that the next page misses none of them. `--limit` is at most 100. `collection list` pages the same way.
 
 ## Command Reference
 
@@ -182,7 +197,18 @@ Loop until `hasNext` is `false`:
   - or `npx --yes folocli@latest login --token <token>`
   - Or set `FOLO_TOKEN`
 - `HTTP_4xx` / `HTTP_5xx`
-  - Retry with `--verbose` for request details
+  - Retry with `--verbose`: `error.request` says what the call sent
   - Verify `--api-url` if using non-default endpoint
+- `NETWORK_ERROR`
+  - The API could not be reached; the message names its URL and the reason, such as `ECONNREFUSED`
+  - Check the network connection and `--api-url`, then retry
+- `TIMEOUT_ERROR`
+  - The API did not answer within 30 seconds; the request may still have been carried out
+  - Retry; check with the matching `list` or `get` command before repeating a change
+- `INVALID_RESPONSE`
+  - The server at the API URL answered as the Folo API never does, such as with a web page; the token is not to blame
+  - Check `--api-url`, or leave it out to use the default API
 - `INVALID_ARGUMENT`
   - Run `npx --yes folocli@latest <command> --help` to inspect accepted options
+- `NOT_FOUND`
+  - The id or URL names nothing the API knows; check it with the matching `list`, `get` or `search` command

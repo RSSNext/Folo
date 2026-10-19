@@ -17,6 +17,17 @@ describe("release build workflow guards", () => {
     expect(iosWorkflow).toContain("release(desktop):")
   })
 
+  // Android builds once shipped the 0.0.0-dev runtime unnoticed, so every EAS build checks it.
+  it("verifies the native OTA runtime version in every EAS mobile build", () => {
+    const mobilePackage = JSON.parse(
+      readFileSync(new URL("../../apps/mobile/package.json", import.meta.url), "utf8"),
+    ) as { scripts: Record<string, string> }
+
+    expect(mobilePackage.scripts["eas-build-post-install"]).toContain(
+      "scripts/verify-native-runtime-version.ts",
+    )
+  })
+
   it("skips direct desktop push builds for mobile release commits on mobile-main", () => {
     const desktopWorkflow = workflow("build-desktop.yml")
 

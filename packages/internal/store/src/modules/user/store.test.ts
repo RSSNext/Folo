@@ -177,3 +177,65 @@ describe("userSyncService.updateProfile", () => {
     expect(useUserStore.getState().whoami?.handle).toBe("folo ")
   })
 })
+
+describe("userSyncService.updateEmail", () => {
+  const changeEmailMock = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useUserStore.setState({ users: {}, whoami: me, role: null, roleEndAt: null })
+    authClientContext.provide({ changeEmail: changeEmailMock } as unknown as AuthClient)
+  })
+
+  it("keeps the current email, which stays until the change is approved and verified", async () => {
+    changeEmailMock.mockResolvedValue({ data: { status: true }, error: null })
+
+    await userSyncService.updateEmail("new@example.com")
+
+    expect(changeEmailMock).toHaveBeenCalledWith({ newEmail: "new@example.com" })
+    expect(useUserStore.getState().whoami?.email).toBe("me@example.com")
+    expect(UserService.upsertMany).not.toHaveBeenCalled()
+  })
+
+  it("keeps the code the auth server refused the change with", async () => {
+    changeEmailMock.mockResolvedValue({
+      data: null,
+      error: {
+        code: "TOO_MANY_REQUESTS",
+        message: "Too many requests. Please try again later.",
+        status: 429,
+        statusText: "Too Many Requests",
+      },
+    })
+
+    const error = await userSyncService.updateEmail("new@example.com").catch((e) => e)
+
+    expect(error).toBeInstanceOf(UserUpdateError)
+    expect(error).toMatchObject({ code: "TOO_MANY_REQUESTS", status: 429 })
+    expect(useUserStore.getState().whoami?.email).toBe("me@example.com")
+  })
+})
+
+describe("userSyncService.fetchUsers", () => {
+  const getBatchMock = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useUserStore.setState({ users: {}, whoami: me, role: null, roleEndAt: null })
+    getBatchMock.mockImplementation(async ({ ids }: { ids: string[] }) => ({
+      code: 0,
+      data: Object.fromEntries(ids.map((id) => [id, { id, name: id }])),
+    }))
+    apiContext.provide({ profiles: { getBatch: getBatchMock } } as unknown as FollowAPI)
+  })
+
+  it("asks for at most 100 profiles a request", async () => {
+    const ids = Array.from({ length: 250 }, (_, index) => `user${index}`)
+
+    const users = await userSyncService.fetchUsers(ids)
+
+    expect(users).toHaveLength(250)
+    const sizes = getBatchMock.mock.calls.map((call) => (call[0] as { ids: string[] }).ids.length)
+    expect(sizes).toEqual([100, 100, 50])
+  })
+})

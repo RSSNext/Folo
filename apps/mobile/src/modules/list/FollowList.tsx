@@ -3,10 +3,11 @@ import { useListById } from "@follow/store/list/hooks"
 import { listSyncServices } from "@follow/store/list/store"
 import { useSubscriptionByListId } from "@follow/store/subscription/hooks"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
+import { whoami } from "@follow/store/user/getters"
 import { useUserRole } from "@follow/store/user/hooks"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { StyleSheet, View } from "react-native"
@@ -28,7 +29,8 @@ import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { IconWithFallback } from "@/src/components/ui/icon/fallback-icon"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Text } from "@/src/components/ui/typography/Text"
-import { toastFetchError } from "@/src/lib/error-parser"
+import { isNotFoundError, toastFetchError } from "@/src/lib/error-parser"
+import { destination } from "@/src/lib/navigation/biz/Destination"
 import { useNavigation, useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
 import { toast } from "@/src/lib/toast"
@@ -38,6 +40,7 @@ import { FeedViewSelector } from "../feed/view-selector"
 
 export const FollowList = (props: { id: string }) => {
   const { id } = props
+  const { t } = useTranslation()
   const list = useListById(id)
   const { isFetching, error, refetch } = useQuery({
     queryKey: ["list", id],
@@ -57,13 +60,19 @@ export const FollowList = (props: { id: string }) => {
         </FollowStateView>
       )
     }
-    if (error) {
+    if (error && !isNotFoundError(error)) {
       return (
         <FollowStateView>
           <ListErrorView error={error} resetError={() => void refetch()} />
         </FollowStateView>
       )
     }
+    // Also for a list the server does not have, which no retry would find
+    return (
+      <FollowStateView>
+        <Text className="mt-24 px-4 text-center text-label">{t("list.not_found", { id })}</Text>
+      </FollowStateView>
+    )
   }
   return <Impl id={id} />
 }
@@ -85,15 +94,24 @@ const Impl = (props: { id: string }) => {
   const role = useUserRole()
   const isPaymentEnabled = useIsPaymentEnabled()
   const isPlanLocked = isPaymentEnabled && (role === UserRole.Free || role === UserRole.Trial)
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+  const defaultFormValues = useMemo(
+    () => ({
       view: list?.view ?? FeedViewType.Articles,
       isPrivate: subscription?.isPrivate ?? false,
       hideFromTimeline: subscription?.hideFromTimeline ?? undefined,
       title: subscription?.title ?? undefined,
-    },
+    }),
+    [list?.view, subscription],
+  )
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultFormValues,
   })
+  // The fields the user left alone follow edits that arrive from other devices, so saving
+  // does not write their old values back.
+  useEffect(() => {
+    form.reset(defaultFormValues, { keepDirtyValues: true })
+  }, [defaultFormValues, form])
   const { isValid, isDirty } = form.formState
   const isModal = useScreenIsInSheetModal()
   const navigation = useNavigation()
@@ -101,6 +119,11 @@ const Impl = (props: { id: string }) => {
   const submit = async () => {
     if (!list) return
     if (isLoading) return
+    // A link can open the form signed out; the form stays for after the sign-in
+    if (!whoami()) {
+      destination.Login()
+      return
+    }
     setIsLoading(true)
     const payload = form.getValues()
     try {

@@ -1,8 +1,10 @@
-import type { EntryListRequest } from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
 import { parseISODate, parsePositiveInt, parseView, viewHelp } from "../args"
 import { runCommand, toChangeResult } from "../command"
+import { CLIError } from "../output"
+import { fetchEntryPage, MAX_PAGE_SIZE } from "../pagination"
+import { toCollectionRow } from "../table-views"
 
 interface CollectionListOptions {
   limit: number
@@ -19,29 +21,30 @@ export const registerCollectionCommand = (program: Command) => {
   collectionCommand
     .command("list")
     .description("List collected entries")
-    .option("--limit <n>", "Number of entries to fetch", parsePositiveInt, 20)
+    .option(
+      "--limit <n>",
+      `Number of entries to fetch, at most ${MAX_PAGE_SIZE}`,
+      parsePositiveInt,
+      20,
+    )
     .option("--cursor <datetime>", "Pagination cursor", parseISODate)
     .action(async function (this: Command, options: CollectionListOptions) {
-      await runCommand(this, async ({ client }) => {
-        const request: EntryListRequest = {
-          isCollection: true,
-          limit: options.limit,
-          publishedAfter: options.cursor,
-        }
-
-        const response = await client.api.entries.list(request)
-        const entries = response.data
-        const lastEntry = entries.at(-1)
-        // Collections are paged by when they were collected, not when they were published
-        const nextCursor =
-          lastEntry?.collections?.createdAt ?? lastEntry?.entries.publishedAt ?? null
-
-        return {
-          entries,
-          nextCursor,
-          hasNext: Boolean(nextCursor) && entries.length >= options.limit,
-        }
-      })
+      await runCommand(
+        this,
+        async ({ client }) =>
+          fetchEntryPage({
+            limit: options.limit,
+            cursor: options.cursor,
+            fetchEntries: async (request) =>
+              (await client.api.entries.list({ ...request, isCollection: true })).data,
+            // Collections are paged by when they were collected, not when they were published.
+            // The SDK types the time as a Date while the JSON holds its ISO string.
+            getCursor: (entry) =>
+              entry.collections ? String(entry.collections.createdAt) : entry.entries.publishedAt,
+            getId: (entry) => entry.entries.id,
+          }),
+        { table: (result) => ({ ...result, entries: result.entries.map(toCollectionRow) }) },
+      )
     })
 
   collectionCommand
@@ -65,6 +68,13 @@ export const registerCollectionCommand = (program: Command) => {
     .argument("<entryId>", "Entry ID")
     .action(async function (this: Command, entryId: string) {
       await runCommand(this, async ({ client }) => {
+        // The API answers the removal of an entry that is not collected with success, and
+        // records it as a change for the user's other devices to sync, so it is checked first
+        const { data: collected } = await client.api.collections.get({ entryId })
+        if (!collected) {
+          throw new CLIError("NOT_FOUND", `Entry ${entryId} is not in your collection.`)
+        }
+
         const response = await client.api.collections.delete({
           entryId,
         })

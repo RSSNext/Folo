@@ -1,3 +1,5 @@
+import type { AuthClientError } from "@follow/utils/auth-error"
+import { describeAuthError } from "@follow/utils/auth-error"
 import { cn } from "@follow/utils/utils"
 import { ExceptionCodeMap, FollowAPIError } from "@follow-app/client-sdk"
 import { t } from "i18next"
@@ -6,13 +8,35 @@ import { createElement } from "react"
 import type { ExternalToast } from "sonner"
 import { toast } from "sonner"
 
+import { getApiUnreachable } from "~/atoms/api-connection"
 import { getIsPaymentEnabled } from "~/atoms/server-configs"
 import { CopyButton } from "~/components/ui/button/CopyButton"
 import { Markdown } from "~/components/ui/markdown/Markdown"
 import { DebugRegistry } from "~/modules/debug/registry"
 
-// The SDK appends the request and its arguments to the server's message
-const stripRequestContext = (message: string) => message.replace(/\r?\nRequest:[\s\S]*$/u, "")
+// How fetch fails when no answer came back, offline or with the API down: each browser words it
+// its own way, and a request the main process made for the window comes back as "fetch failed"
+const CONNECTION_FAILURE_MESSAGE =
+  /^(?:failed to fetch|load failed|networkerror when attempting to fetch resource\.?)$|\bfetch failed\b/iu
+
+/** The request got no answer at all, so the browser's own wording would say nothing useful */
+export const isConnectionFailure = (error: Error) =>
+  !(error instanceof FollowAPIError) && CONNECTION_FAILURE_MESSAGE.test(error.message)
+
+/**
+ * The code of the server's answer, which the error locales translate. `code` names some errors
+ * the SDK's own way, such as AUTH_REQUIRED for a refused session, whose server code is 1000, or
+ * 1008 for a guest who has to sign in first.
+ */
+const getServerCode = (error: FollowAPIError) => {
+  if (error.serverCode !== undefined) return error.serverCode
+  const code = Number(error.code)
+  return error.code && !Number.isNaN(code) ? code : undefined
+}
+
+/** What to tell the user about an error the auth client resolved with, translated where it can */
+export const getAuthErrorMessage = (error: AuthClientError | null | undefined) =>
+  describeAuthError(error, (key) => t(key, { ns: "common" }))
 
 // i18next answers a missing key with the key without its namespace, such as "1000"
 const translateErrorCode = (code: unknown, fallback: string) => {
@@ -45,19 +69,21 @@ export const getFetchErrorInfo = (
   }
 
   if (error instanceof FollowAPIError) {
-    const message = stripRequestContext(error.message)
-    if (!error.code) return { message }
-    // Codes such as "AUTH_REQUIRED" from the SDK are not API error codes
-    const code = Number.isNaN(Number(error.code)) ? undefined : Number(error.code)
+    const { message } = error
+    const code = getServerCode(error)
+    if (code === undefined) return { message }
     try {
-      const i18nMessage = translateErrorCode(code, message)
       return {
-        message: i18nMessage,
+        message: translateErrorCode(code, message),
         code,
       }
     } catch {
       return { message }
     }
+  }
+
+  if (isConnectionFailure(error)) {
+    return { message: t("common:app.api_unreachable") }
   }
 
   return { message: error.message }
@@ -112,17 +138,19 @@ export const toastFetchError = (
   }
 
   if (error instanceof FollowAPIError) {
-    code = error.code ? Number(error.code) : undefined
+    code = getServerCode(error)
     status = error.status ? Number(error.status) : undefined
-    message = stripRequestContext(error.message)
-    serverMessage = message
-  }
-
-  if ("code" in error && error.code) {
+    serverMessage = error.message
+    try {
+      message = translateErrorCode(code, error.message)
+    } catch {
+      message = error.message
+    }
+  } else if ("code" in error && error.code) {
     code = Number(error.code)
     try {
       const tValue = t(`errors:${code}` as any)
-      const i18nMessage = tValue === code?.toString() ? stripRequestContext(error.message) : tValue
+      const i18nMessage = tValue === code?.toString() ? error.message : tValue
       message = i18nMessage
     } catch {
       message = error.message
@@ -132,6 +160,12 @@ export const toastFetchError = (
   // 2fa errors are handled by the form
   if (code === 4007 || code === 4008) {
     return
+  }
+
+  if (isConnectionFailure(error)) {
+    // The notice of an unreachable server says the same and stays until it answers again
+    if (!_title && getApiUnreachable()) return
+    message = t("common:app.api_unreachable")
   }
 
   // Plain errors, such as wrapped auth client errors, carry their text in `message`

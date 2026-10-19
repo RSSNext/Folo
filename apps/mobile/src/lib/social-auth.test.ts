@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { buildAuthorizationProxyURL, parseSocialAuthCallbackURL } from "./social-auth"
+import {
+  buildAuthorizationProxyURL,
+  getSocialSignInErrorCode,
+  getSocialSignInFailureMessageKey,
+  parseSocialAuthCallbackURL,
+} from "./social-auth"
 
 describe("parseSocialAuthCallbackURL", () => {
   it("returns the session cookie of a successful callback", () => {
@@ -64,5 +69,42 @@ describe("buildAuthorizationProxyURL", () => {
     )
 
     expect(url.searchParams.has("oauthState")).toBe(false)
+  })
+})
+
+describe("getSocialSignInErrorCode", () => {
+  it("names a refused ID token sign-in as the redirect flow does", () => {
+    expect(
+      getSocialSignInErrorCode({ code: "OAUTH_LINK_ERROR", message: "account not linked" }),
+    ).toBe("account_not_linked")
+  })
+
+  it("keeps any other code", () => {
+    expect(getSocialSignInErrorCode({ code: "INVALID_TOKEN", message: "Invalid token" })).toBe(
+      "INVALID_TOKEN",
+    )
+    expect(getSocialSignInErrorCode({ code: "OAUTH_LINK_ERROR" })).toBe("OAUTH_LINK_ERROR")
+    expect(getSocialSignInErrorCode(null)).toBeUndefined()
+  })
+})
+
+describe("getSocialSignInFailureMessageKey", () => {
+  it("explains a sign-in refused for an unverified Folo account", () => {
+    expect(getSocialSignInFailureMessageKey("account_not_linked")).toBe(
+      "auth.error.account_not_linked",
+    )
+    expect(
+      getSocialSignInFailureMessageKey(
+        getSocialSignInErrorCode({ code: "OAUTH_LINK_ERROR", message: "account not linked" }),
+      ),
+    ).toBe("auth.error.account_not_linked")
+  })
+
+  it("leaves the reasons of other sign-ins to the generic failure", () => {
+    // An Apple ID token that failed verification, which would read as an expired sign-in link
+    expect(getSocialSignInFailureMessageKey("INVALID_TOKEN")).toBeUndefined()
+    expect(getSocialSignInFailureMessageKey("TWO_FACTOR_REQUIRED")).toBeUndefined()
+    expect(getSocialSignInFailureMessageKey("state_mismatch")).toBeUndefined()
+    expect(getSocialSignInFailureMessageKey(undefined)).toBeUndefined()
   })
 })

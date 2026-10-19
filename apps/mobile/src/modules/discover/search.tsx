@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import { use, useEffect, useRef, useState } from "react"
+import { use, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { StyleSheet, Text, TextInput, View } from "react-native"
 import Animated, {
@@ -16,10 +16,13 @@ import { SetNavigationHeaderHeightContext } from "@/src/components/layouts/views
 import { Search2CuteReIcon } from "@/src/icons/search_2_cute_re"
 import { useScreenIsInSheetModal } from "@/src/lib/navigation/hooks"
 import { queryClient } from "@/src/lib/query-client"
+import { useHeaderWindowControlsInsets } from "@/src/lib/window-controls"
 import { accentColor, useColor } from "@/src/theme/colors"
 
 import { useSearchPageContext, useSearchPageScrollContainerAnimatedX } from "./ctx"
 import { SearchTabBar } from "./SearchTabBar"
+
+const SEARCH_ROW_MARGIN = 16
 
 export const DiscoverHeader = () => {
   const frame = useSafeAreaFrame()
@@ -34,6 +37,18 @@ export const DiscoverHeader = () => {
   const { searchFocusedAtom } = useSearchPageContext()
   const isFocused = useAtomValue(searchFocusedAtom)
   const setHeaderHeight = use(SetNavigationHeaderHeightContext)
+  const windowControlsInsets = useHeaderWindowControlsInsets()
+  // Clear of the iPadOS window controls, which sit over the start of the field otherwise
+  const searchRowStyle = useMemo(
+    () => [
+      styles.header,
+      {
+        marginLeft: SEARCH_ROW_MARGIN + windowControlsInsets.left,
+        marginRight: SEARCH_ROW_MARGIN + windowControlsInsets.right,
+      },
+    ],
+    [windowControlsInsets],
+  )
   return (
     <View
       style={{
@@ -45,7 +60,7 @@ export const DiscoverHeader = () => {
         setHeaderHeight(e.nativeEvent.layout.height)
       }}
     >
-      <View style={styles.header}>
+      <View style={searchRowStyle}>
         <SearchInput />
       </View>
       {isFocused && <SearchTabBar animatedX={scrollContainerAnimatedX} />}
@@ -242,7 +257,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     marginBottom: 14,
-    marginHorizontal: 16,
+    marginHorizontal: SEARCH_ROW_MARGIN,
     position: "relative",
     marginTop: 4,
   },

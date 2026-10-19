@@ -47,7 +47,7 @@ import {
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
-import { toastFetchError } from "~/lib/error-parser"
+import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 
@@ -180,6 +180,10 @@ export const FeedForm: Component<{
               <div className="center grow flex-col gap-3">
                 <i className="i-mgc-close-cute-re size-7 text-red" />
                 <p>{t("feed_form.error_fetching_feed")}</p>
+                {/* Why, such as an address that is not a feed */}
+                <p className="cursor-text select-text break-all px-8 text-center text-sm text-text-secondary">
+                  {getFetchErrorMessage(feedQuery.error)}
+                </p>
               </div>
             )
           }
@@ -298,7 +302,9 @@ const FeedInnerForm = ({
   }, [analytics, defaultValues?.view, form, subscription])
 
   const followMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
+    // Whether the form edits the subscription is decided when it is sent: a follow stores the
+    // subscription before the request settles, so by then the form reads as followed
+    mutationFn: async ({ isEdit, ...values }: z.infer<typeof formSchema> & { isEdit: boolean }) => {
       const userId = whoami()?.id || ""
       const body = {
         url: feed.url,
@@ -314,18 +320,18 @@ const FeedInnerForm = ({
         listId: undefined,
       } as const
 
-      if (isSubscribed) {
+      if (isEdit) {
         return subscriptionSyncService.edit(body)
       } else {
         return subscriptionSyncService.subscribe(body)
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, { isEdit }) => {
       const feedId = feed.id
       if (feedId) {
         feedQuery.byId({ id: feedId }).invalidate()
       }
-      toast(isSubscribed ? t("feed_form.updated") : t("feed_form.followed"), {
+      toast(isEdit ? t("feed_form.updated") : t("feed_form.followed"), {
         duration: 1000,
       })
 
@@ -335,9 +341,14 @@ const FeedInnerForm = ({
       toastFetchError(err)
     },
   })
+  // A form sent to follow keeps saying so until it closes
+  const isEditing =
+    (followMutation.isPending || followMutation.isSuccess) && followMutation.variables
+      ? followMutation.variables.isEdit
+      : isSubscribed
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    followMutation.mutate(values)
+    followMutation.mutate({ ...values, isEdit: isSubscribed })
   }
 
   const t = useI18n()
@@ -510,7 +521,7 @@ const FeedInnerForm = ({
       </Form>
       <RootPortal to={placeholderRef.current}>
         <div className="flex items-center justify-end gap-4 pt-2">
-          {isSubscribed && (
+          {isEditing && (
             <Button
               disabled={!isLoggedIn}
               data-testid="feed-form-cancel"
@@ -530,7 +541,7 @@ const FeedInnerForm = ({
             type="submit"
             isLoading={followMutation.isPending}
           >
-            {isSubscribed ? t("feed_form.update") : t("feed_form.follow")}
+            {isEditing ? t("feed_form.update") : t("feed_form.follow")}
           </Button>
         </div>
       </RootPortal>

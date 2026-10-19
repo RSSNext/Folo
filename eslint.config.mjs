@@ -193,6 +193,27 @@ export default defineConfig(
     },
   },
   {
+    // NativeWind runs `animate-*` keyframes as endless Reanimated animations that keep running
+    // after their view unmounts
+    files: ["apps/mobile/src/**/*.tsx"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXAttribute[name.name=/[cC]lassName$/] Literal[value=/(^|\\s)animate-/]",
+          message:
+            "Animate with Reanimated instead of `animate-*` classes; placeholders use SkeletonPulse.",
+        },
+        {
+          selector:
+            "JSXAttribute[name.name=/[cC]lassName$/] TemplateElement[value.raw=/(^|\\s)animate-/]",
+          message:
+            "Animate with Reanimated instead of `animate-*` classes; placeholders use SkeletonPulse.",
+        },
+      ],
+    },
+  },
+  {
     files: ["**/*.tsx"],
     plugins: {
       style: stylistic,

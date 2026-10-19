@@ -264,6 +264,7 @@
   "entry_list.already_at_first_entry": "Vous êtes déjà à la première entrée",
   "entry_list.already_at_last_entry": "Vous êtes déjà à la dernière entrée",
   "entry_list.load_failed": "Échec du chargement des entrées",
+  "entry_list.offline": "Vous êtes hors ligne. Les entrées se chargeront une fois la connexion rétablie.",
   "entry_list.zero_unread": "Zéro non lu",
   "entry_list_header.ai_timeline": "Chronologie IA",
   "entry_list_header.ai_timeline_failed": "Impossible de trier la chronologie par importance",

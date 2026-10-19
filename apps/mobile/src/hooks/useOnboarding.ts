@@ -11,8 +11,9 @@ export function useOnboarding() {
   const whoami = useWhoami()
   const isNewUser = useIsNewUser({ enabled: !!whoami })
   const navigation = useNavigation()
-  // The sign-in screen pops to the root shortly after signing in, which would also close an
-  // onboarding presented in the meantime, so it waits until nothing is open over the tabs
+  // The sign-in screen closes itself and what is open over it shortly after signing in, which
+  // would also close an onboarding presented in the meantime, so it waits until nothing is open
+  // over the tabs, such as the follow form of a link that was waiting for the sign-in
   const isAtRoot = useAtomValueRawSync(
     useMemo(
       () => selectAtom(navigation.__dangerous_getCtxValue().routesAtom, (r) => r.length === 0),

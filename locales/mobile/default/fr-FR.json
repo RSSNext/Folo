@@ -39,6 +39,7 @@
   "image.saved": "Image enregistrée dans la photothèque",
   "image.share": "Partager l'image",
   "image.share_hint": "Partage l'image avec d'autres applications",
+  "list.not_found": "Liste ({{id}}) introuvable.",
   "login.agree_to": "En continuant, vous acceptez nos",
   "login.back": "Retour",
   "login.confirm_password.label": "Confirmer le mot de passe",

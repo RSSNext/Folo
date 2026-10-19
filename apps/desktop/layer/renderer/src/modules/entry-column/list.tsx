@@ -26,12 +26,15 @@ import { getInitialScrollOffset, shouldApplyScrollResetSignal } from "./scroll-r
 export const EntryEmptyList = ({
   ref,
   error,
+  offline,
   isRetrying,
   onRetry,
   ...props
 }: HTMLMotionProps<"div"> & {
   ref?: React.Ref<HTMLDivElement | null>
   error?: unknown
+  /** Nothing is cached and the entries load once the browser is back online. */
+  offline?: boolean
   isRetrying?: boolean
   onRetry?: () => void
 }) => {
@@ -52,6 +55,11 @@ export const EntryEmptyList = ({
               {t("retry", { ns: "common" })}
             </Button>
           )}
+        </div>
+      ) : offline ? (
+        <div className="flex -translate-y-6 flex-col items-center justify-center gap-2">
+          <i className="i-mgc-wifi-off-cute-re text-3xl" />
+          <span className="text-base">{t("entry_list.offline")}</span>
         </div>
       ) : unreadOnly ? (
         <>

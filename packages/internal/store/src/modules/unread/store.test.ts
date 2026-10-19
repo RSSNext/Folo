@@ -3,6 +3,7 @@ import { FollowAPIError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiContext } from "../../context"
+import { clearAccountInSession, startSessionCheck } from "../../sync/account"
 import type { SyncEngineHandle } from "../../sync/sync-status"
 import { registerSyncEngine, setSyncEngineActive } from "../../sync/sync-status"
 import { transactionQueue } from "../../sync/transaction-queue"
@@ -27,6 +28,15 @@ vi.mock("@follow/database/services/unread", () => ({
     getUnreadAll: vi.fn(),
     reset: vi.fn(),
     upsertMany: unreadUpsertManyMock,
+  },
+}))
+
+vi.mock("@follow/database/services/sync-meta", () => ({
+  SyncMetaService: {
+    get: vi.fn(async () => null),
+    set: vi.fn(async () => {}),
+    delete: vi.fn(async () => {}),
+    reset: vi.fn(async () => {}),
   },
 }))
 
@@ -76,6 +86,9 @@ describe("unreadSyncService", () => {
     vi.useFakeTimers()
     vi.clearAllMocks()
     transactionQueue.clearInSession()
+    // Signed in as the account the local data belongs to.
+    clearAccountInSession()
+    startSessionCheck().confirm("user-1")
 
     useEntryStore.setState({
       data: {},
@@ -277,6 +290,38 @@ describe("unreadSyncService", () => {
     expect(useEntryStore.getState().data.entry1?.read).toBe(false)
     expect(useUnreadStore.getState().data.feed1).toBe(1)
     expect(entryPatchManyMock).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ["rejects it", () => new FollowAPIError("unprocessable", 422)],
+    ["rejects it and the recount fails too", () => new FollowAPIError("bad request", 400)],
+  ])("restores the counts of a mark-all-read when the server %s", async (label, error) => {
+    const entries = {
+      entry1: createEntry("entry1", "feed1"),
+      entry2: createEntry("entry2", "feed1"),
+    }
+    useEntryStore.setState((state) => ({
+      ...state,
+      data: entries,
+      entryIdSet: new Set(Object.keys(entries)),
+    }))
+    seedUnread({ feed1: 17, feed2: 3 })
+    markAllAsReadMock.mockRejectedValue(error())
+    // The recount returns what the client already confirmed, or nothing at all.
+    if (label.includes("recount fails")) {
+      getUnreadMock.mockRejectedValue(new Error("fetch failed: offline"))
+    } else {
+      getUnreadMock.mockResolvedValue({ data: { feed1: 17, feed2: 3 } })
+    }
+
+    await unreadSyncService.markFeedAsRead("feed1")
+    expect(useUnreadStore.getState().data.feed1).toBe(0)
+
+    await flushQueue()
+
+    expect(useUnreadStore.getState().data).toMatchObject({ feed1: 17, feed2: 3 })
+    expect(useEntryStore.getState().data.entry1?.read).toBe(false)
+    expect(useEntryStore.getState().data.entry2?.read).toBe(false)
   })
 
   it("commits the predicted effect when the server has no change log", async () => {

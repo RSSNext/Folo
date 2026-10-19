@@ -12,6 +12,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { useTouchOnTypingPause } from "@/src/hooks/useTouchOnTypingPause"
 import { forgetPassword } from "@/src/lib/auth"
 import { isValidEmail } from "@/src/lib/email"
+import { getAuthErrorMessage } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { toast } from "@/src/lib/toast"
@@ -44,7 +45,7 @@ export const ForgetPasswordScreen: NavigationControllerView = () => {
         },
       )
       if (res.error) {
-        throw new Error(res.error.message)
+        throw new Error(getAuthErrorMessage(res.error))
       }
     },
     onError: (error) => {

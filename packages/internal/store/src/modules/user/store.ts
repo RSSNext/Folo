@@ -4,12 +4,14 @@ import type { UserSchema } from "@follow/database/schemas/types"
 import { UserService } from "@follow/database/services/user"
 import type { AuthUser } from "@follow-app/client-sdk"
 import { FollowAPIError } from "@follow-app/client-sdk"
-import { create, indexedResolver, windowScheduler } from "@yornaath/batshit"
+import { create, indexedResolver, windowedFiniteBatchScheduler } from "@yornaath/batshit"
 
-import { api, authClient } from "../../context"
+import { api, authClient, queryClient } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { apiMorph } from "../../morph/api"
+import { registerSessionVerifier, startSessionCheck } from "../../sync/account"
+import { whoamiQueryKey } from "./constants"
 import type { UserProfileEditable } from "./types"
 
 export type UserModel = UserSchema
@@ -93,6 +95,9 @@ const toProfileChanges = (
   return changes
 }
 
+/** The most profiles one request asks for */
+const USER_BATCH_SIZE = 100
+
 class UserSyncService {
   private userBatcher = create({
     fetcher: async (userIds: string[]) => {
@@ -117,10 +122,24 @@ class UserSyncService {
       return {}
     },
     resolver: indexedResolver(),
-    scheduler: windowScheduler(100),
+    // The server reads at most 1000 ids of a request; a page of a list or a timeline asks for far
+    // fewer, and smaller requests keep each answer quick
+    scheduler: windowedFiniteBatchScheduler({ windowMs: 100, maxBatchSize: USER_BATCH_SIZE }),
   })
 
   async whoami() {
+    // The answer also tells the transaction queue whose credentials it would send changes with.
+    const sessionCheck = startSessionCheck()
+    try {
+      const res = await this.fetchSession()
+      sessionCheck.confirm(res?.user?.id ?? null)
+      return res
+    } finally {
+      sessionCheck.end()
+    }
+  }
+
+  private async fetchSession() {
     const res = await api()
       .auth.getSession()
       .catch((err) => {
@@ -207,7 +226,11 @@ class UserSyncService {
     if (!me?.email) return
     const res = await authClient().sendVerificationEmail({ email: me.email! })
     if (res.error) {
-      throw new Error(res.error.message || res.error.statusText)
+      throw new UserUpdateError(
+        res.error.message || res.error.statusText,
+        res.error.code,
+        res.error.status,
+      )
     }
   }
 
@@ -232,36 +255,21 @@ class UserSyncService {
     return res
   }
 
+  /**
+   * Asks to move the account to `email`. The address changes only once the change is done: a
+   * verified account approves it with a link sent to its current address and then verifies the
+   * new one, an unverified account verifies the new one. Until then the current address stays.
+   */
   async updateEmail(email: string) {
-    const oldEmail = get().whoami?.email
-    if (!oldEmail) return
-    const tx = createTransaction(oldEmail)
-    tx.store(() => {
-      immerSet((state) => {
-        if (!state.whoami) return
-        state.whoami = { ...state.whoami, email }
-      })
-    })
-    tx.request(async () => {
-      const { whoami } = get()
-      if (!whoami) return
-      const res = await authClient().changeEmail({ newEmail: email })
-      if (res.error) {
-        throw new Error(res.error.message || res.error.statusText)
-      }
-    })
-    tx.rollback(() => {
-      immerSet((state) => {
-        if (!state.whoami) return
-        state.whoami.email = oldEmail
-      })
-    })
-    tx.persist(async () => {
-      const { whoami } = get()
-      if (!whoami) return
-      userActions.upsertMany([{ ...whoami, email } as unknown as UserModel])
-    })
-    await tx.run()
+    if (!get().whoami?.email) return
+    const res = await authClient().changeEmail({ newEmail: email })
+    if (res.error) {
+      throw new UserUpdateError(
+        res.error.message || res.error.statusText,
+        res.error.code,
+        res.error.status,
+      )
+    }
   }
 
   async fetchUser(userId: string | undefined) {
@@ -345,3 +353,13 @@ class UserActions implements Hydratable, Resetable {
 
 export const userSyncService = new UserSyncService()
 export const userActions = new UserActions()
+
+// The transaction queue asks for the session when it does not know whose credentials it would
+// send changes with. Through the query cache it shares the request the launch makes anyway.
+registerSessionVerifier(() =>
+  queryClient().fetchQuery({
+    queryKey: whoamiQueryKey,
+    queryFn: () => userSyncService.whoami(),
+    staleTime: 0,
+  }),
+)

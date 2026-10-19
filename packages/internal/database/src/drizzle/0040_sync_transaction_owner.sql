@@ -1,0 +1,1 @@
+ALTER TABLE `sync_transactions` ADD `user_id` text;

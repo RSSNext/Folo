@@ -12,6 +12,7 @@ import { isMacOS } from "~/env"
 import { filePathToAppUrl } from "~/helper"
 import { getCacheDir, getCacheSize } from "~/lib/cleaner"
 import { setRendererReady } from "~/lib/deep-link"
+import { getDownloadFileName } from "~/lib/download-file-name"
 import { i18n } from "~/lib/i18n"
 import { store, StoreKey } from "~/lib/store"
 import { getTrayConfig, registerAppTray } from "~/lib/tray"
@@ -25,11 +26,6 @@ import { checkForAppUpdates, quitAndInstall } from "../../updater"
 
 interface WindowActionInput {
   action: "close" | "minimize" | "maximum"
-}
-
-interface SearchInput {
-  text: string
-  options: Electron.FindInPageOptions
 }
 
 interface ExportCurrentPageAsPdfInput {
@@ -167,44 +163,28 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  async search(input: SearchInput): Promise<Electron.Result | null> {
-    const { sender: webContents } = getIpcContext()
-
-    const { promise, resolve } = Promise.withResolvers<Electron.Result | null>()
-
-    let requestId = -1
-    webContents.once("found-in-page", (_, result) => {
-      resolve(result.requestId === requestId ? result : null)
-    })
-    requestId = webContents.findInPage(input.text, input.options)
-    return promise
-  }
-
-  @IpcMethod()
-  clearSearch(): void {
-    getIpcContext().sender.stopFindInPage("keepSelection")
-  }
-
-  @IpcMethod()
   async download(input: string): Promise<void> {
     const { sender } = getIpcContext()
-    const result = await dialog.showSaveDialog({
-      defaultPath: input.split("/").pop(),
-    })
+    const senderWindow = (sender as Sender).getOwnerBrowserWindow()
+    const dialogOptions: Electron.SaveDialogOptions = {
+      defaultPath: getDownloadFileName(input),
+    }
+    // Attached to the window it was asked from, like the PDF export
+    const result = senderWindow
+      ? await dialog.showSaveDialog(senderWindow, dialogOptions)
+      : await dialog.showSaveDialog(dialogOptions)
     if (result.canceled) return
 
     try {
       await downloadFile(input, result.filePath)
 
-      const senderWindow = (sender as Sender).getOwnerBrowserWindow()
-      if (senderWindow) {
+      if (senderWindow && !senderWindow.isDestroyed()) {
         callWindowExpose(senderWindow).toast.success(i18n.t("download.success"), {
           duration: 1000,
         })
       }
     } catch (err) {
-      const senderWindow = (sender as Sender).getOwnerBrowserWindow()
-      if (senderWindow) {
+      if (senderWindow && !senderWindow.isDestroyed()) {
         callWindowExpose(senderWindow).toast.error(i18n.t("download.failed"), {
           duration: 1000,
         })

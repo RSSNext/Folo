@@ -6,9 +6,9 @@ import { getSubscriptionById } from "@follow/store/subscription/getter"
 import { subscriptionSyncService } from "@follow/store/subscription/store"
 import { usePrefetchUser, useUserById, useWhoami } from "@follow/store/user/hooks"
 import { Image as ExpoImage } from "expo-image"
-import { createContext, Fragment, use, useCallback, useEffect, useMemo } from "react"
+import { createContext, Fragment, use, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Alert, FlatList, Platform, Share, View } from "react-native"
+import { Alert, FlatList, Platform, Share, StyleSheet, View } from "react-native"
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { ReAnimatedScrollView } from "@/src/components/common/AnimatedComponents"
 import { BlurEffect } from "@/src/components/common/BlurEffect"
 import { SwipeableItem } from "@/src/components/common/SwipeableItem"
+import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import {
   DefaultHeaderBackButton,
   InternalNavigationHeader,
@@ -42,18 +43,18 @@ import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
 import type { followClient } from "@/src/lib/api-client"
+import { toastFetchError } from "@/src/lib/error-parser"
 import { useCanBack, useCanDismiss } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { isAndroid } from "@/src/lib/platform"
 import { createLinkShareContent } from "@/src/lib/share"
-import { toast } from "@/src/lib/toast"
+import { UrlBuilder } from "@/src/lib/url-builder"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { BannerStatusBar } from "@/src/modules/settings/BannerStatusBar"
 import { useShareSubscription } from "@/src/modules/settings/hooks/useShareSubscription"
 import { isUserHeaderGradientLight } from "@/src/modules/settings/layout"
 import { UserHeaderBanner } from "@/src/modules/settings/UserHeaderBanner"
-import { ItemSeparator } from "@/src/modules/subscription/ItemSeparator"
 import { useColor } from "@/src/theme/colors"
 
 import { FeedScreen } from "../(stack)/feeds/[feedId]/FeedScreen"
@@ -81,7 +82,8 @@ function ProfileScreenImpl(props: { userId: string }) {
   const {
     data: subscriptions,
     isLoading,
-    isError,
+    error,
+    refetch,
     removeItemById,
   } = useShareSubscription({
     userId: props.userId,
@@ -97,16 +99,12 @@ function ProfileScreenImpl(props: { userId: string }) {
   const bannerIconColor = gradientLight ? "#000" : "#fff"
   const canBack = useCanBack()
   const canDismiss = useCanDismiss()
-  useEffect(() => {
-    if (isError) {
-      toast.error(t("profile.fetch_subscriptions_failed"))
-    }
-  }, [isError, t])
   const insets = useSafeAreaInsets()
   const textLabelColor = useColor("label")
   const openShareUrl = useCallback(() => {
     if (!user?.id) return
-    const shareUrl = `https://app.folo.is/share/users/${user.id}`
+    // On the web app of the environment the user is in, as a feed's share link is
+    const shareUrl = UrlBuilder.profile(user.id)
     Share.share(
       createLinkShareContent({
         platform: Platform.OS,
@@ -162,6 +160,16 @@ function ProfileScreenImpl(props: { userId: string }) {
         <BannerStatusBar gradientLight={gradientLight} scrollY={scrollY} enabled={isAndroid} />
 
         {isLoading && <PlatformActivityIndicator className="mt-24" size={28} />}
+        {/* Without its list, the profile would look like one that follows nothing */}
+        {!isLoading && error && !subscriptions ? (
+          <View className="mt-6">
+            <ListErrorView
+              error={error}
+              resetError={() => void refetch()}
+              description={t("profile.fetch_subscriptions_failed")}
+            />
+          </View>
+        ) : null}
         <IsMyProfileContext value={isMyProfile}>
           <ActionContext value={actionCtx}>
             {!isLoading && subscriptions ? (
@@ -266,7 +274,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
               scrollEnabled={false}
               data={lists}
               renderItem={renderListItems}
-              ItemSeparatorComponent={ItemSeparator}
+              ItemSeparatorComponent={CardRowSeparator}
             />
           </GroupedInsetListCard>
         </Fragment>
@@ -282,7 +290,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
                   scrollEnabled={false}
                   data={feeds}
                   renderItem={renderFeedItems}
-                  ItemSeparatorComponent={ItemSeparator}
+                  ItemSeparatorComponent={CardRowSeparator}
                 />
               </GroupedInsetListCard>
             </Fragment>
@@ -299,7 +307,7 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
                   scrollEnabled={false}
                   data={feeds}
                   renderItem={renderFeedItems}
-                  ItemSeparatorComponent={ItemSeparator}
+                  ItemSeparatorComponent={CardRowSeparator}
                 />
               </GroupedInsetListCard>
             </>
@@ -309,6 +317,18 @@ const SubscriptionList = ({ subscriptions }: { subscriptions: Subscription[] }) 
     </View>
   )
 }
+const ROW_ICON_SIZE = 24
+const styles = StyleSheet.create({
+  // The rows sit in a grouped card, which already has the column width and the side margins, so
+  // the line only starts where the row titles do
+  cardRowSeparator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: GROUPED_LIST_ITEM_PADDING + ROW_ICON_SIZE + GROUPED_ICON_TEXT_GAP,
+  },
+})
+const CardRowSeparator = () => (
+  <View className="bg-opaque-separator/70" style={styles.cardRowSeparator} />
+)
 const renderListItems = ({ item }: { item: PickedListModel }) => (
   <ItemPressable
     className="flex h-12 flex-row items-center bg-secondary-system-grouped-background"
@@ -340,7 +360,7 @@ const renderListItems = ({ item }: { item: PickedListModel }) => (
           className="size-6"
         />
       )}
-      {!item.image && <FallbackIcon title={item.title} size={24} />}
+      {!item.image && <FallbackIcon title={item.title} size={ROW_ICON_SIZE} />}
     </View>
 
     <Text
@@ -387,7 +407,7 @@ const renderFeedItems = ({ item }: { item: PickedFeedModel }) => (
               siteUrl: item.siteUrl || "",
             } as FeedIconRequiredFeed
           }
-          size={24}
+          size={ROW_ICON_SIZE}
         />
       </View>
       <Text
@@ -423,9 +443,15 @@ const MaybeSwipeable = ({ id, children }: { id: string; children: React.ReactNod
               {
                 text: t("operation.unfollow"),
                 style: "destructive",
-                onPress: () => {
-                  subscriptionSyncService.unsubscribe(id)
-                  removeItemById(id)
+                onPress: async () => {
+                  try {
+                    await subscriptionSyncService.unsubscribe(id)
+                    // Only once the server unfollowed it, or the profile would hide a feed
+                    // still followed
+                    removeItemById(id)
+                  } catch (error) {
+                    toastFetchError(error instanceof Error ? error : new Error(String(error)))
+                  }
                 },
               },
             ])

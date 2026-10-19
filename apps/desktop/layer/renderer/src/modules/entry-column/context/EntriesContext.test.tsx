@@ -62,6 +62,7 @@ describe("EntriesProvider", () => {
       isFetchingNextPage: false,
       isFetching: false,
       isLoading: false,
+      isOffline: false,
       error: null,
       refetch,
       fetchNextPage: vi.fn(),

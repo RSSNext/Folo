@@ -15,8 +15,8 @@ const iconPath = iconPathMap[process.env.PROFILE || "production"] || iconPathMap
 const adaptiveIconPath = resolve(__dirname, "./assets/adaptive-icon.png")
 const splashIconPath = resolve(__dirname, "./assets/splash-icon.png")
 
-const isDev = process.env.NODE_ENV === "development"
 const semverPattern = /^\d+\.\d+\.\d+$/
+const developmentProfiles = new Set(["development", "ios-simulator"])
 const channelNameMap = {
   development: "development",
   "ios-simulator": "development",
@@ -25,6 +25,16 @@ const channelNameMap = {
   "e2e-ios-simulator": "preview",
   production: "production",
 } as Record<string, string>
+
+// Every EAS build profile sets PROFILE. NODE_ENV can't tell builds apart: `expo prebuild`, which
+// generates `android/` in every EAS Android build, sets it to "development" when it is unset.
+export const isDevelopmentRuntime = ({
+  profile,
+  nodeEnv,
+}: {
+  profile: string | undefined
+  nodeEnv: string | undefined
+}) => (profile ? developmentProfiles.has(profile) : nodeEnv === "development")
 
 export const resolveRuntimeVersion = ({
   isDevelopment,
@@ -56,7 +66,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const profile = process.env.PROFILE || "production"
   const channelName = channelNameMap[profile] || channelNameMap.production
   const runtimeVersion = resolveRuntimeVersion({
-    isDevelopment: isDev,
+    isDevelopment: isDevelopmentRuntime({
+      profile: process.env.PROFILE,
+      nodeEnv: process.env.NODE_ENV,
+    }),
     packageVersion: PKG.version,
     otaRuntimeVersionOverride: process.env.OTA_RUNTIME_VERSION ?? null,
   })
@@ -201,6 +214,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       require("./plugins/with-gradle-jvm-heap-size-increase.js"),
       require("./plugins/with-android-jdk-21.js"),
       require("./plugins/with-android-manifest-plugin.js"),
+      require("./plugins/with-android-launch-link-guard.js"),
       "expo-secure-store",
       ["@react-native-firebase/app", { ios: { disableSPM: true } }],
       [

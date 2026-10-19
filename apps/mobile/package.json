@@ -1,6 +1,6 @@
 {
   "name": "@follow/mobile",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "main": "src/main.tsx",
   "scripts": {
@@ -13,7 +13,7 @@
     "e2e:doctor": "sh -c 'for f in e2e/flows/shared/*.yaml e2e/flows/android/*.yaml e2e/flows/ios/*.yaml; do maestro check-syntax $f; done'",
     "e2e:ios": "sh ./e2e/run-maestro.sh ios",
     "e2e:ios:bootstrap": "sh ./e2e/run-maestro.sh ios bootstrap-auth",
-    "eas-build-post-install": "rm -rf $TMPDIR/metro-cache",
+    "eas-build-post-install": "rm -rf $TMPDIR/metro-cache && tsx scripts/verify-native-runtime-version.ts",
     "eas-build-pre-install": "command -v pod >/dev/null 2>&1 && pod repo update || echo 'CocoaPods not found, skipping pod repo update'",
     "ios": "expo run:ios",
     "ios:device": "expo run:ios --device",
@@ -130,7 +130,7 @@
     "react-native-keyboard-controller": "1.22.5",
     "react-native-otp-entry": "1.8.6",
     "react-native-pager-view": "9.0.4",
-    "react-native-reanimated": "4.7.0",
+    "react-native-reanimated": "4.7.1",
     "react-native-root-siblings": "5.0.1",
     "react-native-safe-area-context": "5.10.0",
     "react-native-screens": "4.28.0",

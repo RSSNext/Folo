@@ -32,6 +32,8 @@
   "dialog.yes": "はい",
   "download.failed": "ダウンロードに失敗しました",
   "download.success": "ダウンロードが完了しました",
+  "findBar.next": "次の一致",
+  "findBar.previous": "前の一致",
   "menu.about": "{{name}} について",
   "menu.alwaysOnTop": "常に手前に表示",
   "menu.checkForUpdates": "アップデートを確認",

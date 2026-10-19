@@ -16,14 +16,28 @@ interface APIRequest {
   path: string
 }
 
-/** Runs a command against an API that answers every request with `body` */
+/** What the user follows, which subscription update and remove look up first */
+const subscriptions = [
+  { feedId: "feed1", view: 0, isPrivate: false, feeds: { id: "feed1", url: "https://f.test/1" } },
+]
+
+/** What the API answers the lookups that changes make first with */
+const lookups: Record<string, Record<string, unknown>> = {
+  "/subscriptions": { code: 0, data: subscriptions },
+  // Whether the entry is collected, which collection remove checks first
+  "/collections": { code: 0, data: true },
+}
+
+/** Runs a command against an API that answers every change with `body` */
 const runCLI = async (args: string[], body: Record<string, unknown>) => {
   const requests: APIRequest[] = []
   vi.stubGlobal(
     "fetch",
     vi.fn(async (url: string, init?: RequestInit) => {
-      requests.push({ method: init?.method ?? "GET", path: new URL(url).pathname })
-      return new Response(JSON.stringify(body), {
+      const request = { method: init?.method ?? "GET", path: new URL(url).pathname }
+      requests.push(request)
+      const answer = (request.method === "GET" && lookups[request.path]) || body
+      return new Response(JSON.stringify(answer), {
         headers: { "content-type": "application/json" },
       })
     }),
@@ -70,12 +84,14 @@ describe("change commands", () => {
     },
     {
       args: ["subscription", "remove", "feed1"],
+      lookup: { method: "GET", path: "/subscriptions" },
       request: { method: "DELETE", path: "/subscriptions" },
       response: { code: 0, lastSyncId: 41 },
       data: { lastSyncId: 41 },
     },
     {
       args: ["subscription", "update", "feed1", "--category", "Tech"],
+      lookup: { method: "GET", path: "/subscriptions" },
       request: { method: "PATCH", path: "/subscriptions" },
       response: { code: 0, lastSyncId: 42 },
       data: { lastSyncId: 42 },
@@ -89,6 +105,7 @@ describe("change commands", () => {
     {
       // A change the server recorded no sync action for
       args: ["collection", "remove", "entry1"],
+      lookup: { method: "GET", path: "/collections" },
       request: { method: "DELETE", path: "/collections" },
       response: { code: 0 },
       data: {},
@@ -131,10 +148,10 @@ describe("change commands", () => {
     },
   ])(
     "prints what the API answers `$args.0 $args.1` with",
-    async ({ args, request, response, data }) => {
+    async ({ args, lookup, request, response, data }) => {
       const { output, requests } = await runCLI(args, response)
 
-      expect(requests).toEqual([request])
+      expect(requests).toEqual(lookup ? [lookup, request] : [request])
       expect(JSON.parse(output)).toEqual({ ok: true, data, error: null })
     },
   )

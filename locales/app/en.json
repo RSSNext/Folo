@@ -264,6 +264,7 @@
   "entry_list.already_at_first_entry": "You are already at the first entry",
   "entry_list.already_at_last_entry": "You are already at the last entry",
   "entry_list.load_failed": "Failed to load entries",
+  "entry_list.offline": "You're offline. Entries will load once you're back online.",
   "entry_list.zero_unread": "Zero Unread",
   "entry_list_header.ai_timeline": "AI timeline",
   "entry_list_header.ai_timeline_failed": "Couldn't sort the timeline by importance",

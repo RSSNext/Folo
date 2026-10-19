@@ -12,6 +12,7 @@ import { StyleSheet, View } from "react-native"
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
+import { Skeleton, SkeletonPulse } from "@/src/components/ui/skeleton/Skeleton"
 import { useIsTabletLayout } from "@/src/lib/responsive"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
@@ -20,6 +21,10 @@ import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
+import {
+  shouldAnimateLoadingPlaceholder,
+  shouldAnimateNextPagePlaceholder,
+} from "./placeholder-animation"
 // import type { MasonryItem } from "./templates/EntryGridItem"
 import { EntryPictureItem } from "./templates/EntryPictureItem"
 
@@ -97,6 +102,7 @@ export const EntryListContentPicture = ({
 
   // Show loading skeleton when entries are not ready and no data yet
   if (!isReady && (!entryIds || entryIds.length === 0)) {
+    const animateLoadingPlaceholder = shouldAnimateLoadingPlaceholder({ active })
     return (
       <View
         className="flex-1 px-2"
@@ -105,7 +111,11 @@ export const EntryListContentPicture = ({
         <View className="flex-row">
           <View className="mr-1 flex-1">
             {PICTURE_SKELETON_COLUMN_KEYS.map((key, index) => (
-              <EntryPictureItemSkeleton key={`left-${key}`} variantIndex={index} />
+              <EntryPictureItemSkeleton
+                key={`left-${key}`}
+                variantIndex={index}
+                animated={animateLoadingPlaceholder}
+              />
             ))}
           </View>
           <View className="ml-1 flex-1">
@@ -113,6 +123,7 @@ export const EntryListContentPicture = ({
               <EntryPictureItemSkeleton
                 key={`right-${key}`}
                 variantIndex={index + PICTURE_SKELETON_COLUMN_KEYS.length}
+                animated={animateLoadingPlaceholder}
               />
             ))}
           </View>
@@ -139,7 +150,10 @@ export const EntryListContentPicture = ({
       ListFooterComponent={
         hasNextPage ? (
           <View className="h-20 items-center justify-center">
-            <PlatformActivityIndicator />
+            {/* The list keeps the footer far below the screen, so it spins only while loading */}
+            {shouldAnimateNextPagePlaceholder({ active, isFetchingNextPage }) && (
+              <PlatformActivityIndicator />
+            )}
           </View>
         ) : (
           <View>
@@ -154,43 +168,37 @@ export const EntryListContentPicture = ({
   )
 }
 
-function EntryPictureItemSkeleton({ variantIndex }: { variantIndex: number }) {
+function EntryPictureItemSkeleton({
+  animated,
+  variantIndex,
+}: {
+  animated: boolean
+  variantIndex: number
+}) {
   const imageHeightStyle =
     PICTURE_SKELETON_HEIGHT_STYLES[variantIndex % PICTURE_SKELETON_HEIGHT_STYLES.length]
 
   return (
-    <View className="mx-1 mb-2">
+    <SkeletonPulse animated={animated} className="mx-1 mb-2">
       {/* Image placeholder */}
-      <View className="animate-pulse rounded-md bg-system-fill" style={imageHeightStyle} />
+      <Skeleton className="rounded-md" style={imageHeightStyle} />
 
       {/* Footer content */}
       <View className="gap-2 px-1 py-2">
         {/* Title lines */}
         <View className="gap-1">
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.titleLinePrimary}
-          />
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.titleLineSecondary}
-          />
+          <Skeleton className="h-3 rounded-md" style={styles.titleLinePrimary} />
+          <Skeleton className="h-3 rounded-md" style={styles.titleLineSecondary} />
         </View>
 
         {/* Feed info */}
         <View className="flex-row items-center gap-1.5">
-          <View className="size-3.5 animate-pulse rounded-full bg-system-fill" />
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.feedLinePrimary}
-          />
-          <View
-            className="h-3 animate-pulse rounded-md bg-system-fill"
-            style={styles.feedLineSecondary}
-          />
+          <Skeleton className="size-3.5 rounded-full" />
+          <Skeleton className="h-3 rounded-md" style={styles.feedLinePrimary} />
+          <Skeleton className="h-3 rounded-md" style={styles.feedLineSecondary} />
         </View>
       </View>
-    </View>
+    </SkeletonPulse>
   )
 }
 

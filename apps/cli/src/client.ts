@@ -4,12 +4,16 @@ import type { Command } from "commander"
 import type { FoloCLIConfig } from "./config"
 import { readConfig } from "./config"
 import type { OutputFormat } from "./output"
-import { CLIError } from "./output"
+import { CLIError, readJSONBody } from "./output"
 
 export const defaultApiURL = "https://api.folo.is"
 
 const readString = (value: unknown): string | undefined => {
   return typeof value === "string" && value.length > 0 ? value : undefined
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
 export const normalizeToken = (token: string | undefined) => {
@@ -43,24 +47,25 @@ export interface CommandContext {
 }
 
 export interface CLIAuthSession {
-  user?: Record<string, unknown>
-  session?: Record<string, unknown>
+  user: Record<string, unknown>
+  session: Record<string, unknown>
   role?: unknown
   roleEndAt?: unknown
   feedSubscriptionLimit?: unknown
   rsshubSubscriptionLimit?: unknown
 }
 
+/**
+ * What the API said about a failed session check. Only its JSON says anything: the body of
+ * another server, such as the page a web server answers a missing path with, would fill the
+ * message with HTML.
+ */
 const readSessionErrorMessage = async (response: Response): Promise<string | undefined> => {
   const contentType = response.headers.get("content-type") ?? ""
+  if (!contentType.includes("application/json")) return undefined
 
-  if (contentType.includes("application/json")) {
-    const data = (await response.json().catch(() => null)) as Record<string, unknown> | null
-    return typeof data?.message === "string" ? data.message : undefined
-  }
-
-  const text = await response.text().catch(() => "")
-  return text || undefined
+  const data = (await response.json().catch(() => null)) as Record<string, unknown> | null
+  return typeof data?.message === "string" ? data.message : undefined
 }
 
 export const fetchAuthSession = async ({
@@ -89,12 +94,48 @@ export const fetchAuthSession = async ({
     console.error(`[response] GET ${requestUrl} -> ${response.status}`)
   }
 
-  if (!response.ok) {
+  if (response.status === 401 || response.status === 403) {
     const message = await readSessionErrorMessage(response)
     throw new CLIError("UNAUTHORIZED", message || "Token is invalid or expired.")
   }
 
-  return (await response.json()) as CLIAuthSession
+  // Any other failure, such as a wrong API URL answering 404, says nothing about the token
+  if (!response.ok) {
+    const message = await readSessionErrorMessage(response)
+    throw new CLIError(
+      `HTTP_${response.status}`,
+      message || response.statusText || `Session check failed with HTTP ${response.status}.`,
+    )
+  }
+
+  // A token the API does not know, or a session signed out elsewhere, is answered with a null
+  // body. A body that is not JSON comes from something else than the API, not from the token.
+  const body = await readJSONBody(response, apiUrl)
+  if (!isRecord(body) || !isRecord(body.user) || !isRecord(body.session)) {
+    throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
+  }
+
+  return body as unknown as CLIAuthSession
+}
+
+/**
+ * The API URL requests append their paths to, without trailing slashes: an URL saved as
+ * `http://localhost:3000/` sent the session check to `//better-auth/get-session`.
+ */
+export const resolveApiUrl = (value: string): string => {
+  const apiUrl = value.trim().replace(/\/+$/, "")
+
+  let url: URL
+  try {
+    url = new URL(apiUrl)
+  } catch {
+    throw new CLIError("INVALID_ARGUMENT", `Invalid API URL: ${value}`)
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new CLIError("INVALID_ARGUMENT", `Invalid API URL: ${value}. Use an http or https URL.`)
+  }
+
+  return apiUrl
 }
 
 export const getGlobalOptions = (command: Command): GlobalOptions => {
@@ -132,7 +173,7 @@ export const createCommandContext = async (
   const globalOptions = getGlobalOptions(command)
   const config = await readConfig()
   const token = normalizeToken(globalOptions.token ?? process.env.FOLO_TOKEN ?? config.token)
-  const apiUrl = globalOptions.apiUrl ?? config.apiUrl ?? defaultApiURL
+  const apiUrl = resolveApiUrl(globalOptions.apiUrl ?? config.apiUrl ?? defaultApiURL)
 
   if (requireAuth && !token) {
     throw new CLIError(
@@ -151,6 +192,11 @@ export const createCommandContext = async (
       Cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
     })
   }
+
+  // Without an error interceptor the SDK throws what fetch threw, so a request it gave up on
+  // failed as a bare AbortError. One that returns nothing keeps the SDK's own handling, which
+  // reports its timeout as a FollowTimeoutError.
+  client.addErrorInterceptor(() => {})
 
   if (globalOptions.verbose) {
     setupVerboseLogging(client)

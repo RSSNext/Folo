@@ -1,6 +1,7 @@
 import { expoClient, getSetCookie, storageAdapter } from "@better-auth/expo/client"
 import type { BaseAuthPlugins } from "@follow/shared/auth"
 import { baseAuthPlugins } from "@follow/shared/auth"
+import { invalidateSessionUser, onLocalDataOfAnotherAccount } from "@follow/store/sync/account"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
@@ -9,22 +10,21 @@ import { useQuery } from "@tanstack/react-query"
 import type { BetterAuthClientOptions } from "better-auth/client"
 import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
-import * as FileSystem from "expo-file-system/legacy"
 import Storage from "expo-sqlite/kv-store"
 import * as WebBrowser from "expo-web-browser"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
-
-import { getDbPath } from "@/src/database"
 
 import {
   createMobileAuthCookieSyncPlugin,
   createSessionAwareAuthCookieStorage,
 } from "./auth-cookie-sync"
 import { getClientId, getSessionId } from "./client-session"
+import { scheduleLocalDataReset } from "./local-data-reset"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
 import { getEnvProfile, proxyEnv } from "./proxy-env"
+import { unregisterPushToken } from "./push-token"
 import { queryClient } from "./query-client"
 import { reloadApp } from "./reload-app"
 import { safeSecureStore } from "./secure-store"
@@ -39,6 +39,11 @@ const sessionCookieRefreshIntervalSeconds = 60 * 60 * 12
 
 let authStateRevision = 0
 let lastAuthStateChangeAt = 0
+/**
+ * Set while signing out, which ends in a reload with an empty database. The session's queries
+ * are not loaded again before it: without the session the server would only refuse them.
+ */
+let signingOut = false
 
 export const getAuthStateRevision = () => authStateRevision
 export const getLastAuthStateChangeAt = () => lastAuthStateChangeAt
@@ -121,7 +126,11 @@ const authCookieStorage = createSessionAwareAuthCookieStorage({
   storage: secureAuthCookieStorage,
   onSessionChange() {
     bumpAuthStateRevision()
-    void refreshSessionQueries()
+    // Whose session it is stays unknown until the session endpoint answers, so queued changes
+    // are not sent with it before.
+    invalidateSessionUser()
+    // The Expo plugin drops the stored session as the sign-out request leaves
+    if (!signingOut) void refreshSessionQueries()
   },
 })
 
@@ -303,7 +312,16 @@ const clearAuthStorage = async () => {
   await Promise.all(keys.map((key) => safeSecureStore.removeItemAsync(key)))
 }
 
+/** Reload with an empty local database; the app then starts over for the current session. */
+const resetLocalData = async (reason: string) => {
+  scheduleLocalDataReset()
+  await reloadApp(reason)
+}
+
 export const signOut = async () => {
+  // While the session still authorizes the request
+  await unregisterPushToken()
+  signingOut = true
   try {
     await authClient.signOut()
   } catch (error) {
@@ -315,11 +333,27 @@ export const signOut = async () => {
   await userActions.removeCurrentUser()
   Navigation.rootNavigation.popToRoot()
   bumpAuthStateRevision()
-  await refreshSessionQueries()
-  const dbPath = getDbPath()
-  await FileSystem.deleteAsync(dbPath, { idempotent: true })
-  await reloadApp("User sign out")
+  try {
+    await resetLocalData("User sign out")
+  } catch (error) {
+    // Without the reload the screens would keep the signed-out account's data
+    await refreshSessionQueries()
+    throw error
+  } finally {
+    signingOut = false
+  }
 }
+
+let resettingForAnotherAccount = false
+// Signed in to another account than the one whose data is on this device, after that one's
+// session ended without a sign-out. The data on screen and the changes still queued belong to
+// the account before, so start over as a sign-out does, keeping the new session.
+onLocalDataOfAnotherAccount(() => {
+  if (resettingForAnotherAccount) return
+  resettingForAnotherAccount = true
+  Navigation.rootNavigation.popToRoot()
+  void resetLocalData("Signed in to another account")
+})
 
 /**
  * @param TOTPCode - required by the server only when two-factor authentication is enabled

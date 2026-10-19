@@ -2,7 +2,7 @@ import { Button } from "@follow/components/ui/button/index.js"
 import { Input } from "@follow/components/ui/input/index.js"
 import * as ScrollArea from "@follow/components/ui/scroll-area/ScrollArea.js"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
-import { useActionRule, useActionRules, useUpdateActionsMutation } from "@follow/store/action/hooks"
+import { useActionRule, useActionRules } from "@follow/store/action/hooks"
 import { actionActions } from "@follow/store/action/store"
 import { nextFrame } from "@follow/utils"
 import { cn } from "@follow/utils/utils"
@@ -13,6 +13,7 @@ import { useDialog } from "~/components/ui/modal/stacked/hooks"
 
 import { buildActionSummary, buildConditionSummary, getRuleDisplayName } from "./rule-summary"
 import { ThenSection } from "./then-section"
+import { useSaveActionRules } from "./use-save-action-rules"
 import { WhenSection } from "./when-section"
 
 type RuleCardProps = {
@@ -135,7 +136,7 @@ const RuleCardToolbar = ({ index }: { index: number }) => {
   const { t } = useTranslation("settings")
   const rule = useActionRule(index)
   const ruleCount = useActionRules((s) => s.length)
-  const mutation = useUpdateActionsMutation()
+  const mutation = useSaveActionRules()
   const { ask } = useDialog()
 
   if (!rule) {

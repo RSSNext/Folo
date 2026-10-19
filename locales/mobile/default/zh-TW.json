@@ -39,6 +39,7 @@
   "image.saved": "圖片已儲存到相簿",
   "image.share": "分享圖片",
   "image.share_hint": "將圖片分享到其他應用程式",
+  "list.not_found": "找不到列表（{{id}}）。",
   "login.agree_to": "繼續即表示您同意我們的",
   "login.back": "返回",
   "login.confirm_password.label": "確認密碼",

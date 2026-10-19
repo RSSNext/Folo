@@ -31,6 +31,13 @@ const queryClient = new QueryClient({
       },
       // throwOnError: import.meta.env.DEV,
     },
+    // TanStack pauses mutations before they run while the browser is offline, and a paused
+    // mutation has no function after a reload, so a star or a read toggle made offline did
+    // nothing and was lost with the window. Entry actions record their intent in the
+    // transaction queue, which waits for the network itself; the rest fail with their error.
+    mutations: {
+      networkMode: "always",
+    },
   },
 })
 const localStoragePersister = createSyncStoragePersister({
@@ -51,6 +58,8 @@ export const persistConfig: OmitKeyof<PersistQueryClientOptions, "queryClient"> 
   // 7 day
   maxAge: 7 * 24 * 60 * 60 * 1000,
   dehydrateOptions: {
+    // A restored mutation has no function to run, so persisting one only keeps it hanging.
+    shouldDehydrateMutation: () => false,
     shouldDehydrateQuery: (query) => {
       if (!query.meta?.persist) return false
       const queryIsReadyForPersistence = query.state.status === "success"

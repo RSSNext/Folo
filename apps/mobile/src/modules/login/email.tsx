@@ -16,6 +16,7 @@ import { SubmitButton } from "@/src/components/common/SubmitButton"
 import { PlainTextField } from "@/src/components/ui/form/TextField"
 import { Text } from "@/src/components/ui/typography/Text"
 import { getCookie, signIn, signUp } from "@/src/lib/auth"
+import { getAuthErrorMessage } from "@/src/lib/error-parser"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { toast } from "@/src/lib/toast"
@@ -60,15 +61,19 @@ async function signInWithEmail(
     )
 
     if (res.error) {
-      throw new Error(res.error.message)
+      throw new Error(getAuthErrorMessage(res.error))
     }
 
     if (res.data?.twoFactorRedirect) {
-      Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen)
+      Navigation.rootNavigation.presentControllerView(TwoFactorAuthScreen, { isSignIn: true })
       return false
     }
   } catch (error) {
-    Alert.alert(error instanceof Error ? error.message : "Unable to sign in")
+    Alert.alert(
+      error instanceof Error
+        ? error.message
+        : i18next.t("auth.error.sign_in_failed", { ns: "common" }),
+    )
     return false
   }
 
@@ -219,8 +224,8 @@ export function EmailSignUp() {
         },
       )
 
-      if (res.error?.message) {
-        toast.error(res.error.message)
+      if (res.error) {
+        toast.error(getAuthErrorMessage(res.error))
         return
       }
 

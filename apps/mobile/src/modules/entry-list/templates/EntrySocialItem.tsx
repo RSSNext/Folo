@@ -115,7 +115,8 @@ export const EntrySocialItem = memo(
       },
       [entry?.media, openLightbox],
     )
-    if (!entry) return <EntryItemSkeleton />
+    // Nothing loads an entry missing from the store, so its placeholder holds still
+    if (!entry) return <EntryItemSkeleton animated={false} />
     const { description, publishedAt, media } = entry
     return (
       <EntryItemContextMenu id={entryId} view={FeedViewType.SocialMedia}>
@@ -128,7 +129,7 @@ export const EntrySocialItem = memo(
             <View className="absolute left-1.5 top-[25] size-2 rounded-full bg-red" />
           )}
 
-          <View className="flex flex-1 flex-row items-start gap-4">
+          <View className="flex flex-row items-start gap-4">
             <NativePressable hitSlop={10} onPress={navigationToFeedEntryList}>
               {entry.authorAvatar ? (
                 <UserAvatar

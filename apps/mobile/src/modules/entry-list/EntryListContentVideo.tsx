@@ -11,6 +11,7 @@ import { StyleSheet, View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
+import { Skeleton, SkeletonPulse } from "@/src/components/ui/skeleton/Skeleton"
 import { useIsTabletLayout } from "@/src/lib/responsive"
 import { useEntries } from "@/src/modules/screen/atoms"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
@@ -19,6 +20,10 @@ import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { GridEntryListFooter } from "./EntryListFooter"
 import { useOnViewableItemsChanged } from "./hooks"
+import {
+  shouldAnimateLoadingPlaceholder,
+  shouldAnimateNextPagePlaceholder,
+} from "./placeholder-animation"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
 
 const VIDEO_SKELETON_KEYS = ["video-skeleton-1", "video-skeleton-2", "video-skeleton-3"] as const
@@ -81,12 +86,16 @@ export const EntryListContentVideo = ({
     entryCount: entryIds?.length ?? 0,
     hasNextPage,
   })
+  const animateNextPagePlaceholder = shouldAnimateNextPagePlaceholder({
+    active,
+    isFetchingNextPage,
+  })
   const ListFooterComponent = useMemo(
     () =>
       hasNextPage ? (
         <View className="flex flex-row justify-between">
-          <EntryItemSkeleton />
-          <EntryItemSkeleton />
+          <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
+          <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
         </View>
       ) : (
         <View>
@@ -94,7 +103,7 @@ export const EntryListContentVideo = ({
           {hasEndSpacer && <EntryListEndScrollSpacer />}
         </View>
       ),
-    [hasEndSpacer, hasNextPage, fetchedTime],
+    [animateNextPagePlaceholder, hasEndSpacer, hasNextPage, fetchedTime],
   )
 
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {
@@ -106,6 +115,7 @@ export const EntryListContentVideo = ({
 
   // Show loading skeleton when entries are not ready and no data yet
   if (!isReady && (!entryIds || entryIds.length === 0)) {
+    const animateLoadingPlaceholder = shouldAnimateLoadingPlaceholder({ active })
     return (
       <View
         className="flex-1 px-2"
@@ -114,12 +124,12 @@ export const EntryListContentVideo = ({
         <View className="flex-row">
           <View className="mr-1 flex-1">
             {VIDEO_SKELETON_KEYS.map((key) => (
-              <EntryVideoItemSkeleton key={`left-${key}`} />
+              <EntryVideoItemSkeleton key={`left-${key}`} animated={animateLoadingPlaceholder} />
             ))}
           </View>
           <View className="ml-1 flex-1">
             {VIDEO_SKELETON_KEYS.map((key) => (
-              <EntryVideoItemSkeleton key={`right-${key}`} />
+              <EntryVideoItemSkeleton key={`right-${key}`} animated={animateLoadingPlaceholder} />
             ))}
           </View>
         </View>
@@ -162,54 +172,25 @@ const defaultKeyExtractor = (item: string) => {
   return item
 }
 
-function EntryVideoItemSkeleton() {
+function EntryVideoItemSkeleton({ animated }: { animated: boolean }) {
   return (
-    <View className="m-1 overflow-hidden rounded-md">
+    <SkeletonPulse animated={animated} className="m-1 overflow-hidden rounded-md">
       {/* Video thumbnail */}
-      <View
-        className="h-32 w-full animate-pulse rounded-md bg-system-fill"
-        style={{ aspectRatio: 16 / 9 }}
-      />
+      <Skeleton className="h-32 w-full rounded-md" style={{ aspectRatio: 16 / 9 }} />
 
       {/* Description and footer */}
       <View className="my-2 px-2">
         {/* Description */}
-        <View className="mb-1 h-4 w-full animate-pulse rounded-md bg-system-fill" />
-        <View className="mb-3 h-4 w-3/4 animate-pulse rounded-md bg-system-fill" />
+        <Skeleton className="mb-1 h-4 w-full rounded-md" />
+        <Skeleton className="mb-3 h-4 w-3/4 rounded-md" />
 
         {/* Footer with feed icon and metadata */}
         <View className="flex-row items-center gap-1">
-          <View className="size-4 animate-pulse rounded-full bg-system-fill" />
-          <View className="h-3 w-24 animate-pulse rounded-md bg-system-fill" />
-          <View className="h-3 w-20 animate-pulse rounded-md bg-system-fill" />
+          <Skeleton className="size-4 rounded-full" />
+          <Skeleton className="h-3 w-24 rounded-md" />
+          <Skeleton className="h-3 w-20 rounded-md" />
         </View>
       </View>
-    </View>
-  )
-}
-
-export function EntryItemSkeleton() {
-  return (
-    <View className="m-1 overflow-hidden rounded-md">
-      {/* Video thumbnail */}
-      <View
-        className="h-32 w-full animate-pulse rounded-md bg-system-fill"
-        style={{ aspectRatio: 16 / 9 }}
-      />
-
-      {/* Description and footer */}
-      <View className="my-2 px-2">
-        {/* Description */}
-        <View className="mb-1 h-4 w-full animate-pulse rounded-md bg-system-fill" />
-        <View className="mb-3 h-4 w-3/4 animate-pulse rounded-md bg-system-fill" />
-
-        {/* Footer with feed icon and metadata */}
-        <View className="flex-row items-center gap-1">
-          <View className="size-4 animate-pulse rounded-full bg-system-fill" />
-          <View className="h-3 w-24 animate-pulse rounded-md bg-system-fill" />
-          <View className="h-3 w-20 animate-pulse rounded-md bg-system-fill" />
-        </View>
-      </View>
-    </View>
+    </SkeletonPulse>
   )
 }

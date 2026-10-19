@@ -1,5 +1,6 @@
 import { reloadAppAsync } from "expo"
 
+import { rememberHandledLaunchLink } from "./launch-link"
 import { abortInFlightRequests, waitForNetworkIdle } from "./network-activity"
 import { queryClient } from "./query-client"
 
@@ -19,5 +20,7 @@ export const reloadApp = async (reason: string) => {
   abortInFlightRequests()
   await waitForNetworkIdle(DRAIN_TIMEOUT_MS)
   await new Promise((resolve) => setTimeout(resolve, SETTLE_DELAY_MS))
+  // The reloaded app would report the same launch link and open it again
+  await rememberHandledLaunchLink()
   await reloadAppAsync(reason)
 }

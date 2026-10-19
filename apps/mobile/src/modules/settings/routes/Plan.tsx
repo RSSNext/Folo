@@ -10,15 +10,7 @@ import type { TFunction } from "i18next"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { LayoutChangeEvent } from "react-native"
-import {
-  ActivityIndicator,
-  Animated,
-  Easing,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native"
+import { ActivityIndicator, Animated, Easing, Pressable, StyleSheet, View } from "react-native"
 
 import { useIsPaymentEnabled, useServerConfigs } from "@/src/atoms/server-configs"
 import { DefaultHeaderBackButton } from "@/src/components/layouts/header/NavigationHeader"
@@ -31,10 +23,20 @@ import { CheckLineIcon } from "@/src/icons/check_line"
 import { followClient } from "@/src/lib/api-client"
 import { authClient } from "@/src/lib/auth"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
+import { getMobileBillingProvider } from "@/src/lib/payment"
 import { proxyEnv } from "@/src/lib/proxy-env"
 import { toast } from "@/src/lib/toast"
 import { useAppleIAP } from "@/src/providers/AppleIAPProvider"
+import type { GooglePlayFreeTrial } from "@/src/providers/google-play-purchase"
+import {
+  getGooglePlayProductId,
+  getGooglePlayProductIds,
+} from "@/src/providers/google-play-purchase"
+import { useGooglePlayBilling } from "@/src/providers/GooglePlayBillingProvider"
 import { useColor } from "@/src/theme/colors"
+
+import type { SubscriptionManagement, SubscriptionSource } from "./plan-billing"
+import { canChangeSubscriptionHere, getSubscriptionManagement } from "./plan-billing"
 
 type PaymentPlan = NonNullable<StatusConfigs["PAYMENT_PLAN_LIST"]>[number]
 type PaymentFeature = PaymentPlan["limit"]
@@ -108,7 +110,7 @@ type UpgradeVariables = {
 }
 
 type ActiveSubscription = {
-  source: "stripe" | "apple" | null
+  source: SubscriptionSource | null
   plan: string | null
   status: string | null
   productId: string | null
@@ -207,6 +209,9 @@ const isFeatureValueVisible = (value: PaymentFeature[keyof PaymentFeature] | nul
 
 const isAppleProductId = (value: string | undefined): value is string => typeof value === "string"
 
+const APPLE_STANDARD_EULA_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+const TERMS_OF_SERVICE_URL = "https://folo.is/terms-of-service"
+
 const BILLING_PERIOD_RANK: Record<BillingPeriod, number> = {
   monthly: 0,
   yearly: 1,
@@ -243,11 +248,17 @@ const inferBillingPeriodFromProductId = (
     return null
   }
 
-  if (productId === plan.appleProductIdentifierAnnual) {
+  if (
+    productId === plan.appleProductIdentifierAnnual ||
+    productId === getGooglePlayProductId(plan, true)
+  ) {
     return "yearly"
   }
 
-  if (productId === plan.appleProductIdentifier) {
+  if (
+    productId === plan.appleProductIdentifier ||
+    productId === getGooglePlayProductId(plan, false)
+  ) {
     return "monthly"
   }
 
@@ -325,15 +336,14 @@ export const PlanScreen: NavigationControllerView = () => {
   const role = useUserRole()
   const roleEndAt = useRoleEndAt()
   const whoami = useWhoami()
-  const {
-    subscriptions: appleSubscriptions,
-    isProcessingPurchase,
-    isPurchasing,
-    isRestoring,
-    loadSubscriptions,
-    requestSubscriptionPurchase,
-    restoreSubscriptionPurchases,
-  } = useAppleIAP()
+  const billingProvider = getMobileBillingProvider()
+  // Each is null unless this build sells through that store
+  const appleIAP = useAppleIAP()
+  const googlePlay = useGooglePlayBilling()
+  const storeBilling = appleIAP ?? googlePlay
+  const isPurchasing = storeBilling?.isPurchasing ?? false
+  const isProcessingPurchase = storeBilling?.isProcessingPurchase ?? false
+  const isRestoring = storeBilling?.isRestoring ?? false
 
   const plans = useMemo<PaymentPlan[]>(
     () => serverConfigs?.PAYMENT_PLAN_LIST ?? [],
@@ -346,24 +356,46 @@ export const PlanScreen: NavigationControllerView = () => {
         .filter(isAppleProductId),
     [plans],
   )
+  const appleSubscriptions = appleIAP?.subscriptions
   const appleProductsById = useMemo(
     () =>
       new Map<string, ProductSubscription>(
-        appleSubscriptions.map((product: ProductSubscription) => [product.id, product]),
+        (appleSubscriptions ?? []).map((product: ProductSubscription) => [product.id, product]),
       ),
     [appleSubscriptions],
   )
+  const googlePlayProductIds = useMemo(() => getGooglePlayProductIds(plans), [plans])
 
   const defaultBillingPeriod: BillingPeriod = "yearly"
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(defaultBillingPeriod)
 
+  const loadAppleSubscriptions = appleIAP?.loadSubscriptions
   useEffect(() => {
-    if (Platform.OS !== "ios" || appleProductIds.length === 0) {
+    if (!loadAppleSubscriptions || appleProductIds.length === 0) {
       return
     }
 
-    void loadSubscriptions(appleProductIds)
-  }, [appleProductIds, loadSubscriptions])
+    void loadAppleSubscriptions(appleProductIds)
+  }, [appleProductIds, loadAppleSubscriptions])
+
+  const isGooglePlayConnected = googlePlay?.connected ?? false
+  const loadGooglePlaySubscriptions = googlePlay?.loadSubscriptions
+  // Play products fail to load when the device has no usable Play Store
+  const [isGooglePlayUnavailable, setIsGooglePlayUnavailable] = useState(false)
+  useEffect(() => {
+    if (
+      !isGooglePlayConnected ||
+      !loadGooglePlaySubscriptions ||
+      googlePlayProductIds.length === 0
+    ) {
+      return
+    }
+
+    void loadGooglePlaySubscriptions(googlePlayProductIds).then(
+      () => setIsGooglePlayUnavailable(false),
+      () => setIsGooglePlayUnavailable(true),
+    )
+  }, [googlePlayProductIds, isGooglePlayConnected, loadGooglePlaySubscriptions])
 
   const sortedPlans = useMemo(() => {
     return [...plans].sort((a, b) => (a.tier ?? 0) - (b.tier ?? 0))
@@ -463,7 +495,24 @@ export const PlanScreen: NavigationControllerView = () => {
     mutationFn: async ({ planId, annual }) => {
       const selectedPlan = plans.find((plan: PaymentPlan) => plan.planID === planId)
 
-      if (Platform.OS === "ios" && activeSubscription?.source !== "stripe") {
+      // Google Play installs must never reach Stripe
+      if (billingProvider === "google-play") {
+        const productId = selectedPlan ? getGooglePlayProductId(selectedPlan, annual) : null
+        if (!googlePlay || !productId) {
+          throw new Error(t("subscription.actions.google_play_unavailable"))
+        }
+
+        await googlePlay.requestSubscriptionPurchase({
+          sku: productId,
+          // Lets the server match the purchase to this account
+          accountToken: whoami?.appleAppAccountToken,
+          replacingProductId:
+            activeSubscription?.source === "google" ? activeSubscription.productId : null,
+        })
+        return
+      }
+
+      if (appleIAP && activeSubscription?.source !== "stripe") {
         const productId = annual
           ? selectedPlan?.appleProductIdentifierAnnual
           : selectedPlan?.appleProductIdentifier
@@ -472,7 +521,7 @@ export const PlanScreen: NavigationControllerView = () => {
           throw new Error(t("subscription.actions.upgrade_error"))
         }
 
-        await requestSubscriptionPurchase({
+        await appleIAP.requestSubscriptionPurchase({
           sku: productId,
           appAccountToken: whoami?.appleAppAccountToken,
         })
@@ -510,8 +559,24 @@ export const PlanScreen: NavigationControllerView = () => {
   })
 
   const handleManageSubscription = useCallback(() => {
+    if (activeSubscription?.source === "google" && googlePlay) {
+      void googlePlay.openSubscriptionManagement(activeSubscription.productId).catch(() => {
+        toast.error(t("subscription.actions.manage_error"))
+      })
+      return
+    }
+
     billingPortalMutation.mutate()
-  }, [billingPortalMutation])
+  }, [activeSubscription, billingPortalMutation, googlePlay, t])
+
+  const canChangeSubscription = canChangeSubscriptionHere(
+    activeSubscription?.source,
+    billingProvider,
+  )
+  const subscriptionManagement = getSubscriptionManagement(
+    activeSubscription?.source,
+    billingProvider,
+  )
 
   if (!isPaymentEnabled || sortedPlans.length === 0) {
     return (
@@ -553,6 +618,8 @@ export const PlanScreen: NavigationControllerView = () => {
   return (
     <SafeNavigationScrollView
       className="bg-system-grouped-background"
+      // A centred column on iPad, as wide as the other settings screens
+      contentContainerMaxWidth={760}
       Header={
         <NavigationBlurEffectHeaderView
           title={t("titles.subscription.long")}
@@ -590,6 +657,12 @@ export const PlanScreen: NavigationControllerView = () => {
               activeSubscription,
               hasExistingSubscription,
             })
+            const googlePlayProduct = googlePlay?.products.get(
+              getGooglePlayProductId(plan, billingPeriod === "yearly") ?? "",
+            )
+            // A Google Play install can only sell a plan whose Google Play product has loaded
+            const canPurchase =
+              canChangeSubscription && (billingProvider !== "google-play" || !!googlePlayProduct)
 
             return (
               <PlanCard
@@ -599,17 +672,18 @@ export const PlanScreen: NavigationControllerView = () => {
                 actionType={actionType}
                 isCurrentPlan={isCurrentPlan}
                 storeProduct={
-                  Platform.OS === "ios"
+                  appleIAP
                     ? appleProductsById.get(
                         getAppleProductIdForBillingPeriod(plan, billingPeriod) ?? "",
                       )
-                    : undefined
+                    : googlePlayProduct
                 }
                 onUpgrade={
                   plan.planID &&
                   actionType &&
                   actionType !== "current" &&
                   actionType !== "coming-soon" &&
+                  canPurchase &&
                   (!hasExistingSubscription || billingSubscriptionQuery.isFetched)
                     ? () =>
                         upgradeMutation.mutate({
@@ -619,19 +693,31 @@ export const PlanScreen: NavigationControllerView = () => {
                     : undefined
                 }
                 onManageSubscription={handleManageSubscription}
+                subscriptionManagement={subscriptionManagement}
                 isProcessing={isProcessing || isPurchasing || isProcessingPurchase}
                 isManaging={billingPortalMutation.isPending}
                 activeSubscription={billingSubscriptionQuery.data}
-                upgradeButtonText={plan.upgradeButtonText}
+                // Google Play shows the free trial only to users who can still start one
+                upgradeButtonText={
+                  billingProvider === "google-play" && !googlePlayProduct?.freeTrial
+                    ? undefined
+                    : plan.upgradeButtonText
+                }
               />
             )
           })}
         </View>
 
-        {Platform.OS === "ios" && (
+        {googlePlay && (!googlePlay.connected || isGooglePlayUnavailable) ? (
+          <Text className="px-2 text-center text-sm leading-5 text-secondary-label">
+            {t("subscription.actions.google_play_not_connected")}
+          </Text>
+        ) : null}
+
+        {storeBilling && (
           <Pressable
             accessibilityRole="button"
-            onPress={() => void restoreSubscriptionPurchases()}
+            onPress={() => void storeBilling.restoreSubscriptionPurchases()}
             disabled={isRestoring}
             className="h-11 items-center justify-center rounded-full border border-opaque-separator/60 bg-secondary-system-grouped-background disabled:opacity-60"
           >
@@ -645,21 +731,25 @@ export const PlanScreen: NavigationControllerView = () => {
           </Pressable>
         )}
 
-        {Platform.OS === "ios" && (
+        {storeBilling && (
           <View className="gap-1 px-2">
             <Text className="text-center text-xs leading-5 text-secondary-label">
-              {t("subscription.legal.auto_renewal_apple")}
+              {appleIAP
+                ? t("subscription.legal.auto_renewal_apple")
+                : t("subscription.legal.auto_renewal_google")}
             </Text>
             <View className="flex-row flex-wrap justify-center gap-x-2">
               <Pressable
                 accessibilityRole="link"
                 onPress={() =>
-                  void openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+                  void openURL(appleIAP ? APPLE_STANDARD_EULA_URL : TERMS_OF_SERVICE_URL)
                 }
                 className="min-h-11 justify-center px-2"
               >
                 <Text className="text-center text-sm text-link underline">
-                  {t("subscription.legal.terms_of_use")}
+                  {appleIAP
+                    ? t("subscription.legal.terms_of_use")
+                    : t("subscription.legal.terms_of_service")}
                 </Text>
               </Pressable>
               <Pressable
@@ -728,10 +818,12 @@ const BillingToggle = ({
       const { width, x } = event.nativeEvent.layout
       segmentLayouts.current[period] = { width, x }
       const measuredAll = BILLING_SEGMENTS.every((option) => segmentLayouts.current[option])
-      if (measuredAll && !indicatorReady) {
+      if (!measuredAll) return
+      if (!indicatorReady) {
         setIndicatorReady(true)
-        animateIndicator(value, false)
       }
+      // Every time, not only the first: a rotation or a window resize moves the segments
+      animateIndicator(value, false)
     },
     [animateIndicator, indicatorReady, value],
   )
@@ -812,6 +904,7 @@ const PlanCard = ({
   storeProduct,
   onUpgrade,
   onManageSubscription,
+  subscriptionManagement,
   isProcessing,
   isManaging,
   activeSubscription,
@@ -821,9 +914,10 @@ const PlanCard = ({
   billingPeriod: BillingPeriod
   actionType: PlanActionType
   isCurrentPlan: boolean
-  storeProduct?: { displayPrice?: string } | null
+  storeProduct?: { displayPrice?: string; freeTrial?: GooglePlayFreeTrial | null } | null
   onUpgrade?: () => void
   onManageSubscription?: () => void
+  subscriptionManagement: SubscriptionManagement
   isProcessing?: boolean
   isManaging?: boolean
   activeSubscription?: ActiveSubscription
@@ -861,6 +955,12 @@ const PlanCard = ({
     discountPercentage > 0
       ? t("subscription.discount.tag", { value: discountPercentage })
       : undefined
+  const freeTrial = isPaidPlan ? storeProduct?.freeTrial : null
+  const freeTrialLabel = freeTrial
+    ? freeTrial.unit === "day"
+      ? t("subscription.price.free_trial_days", { count: freeTrial.count })
+      : t("subscription.price.free_trial_months", { count: freeTrial.count })
+    : undefined
 
   const priceAnimation = useRef(new Animated.Value(1)).current
 
@@ -955,6 +1055,9 @@ const PlanCard = ({
         {discountLabel ? (
           <Text className="mt-1 text-xs font-semibold text-green">{discountLabel}</Text>
         ) : null}
+        {freeTrialLabel ? (
+          <Text className="mt-1 text-xs font-semibold text-green">{freeTrialLabel}</Text>
+        ) : null}
       </View>
 
       <View className="mt-4 gap-2">
@@ -994,6 +1097,7 @@ const PlanCard = ({
         actionType={actionType}
         onUpgrade={onUpgrade}
         onManageSubscription={onManageSubscription}
+        subscriptionManagement={subscriptionManagement}
         isProcessing={isProcessing}
         isManaging={isManaging}
         activeSubscription={activeSubscription}
@@ -1007,6 +1111,7 @@ const PlanAction = ({
   actionType,
   onUpgrade,
   onManageSubscription,
+  subscriptionManagement,
   isProcessing,
   isManaging,
   activeSubscription,
@@ -1015,6 +1120,7 @@ const PlanAction = ({
   actionType: "current" | "upgrade" | "new" | "coming-soon" | null
   onUpgrade?: () => void
   onManageSubscription?: () => void
+  subscriptionManagement: SubscriptionManagement
   isProcessing?: boolean
   isManaging?: boolean
   activeSubscription?: ActiveSubscription
@@ -1023,7 +1129,6 @@ const PlanAction = ({
   const { t } = useTranslation("settings")
 
   const canManageSubscription = !!activeSubscription?.canManage
-  const isAppleSubscription = activeSubscription?.source === "apple"
   const isCanceled = activeSubscription?.status === "canceled"
   const periodEnd = activeSubscription?.trialEnd ?? activeSubscription?.periodEnd
   const effectivePeriodEnd = periodEnd ? new Date(periodEnd) : null
@@ -1078,9 +1183,11 @@ const PlanAction = ({
             </Text>
           </View>
         )}
-        {isAppleSubscription ? (
+        {subscriptionManagement !== "manage-button" ? (
           <Text className="rounded-2xl bg-secondary-system-fill px-4 py-3 text-center text-sm leading-5 text-secondary-label">
-            {t("plan.manage_subscription_hint_apple")}
+            {subscriptionManagement === "apple-hint"
+              ? t("plan.manage_subscription_hint_apple")
+              : t("plan.manage_subscription_hint_other_platform")}
           </Text>
         ) : (
           <Pressable

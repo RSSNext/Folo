@@ -25,6 +25,7 @@ import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { CopyCuteReIcon } from "@/src/icons/copy_cute_re"
 import { PowerMonoIcon } from "@/src/icons/power_mono"
 import { RightCuteReIcon } from "@/src/icons/right_cute_re"
+import { getFetchErrorMessage } from "@/src/lib/error-parser"
 import { isAndroid, isIOS } from "@/src/lib/platform"
 import { toast } from "@/src/lib/toast"
 import { navigateToPlanScreen } from "@/src/modules/settings/routes/navigateToPlanScreen"
@@ -84,9 +85,14 @@ export const AISummary: FC<{
   const isPaymentEnabled = useIsPaymentEnabled()
   const followApiError = error instanceof FollowAPIError ? error : null
   const shouldSuggestUpgrade = Boolean(isPaymentEnabled && followApiError?.status === 402)
-  const errorMessage =
-    typeof error === "string" ? error : error instanceof Error ? error.message : undefined
-  const showErrorContent = Boolean(errorMessage && !shouldSuggestUpgrade)
+  const errorDetail =
+    typeof error === "string"
+      ? error
+      : error instanceof Error
+        ? getFetchErrorMessage(error)
+        : undefined
+  const showErrorContent = Boolean(error && !shouldSuggestUpgrade)
+  const errorTitle = t("ai.summary_not_available")
   const upgradeTitle = t("ai.summary_upgrade_required_title")
   const upgradeDescription = t("ai.summary_upgrade_required_description")
   const upgradeCTA = t("ai.summary_upgrade_view_plans")
@@ -141,9 +147,14 @@ export const AISummary: FC<{
       )
     }
 
-    if (showErrorContent && errorMessage) {
+    if (showErrorContent) {
       return (
-        <ErrorContent forMeasurement={forMeasurement} message={errorMessage} onRetry={onRetry} />
+        <ErrorContent
+          forMeasurement={forMeasurement}
+          message={errorTitle}
+          detail={errorDetail}
+          onRetry={onRetry}
+        />
       )
     }
 
@@ -225,10 +236,12 @@ export const AISummary: FC<{
 const ErrorContent = ({
   forMeasurement,
   message,
+  detail,
   onRetry,
 }: {
   forMeasurement: boolean
   message: string
+  detail?: string
   onRetry?: () => void
 }) => {
   const { t } = useTranslation()
@@ -237,6 +250,9 @@ const ErrorContent = ({
       <View className="flex-row items-center gap-2">
         <Text className="flex-1 text-[14px] leading-[20px] text-red">{message}</Text>
       </View>
+      {!!detail && (
+        <Text className="mt-1 text-[13px] leading-[18px] text-secondary-label">{detail}</Text>
+      )}
       {onRetry &&
         (forMeasurement ? (
           <View className="mt-3 self-start rounded-full bg-quaternary-system-fill px-4 py-2">

@@ -19,7 +19,15 @@ export const resolveLoginToken = async ({
   onStatus: (message: string) => void
 }) => {
   if (inputToken) {
-    return await resolveBrowserLoginToken(apiUrl, inputToken)
+    try {
+      return await resolveBrowserLoginToken(apiUrl, inputToken)
+    } catch (error) {
+      // The token given is neither a one-time token nor a live session: no browser was involved
+      if (error instanceof CLIError && error.code === "UNAUTHORIZED") {
+        throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
+      }
+      throw error
+    }
   }
 
   const browserLogin = await loginWithBrowser({
@@ -56,10 +64,6 @@ const runLoginAction = async function (this: Command, options: AuthLoginOptions)
         token,
         verbose: globalOptions.verbose,
       })
-
-      if (!session.user || !session.session) {
-        throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
-      }
 
       await updateConfig({
         token,
@@ -101,9 +105,6 @@ const runWhoamiAction = async function (this: Command) {
       token,
       verbose: globalOptions.verbose,
     })
-    if (!session.user || !session.session) {
-      throw new CLIError("UNAUTHORIZED", "Token is invalid or expired.")
-    }
 
     return {
       user: session.user,

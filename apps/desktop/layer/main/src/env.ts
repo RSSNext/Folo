@@ -12,6 +12,15 @@ export const isWindows = platform === "win32"
 
 export const isLinux = platform === "linux"
 
+/** The temporary profile the end-to-end tests run the app on */
+export const e2eUserDataDir = process.env.FOLO_E2E_USER_DATA_DIR
+
+/**
+ * A test run of the unpackaged app. It uses the release URL schemes, see `DEV`, and must leave
+ * the installed app's registration and log alone.
+ */
+export const isTestRun = process.env.NODE_ENV === "test" || !!e2eUserDataDir
+
 /**
  * @see https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information
  * Windows 11 buildNumber starts from 22000.

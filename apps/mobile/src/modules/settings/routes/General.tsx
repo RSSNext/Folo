@@ -28,7 +28,10 @@ import { fetchTtsVoices } from "@/src/modules/player/tts-service"
 
 import { PaidSettingCell } from "../components/PaidSettingCell"
 
-const settingSelectWrapperClassName = "w-[200px]"
+// In a row as narrow as a phone-wide iPad window or a 2x iPhone, the select gives way to the
+// setting name, whose words a fixed 200 pt select broke mid-word
+const settingSelectWrapperClassName = "w-[200px] shrink"
+const settingLabelClassName = "min-w-32"
 
 export function LanguageSelect({ settingKey }: { settingKey: "language" | "actionLanguage" }) {
   const { t } = useTranslation("settings")
@@ -87,6 +90,7 @@ function LanguageSetting({ settingKey }: { settingKey: "language" | "actionLangu
           ? t("general.language.description")
           : t("general.action_language.description")
       }
+      leftClassName={settingLabelClassName}
       rightClassName={settingSelectWrapperClassName}
     >
       <LanguageSelect settingKey={settingKey} />
@@ -104,6 +108,7 @@ function TranslationModeSetting() {
       label={t("general.translation_mode.label")}
       description={t("general.translation_mode.description")}
       locked={isLocked}
+      leftClassName={settingLabelClassName}
       rightClassName={settingSelectWrapperClassName}
     >
       <Select
@@ -146,6 +151,7 @@ function VoiceSetting() {
     <GroupedInsetListCell
       label={t("general.voices")}
       testID="general-voice-cell"
+      leftClassName={settingLabelClassName}
       rightClassName={settingSelectWrapperClassName}
     >
       <Select

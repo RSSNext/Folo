@@ -21,6 +21,10 @@ export const registerEntryCommand = (program: Command) => {
     .action(async function (this: Command, entryId: string) {
       await runCommand(this, async ({ client }) => {
         const response = await client.api.entries.get({ id: entryId })
+        // The API answers an id it has no entry for with success and no data
+        if (!response.data) {
+          throw new CLIError("NOT_FOUND", `Entry ${entryId} not found.`)
+        }
         return response.data
       })
     })
@@ -30,8 +34,12 @@ export const registerEntryCommand = (program: Command) => {
     .description("Get readability content")
     .argument("<entryId>", "Entry ID")
     .action(async function (this: Command, entryId: string) {
-      await runCommand(this, async ({ client }) => {
+      await runCommand(this, async ({ client, options }) => {
         const response = await client.api.entries.readability({ id: entryId })
+        // Plain output is the content itself, ready to be piped or saved
+        if (options.format === "plain") {
+          return response.data?.content ?? ""
+        }
         return response.data
       })
     })
