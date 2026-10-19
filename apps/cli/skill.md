@@ -202,6 +202,9 @@ A page can hold fewer entries than `--limit` while more follow, so keep going un
 - `NETWORK_ERROR`
   - The API could not be reached; the message names its URL and the reason, such as `ECONNREFUSED`
   - Check the network connection and `--api-url`, then retry
+- `TIMEOUT_ERROR`
+  - The API did not answer within 30 seconds; the request may still have been carried out
+  - Retry; check with the matching `list` or `get` command before repeating a change
 - `INVALID_RESPONSE`
   - The server at the API URL answered as the Folo API never does, such as with a web page; the token is not to blame
   - Check `--api-url`, or leave it out to use the default API
