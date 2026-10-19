@@ -143,6 +143,10 @@ export const EntryListContentSocial = ({
   if (!isReady && (!entryIds || entryIds.length === 0)) {
     return (
       <TimelineSelectorList
+        // FlashList only listens for viewable items if it mounts with onViewableItemsChanged, so
+        // the entries list must mount on its own instead of taking over this one, or scrolling
+        // it never marks entries read
+        key="placeholder"
         onRefresh={() => {}}
         isRefetching={false}
         onResetScrollSignalConsumed={onResetScrollSignalConsumed}
