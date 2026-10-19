@@ -22,7 +22,7 @@ appId: is.follow
 - tapOn:
     id: follow-unfollow
 - extendedWaitUntil:
-    visible: Unsubscribe?
+    visible: Unfollow\?
     timeout: 10000
 - tapOn:
     point: "275,497"

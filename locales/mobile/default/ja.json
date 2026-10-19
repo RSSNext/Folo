@@ -26,7 +26,7 @@
   "feed.follow.update_success": "フィードを更新しました。",
   "feed.not_found": "フィード（{{id}}）が見つかりません。",
   "feed.unfollow.confirm_description": "このフィードは購読一覧から削除されます。",
-  "feed.unfollow.confirm_title": "購読を解除しますか？",
+  "feed.unfollow.confirm_title": "フォローを解除しますか？",
   "feed.unfollow.success": "フィードのフォローを解除しました。",
   "image.close": "画像を閉じる",
   "image.close_hint": "画像ビューアを閉じます",

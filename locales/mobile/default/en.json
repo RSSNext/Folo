@@ -26,7 +26,7 @@
   "feed.follow.update_success": "Feed updated.",
   "feed.not_found": "Feed ({{id}}) not found.",
   "feed.unfollow.confirm_description": "This will remove the feed from your subscriptions.",
-  "feed.unfollow.confirm_title": "Unsubscribe?",
+  "feed.unfollow.confirm_title": "Unfollow?",
   "feed.unfollow.success": "Feed unfollowed.",
   "image.close": "Close image",
   "image.close_hint": "Closes the image viewer",
