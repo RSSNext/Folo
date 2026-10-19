@@ -3,6 +3,7 @@
   "app.copied_to_clipboard": "已複製到剪貼簿",
   "app.request_timeout": "伺服器回應逾時，請稍後再試。",
   "auth.error.account_not_linked": "此電子信箱對應的 Folo 帳號尚未驗證。請先在 app.folo.is 用魔法連結登入一次（密碼留空），再使用這種登入方式。",
+  "auth.error.invalid_email_or_password": "電子信箱或密碼不正確。",
   "auth.error.invalid_token": "此連結無效或已過期，請重新取得。",
   "auth.error.sign_in_failed": "登入失敗，請再試一次。",
   "auth.error.too_many_requests": "請求過於頻繁，請稍後再試。",

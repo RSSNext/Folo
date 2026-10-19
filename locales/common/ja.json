@@ -3,6 +3,7 @@
   "app.copied_to_clipboard": "クリップボードにコピーしました",
   "app.request_timeout": "サーバーの応答に時間がかかりすぎました。しばらくしてからもう一度お試しください。",
   "auth.error.account_not_linked": "このメールアドレスの Folo アカウントはまだ確認されていません。app.folo.is でマジックリンクを使って一度ログインしてから（パスワードは空欄のまま）、このログイン方法をもう一度お試しください。",
+  "auth.error.invalid_email_or_password": "メールアドレスまたはパスワードが正しくありません。",
   "auth.error.invalid_token": "このリンクは無効か、有効期限が切れています。新しいリンクをリクエストしてください。",
   "auth.error.sign_in_failed": "ログインできませんでした。もう一度お試しください。",
   "auth.error.too_many_requests": "リクエストが多すぎます。しばらくしてからもう一度お試しください。",

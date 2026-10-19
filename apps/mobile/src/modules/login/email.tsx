@@ -69,7 +69,11 @@ async function signInWithEmail(
       return false
     }
   } catch (error) {
-    Alert.alert(error instanceof Error ? error.message : "Unable to sign in")
+    Alert.alert(
+      error instanceof Error
+        ? error.message
+        : i18next.t("auth.error.sign_in_failed", { ns: "common" }),
+    )
     return false
   }
 

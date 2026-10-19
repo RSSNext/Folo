@@ -6,6 +6,8 @@
 const AUTH_ERROR_MESSAGE_KEYS = {
   // A provider's account for an email whose Folo account is not verified yet
   account_not_linked: "auth.error.account_not_linked",
+  // A password sign-in with an email that has no account, or with the wrong password
+  INVALID_EMAIL_OR_PASSWORD: "auth.error.invalid_email_or_password",
   // A sign-in or verification link that was used already, or is not one at all
   INVALID_TOKEN: "auth.error.invalid_token",
   TOKEN_EXPIRED: "auth.error.invalid_token",

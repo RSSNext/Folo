@@ -13,6 +13,9 @@ describe("getAuthErrorMessageKey", () => {
     expect(getAuthErrorMessageKey("INVALID_TOKEN")).toBe("auth.error.invalid_token")
     expect(getAuthErrorMessageKey("TOKEN_EXPIRED")).toBe("auth.error.invalid_token")
     expect(getAuthErrorMessageKey("account_not_linked")).toBe("auth.error.account_not_linked")
+    expect(getAuthErrorMessageKey("INVALID_EMAIL_OR_PASSWORD")).toBe(
+      "auth.error.invalid_email_or_password",
+    )
   })
 
   it("names none for any other code", () => {
@@ -58,6 +61,15 @@ describe("describeAuthError", () => {
     expect(describeAuthError({ status: 429, statusText: "Too Many Requests" }, translate)).toBe(
       "translated auth.error.too_many_requests",
     )
+  })
+
+  it("translates a password sign-in the server refused for the email or the password", () => {
+    expect(
+      describeAuthError(
+        { code: "INVALID_EMAIL_OR_PASSWORD", message: "Invalid email or password", status: 401 },
+        translate,
+      ),
+    ).toBe("translated auth.error.invalid_email_or_password")
   })
 
   it("keeps what the server said about anything else", () => {
