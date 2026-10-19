@@ -1,6 +1,5 @@
 import { userSyncService } from "@follow/store/user/store"
 import { tracker } from "@follow/tracker"
-import { getAuthErrorMessageKey } from "@follow/utils/auth-error"
 import * as AppleAuthentication from "expo-apple-authentication"
 import { useColorScheme } from "nativewind"
 import { useState } from "react"
@@ -13,7 +12,7 @@ import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformA
 import { Text } from "@/src/components/ui/typography/Text"
 import type { AuthProvider } from "@/src/lib/auth"
 import { signIn, signInWithSocialProvider, useAuthProviders } from "@/src/lib/auth"
-import { getSocialSignInErrorCode } from "@/src/lib/social-auth"
+import { getSocialSignInErrorCode, getSocialSignInFailureMessageKey } from "@/src/lib/social-auth"
 import { toast } from "@/src/lib/toast"
 
 import { loginWithSocialProvider } from "./social-login"
@@ -71,7 +70,7 @@ export function SocialLogin({ onPressEmail }: { isRegister: boolean; onPressEmai
       {socialProviders.map(([key, provider]) => {
         // Says why the server refused the sign-in when it names a reason the app explains
         const showFailure = (code: string | undefined) => {
-          const messageKey = getAuthErrorMessageKey(code)
+          const messageKey = getSocialSignInFailureMessageKey(code)
           toast.error(
             messageKey
               ? t(messageKey, { ns: "common" })
