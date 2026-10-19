@@ -6,4 +6,4 @@ We always recommend using the latest version of Follow to ensure you get all sec
 
 ## Reporting a Vulnerability
 
-Please report security vulnerabilities to follow@rss3.io.
+Please report security vulnerabilities to i@diygod.cc.
