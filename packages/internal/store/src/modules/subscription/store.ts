@@ -248,7 +248,6 @@ export const getSubscriptionChanges = (current: SubscriptionModel, next: Subscri
   return changes as Partial<Pick<SubscriptionModel, EditableSubscriptionField>>
 }
 
-/** A body of DELETE /subscriptions that the server handles, and the subscriptions it unfollows */
 /** A follow or unfollow of a feed or list that the server confirmed to this device. */
 export interface ConfirmedSubscriptionChange {
   /** The followed subscription, or null once it was unfollowed */
