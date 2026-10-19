@@ -369,7 +369,7 @@
   "mark_all_read_button.confirm_mark_all": "将 <which /> 标记为已读？",
   "mark_all_read_button.confirm_mark_all_info": "确认将全部标记为已读？",
   "mark_all_read_button.done": "已标记",
-  "mark_all_read_button.mark_as_read": "标记 <which /> 为已读",
+  "mark_all_read_button.mark_as_read": "标记<which />为已读",
   "mark_all_read_button.undo": "撤销",
   "media.image_load_failed": "图片加载失败",
   "media.image_load_failed_actions": "<Retry>重试</Retry>或<Link>访问原图</Link>",
