@@ -39,6 +39,11 @@ const sessionCookieRefreshIntervalSeconds = 60 * 60 * 12
 
 let authStateRevision = 0
 let lastAuthStateChangeAt = 0
+/**
+ * Set while signing out, which ends in a reload with an empty database. The session's queries
+ * are not loaded again before it: without the session the server would only refuse them.
+ */
+let signingOut = false
 
 export const getAuthStateRevision = () => authStateRevision
 export const getLastAuthStateChangeAt = () => lastAuthStateChangeAt
@@ -124,7 +129,8 @@ const authCookieStorage = createSessionAwareAuthCookieStorage({
     // Whose session it is stays unknown until the session endpoint answers, so queued changes
     // are not sent with it before.
     invalidateSessionUser()
-    void refreshSessionQueries()
+    // The Expo plugin drops the stored session as the sign-out request leaves
+    if (!signingOut) void refreshSessionQueries()
   },
 })
 
@@ -315,6 +321,7 @@ const resetLocalData = async (reason: string) => {
 export const signOut = async () => {
   // While the session still authorizes the request
   await unregisterPushToken()
+  signingOut = true
   try {
     await authClient.signOut()
   } catch (error) {
@@ -326,8 +333,15 @@ export const signOut = async () => {
   await userActions.removeCurrentUser()
   Navigation.rootNavigation.popToRoot()
   bumpAuthStateRevision()
-  await refreshSessionQueries()
-  await resetLocalData("User sign out")
+  try {
+    await resetLocalData("User sign out")
+  } catch (error) {
+    // Without the reload the screens would keep the signed-out account's data
+    await refreshSessionQueries()
+    throw error
+  } finally {
+    signingOut = false
+  }
 }
 
 let resettingForAnotherAccount = false
