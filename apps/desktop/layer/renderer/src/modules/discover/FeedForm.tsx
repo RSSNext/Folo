@@ -47,7 +47,7 @@ import {
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
-import { toastFetchError } from "~/lib/error-parser"
+import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 
@@ -180,6 +180,10 @@ export const FeedForm: Component<{
               <div className="center grow flex-col gap-3">
                 <i className="i-mgc-close-cute-re size-7 text-red" />
                 <p>{t("feed_form.error_fetching_feed")}</p>
+                {/* Why, such as an address that is not a feed */}
+                <p className="cursor-text select-text break-all px-8 text-center text-sm text-text-secondary">
+                  {getFetchErrorMessage(feedQuery.error)}
+                </p>
               </div>
             )
           }

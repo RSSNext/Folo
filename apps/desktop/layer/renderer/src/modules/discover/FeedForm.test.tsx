@@ -23,6 +23,7 @@ const mocks = vi.hoisted(() => {
     edit: vi.fn(),
     toast: vi.fn(),
     onSuccess: vi.fn(),
+    feedError: null as Error | null,
   }
 })
 
@@ -62,16 +63,22 @@ vi.mock("~/hooks/common", () => ({
   useI18n: () => Object.assign((key: string) => key, { common: (key: string) => key }),
 }))
 vi.mock("~/hooks/common/useFormHasChanges", () => ({ useFormHasChanges: () => false }))
-vi.mock("~/lib/error-parser", () => ({ toastFetchError: vi.fn() }))
+vi.mock("~/lib/error-parser", () => ({
+  getFetchErrorMessage: (error: Error) => `translated ${error.message}`,
+  toastFetchError: vi.fn(),
+}))
 vi.mock("~/modules/settings/modal/useSettingModal", () => ({ useSettingModal: () => () => {} }))
 vi.mock("~/queries/feed", () => ({
   feed: { byId: () => ({ invalidate: () => {} }) },
-  useFeedQuery: () => ({
-    data: { feed: FEED, entries: [], subscription: mocks.subscriptions.get(FEED.id) },
-    isLoading: false,
-    isError: false,
-    error: null,
-  }),
+  useFeedQuery: () =>
+    mocks.feedError
+      ? { data: undefined, isLoading: false, isError: true, error: mocks.feedError }
+      : {
+          data: { feed: FEED, entries: [], subscription: mocks.subscriptions.get(FEED.id) },
+          isLoading: false,
+          isError: false,
+          error: null,
+        },
 }))
 vi.mock("../shared/ViewSelectorRadioGroup", () => ({ ViewSelectorRadioGroup: () => null }))
 vi.mock("./FeedSummary", () => ({ FeedSummary: () => null }))
@@ -120,6 +127,7 @@ describe("FeedForm", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.subscriptions.clear()
+    mocks.feedError = null
   })
 
   afterEach(async () => {
@@ -169,5 +177,13 @@ describe("FeedForm", () => {
     expect(mocks.edit).toHaveBeenCalledTimes(1)
     expect(mocks.subscribe).not.toHaveBeenCalled()
     expect(mocks.toast).toHaveBeenCalledWith("feed_form.updated", { duration: 1000 })
+  })
+
+  test("says why a feed could not be loaded", async () => {
+    mocks.feedError = new Error("Feed failed to parse")
+    await render()
+
+    expect(host?.textContent).toContain("feed_form.error_fetching_feed")
+    expect(host?.textContent).toContain("translated Feed failed to parse")
   })
 })
