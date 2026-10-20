@@ -22,6 +22,7 @@ import {
   aiLocalOnlyKeys,
   createDefaultSettings as createDefaultAISettings,
   getAISettings,
+  hasOnlyUnchangedServerShortcuts,
 } from "~/atoms/settings/ai"
 import {
   __generalSettingAtom,
@@ -111,6 +112,23 @@ const defaultSettingsGetterMap: Record<LocalOnlyDomain, () => object> = {
   general: createDefaultGeneralSettings,
   ai: createDefaultAISettings,
 }
+
+/**
+ * Whether a setting of this device holds nothing the user changed here. AI shortcuts that are
+ * only the server's, unchanged, hold nothing either: every device adds those on its own, signed
+ * in or not, and sending them would replace the account's own shortcuts.
+ */
+const isSettingAtDefault = (
+  domain: LocalOnlyDomain,
+  key: string,
+  localValue: unknown,
+  defaultValue: unknown,
+) =>
+  isEqual(localValue, defaultValue) ||
+  (domain === "ai" &&
+    key === "shortcuts" &&
+    Array.isArray(localValue) &&
+    hasOnlyUnchangedServerShortcuts(localValue))
 
 const omitLocalOnlyKeys = <T extends object>(domain: LocalOnlyDomain, payload: T) => {
   const localOnlyKeys = new Set(localOnlyKeysMap[domain])
@@ -728,7 +746,9 @@ class SettingSyncQueue {
       const defaultSettings = defaultSettingsGetterMap[domain]() as Record<string, unknown>
       const changedSettings = Object.fromEntries(
         Object.keys(defaultSettings)
-          .filter((key) => !isEqual(localSettings[key], defaultSettings[key]))
+          .filter(
+            (key) => !isSettingAtDefault(domain, key, localSettings[key], defaultSettings[key]),
+          )
           .map((key) => [key, localSettings[key]]),
       )
       const payload = omitLocalOnlyKeys(domain, changedSettings)
