@@ -22,6 +22,8 @@ interface GestureWrapperProps {
 }
 
 export interface UsePullUpToNextReturn {
+  /** Whether the user is pulling past the end of the content */
+  isPulling: boolean
   pullUpViewProps: EntryPullUpToNextProps
   scrollViewEventHandlers: {
     onScroll?: (e: ReanimatedScrollEvent) => void

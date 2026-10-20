@@ -5,6 +5,8 @@
   "ai.summary_upgrade_required_description": "Pro プランにアップグレードして、無制限の AI サマリー、翻訳、およびその他のインテリジェント機能をアンロックしましょう。",
   "ai.summary_upgrade_required_title": "無料トライアルを開始して AI 要約を引き続き利用しましょう",
   "ai.summary_upgrade_view_plans": "プランを表示",
+  "entry.next_entry": "次のエントリー",
+  "entry.previous_entry": "前のエントリー",
   "entry.pull_up_to_next_entry": "引っ張って次のエントリーに移動",
   "entry.release_to_next_entry": "離して次のエントリーに移動",
   "entry_content.ai_summary": "AI 要約",

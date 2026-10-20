@@ -23,7 +23,7 @@ import { NavigationBlurEffectHeaderView } from "@/src/components/layouts/views/S
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 
 import { useHeaderHeight } from "../screen/hooks/useHeaderHeight"
-import { EntryContentContext } from "./ctx"
+import { EntryContentContext, EntryReaderBarsHiddenContext } from "./ctx"
 import { EntryContentHeaderRightActions } from "./EntryContentHeaderRightActions"
 import { EntryReadHistory } from "./EntryReadHistory"
 
@@ -44,7 +44,10 @@ const useAutoHideHeader = () => {
   const headerHeight = use(NavigationHeaderHeightContext)
   const hiddenOffset = headerHeight
 
-  const headerTranslateY = useSharedValue(0)
+  // Shared with the reader's bottom controls, which slide away along with the header
+  const readerBarsHiddenProgress = use(EntryReaderBarsHiddenContext)
+  const ownHiddenProgress = useSharedValue(0)
+  const hiddenProgress = readerBarsHiddenProgress ?? ownHiddenProgress
   const isHeaderHidden = useSharedValue(false)
   const lastScrollY = useSharedValue(0)
   const directionAnchorY = useSharedValue(0)
@@ -62,7 +65,7 @@ const useAutoHideHeader = () => {
         directionAnchorY.value = value
         if (isHeaderHidden.value) {
           isHeaderHidden.value = false
-          headerTranslateY.value = withTiming(0, AUTO_HIDE_ANIMATION)
+          hiddenProgress.value = withTiming(0, AUTO_HIDE_ANIMATION)
         }
         return
       }
@@ -76,23 +79,23 @@ const useAutoHideHeader = () => {
 
       if (scrollingDown !== isHeaderHidden.value) {
         isHeaderHidden.value = scrollingDown
-        headerTranslateY.value = withTiming(scrollingDown ? -hiddenOffset : 0, AUTO_HIDE_ANIMATION)
+        hiddenProgress.value = withTiming(scrollingDown ? 1 : 0, AUTO_HIDE_ANIMATION)
       }
     },
-    [autoHideReaderHeader, headerHeight, hiddenOffset],
+    [autoHideReaderHeader, headerHeight, hiddenProgress],
   )
 
   useEffect(() => {
     if (autoHideReaderHeader) return
     isHeaderHidden.value = false
-    headerTranslateY.value = withTiming(0, AUTO_HIDE_ANIMATION)
-  }, [autoHideReaderHeader, headerTranslateY, isHeaderHidden])
+    hiddenProgress.value = withTiming(0, AUTO_HIDE_ANIMATION)
+  }, [autoHideReaderHeader, hiddenProgress, isHeaderHidden])
 
   const headerContainerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: headerTranslateY.value }],
+    transform: [{ translateY: -hiddenOffset * hiddenProgress.value }],
   }))
   const statusBarStripStyle = useAnimatedStyle(() => ({
-    opacity: hiddenOffset > 0 ? interpolate(headerTranslateY.value, [-hiddenOffset, 0], [1, 0]) : 0,
+    opacity: hiddenOffset > 0 ? hiddenProgress.value : 0,
   }))
 
   return { autoHideReaderHeader, headerContainerStyle, statusBarStripStyle, topInset: insets.top }

@@ -148,7 +148,7 @@
   "appearance.accent_color.custom": "Couleur personnalisée",
   "appearance.accent_color.description": "Choisissez la couleur d'accentuation pour l'interface de l'application.",
   "appearance.accent_color.label": "Couleur d'accentuation",
-  "appearance.auto_hide_reader_header.description": "Masque la barre supérieure lors du défilement vers le bas et la réaffiche lors du défilement vers le haut.",
+  "appearance.auto_hide_reader_header.description": "Masque la barre supérieure et les boutons d'entrée précédente et suivante lors du défilement vers le bas, et les réaffiche lors du défilement vers le haut.",
   "appearance.auto_hide_reader_header.label": "Masquer l'en-tête pendant la lecture",
   "appearance.code_highlight_theme.description": "Ajustez le thème de mise en évidence du code.",
   "appearance.code_highlight_theme.label": "Thème du code",

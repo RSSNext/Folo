@@ -7,7 +7,7 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { tracker } from "@follow/tracker"
 import type { ImageSource } from "expo-image"
-import { memo, useCallback } from "react"
+import { memo, use, useCallback } from "react"
 import { Pressable, View } from "react-native"
 import type { MeasuredDimensions } from "react-native-reanimated"
 import Animated, { measure, runOnJS, runOnUI, useAnimatedRef } from "react-native-reanimated"
@@ -26,6 +26,7 @@ import { NativePressable } from "@/src/components/ui/pressable/NativePressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { VideoPlayer } from "@/src/components/ui/video/VideoPlayer"
 import { useNavigation } from "@/src/lib/navigation/hooks"
+import { EntryListSourceContext } from "@/src/modules/entry-content/entry-navigation/entry-list-source"
 import { useSocialAuthorTitle } from "@/src/modules/feed/feed-title"
 import { selectFeed } from "@/src/modules/screen/atoms"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
@@ -60,6 +61,7 @@ export const EntrySocialItem = memo(
     const authorTitle = useSocialAuthorTitle(entry?.feedId, entry?.author)
     const isLoggedIn = useIsLoggedIn()
     const navigation = useNavigation()
+    const entryListSource = use(EntryListSourceContext)
     const handlePress = useCallback(() => {
       if (isLoggedIn) {
         unreadSyncService.markEntryAsRead(entryId)
@@ -71,9 +73,10 @@ export const EntrySocialItem = memo(
       navigation.pushControllerView(EntryDetailScreen, {
         entryId,
         entryIds: extraData.entryIds ?? [],
+        entryListSource,
         view: FeedViewType.SocialMedia,
       })
-    }, [entry?.feedId, entryId, extraData.entryIds, isLoggedIn, navigation])
+    }, [entry?.feedId, entryId, entryListSource, extraData.entryIds, isLoggedIn, navigation])
     const autoExpandLongSocialMedia = useGeneralSettingKey("autoExpandLongSocialMedia")
     const navigationToFeedEntryList = useCallback(() => {
       if (!entry?.feedId) return

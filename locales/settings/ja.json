@@ -148,7 +148,7 @@
   "appearance.accent_color.custom": "カスタムカラー",
   "appearance.accent_color.description": "アプリインターフェースのアクセントカラーを選択",
   "appearance.accent_color.label": "アクセントカラー",
-  "appearance.auto_hide_reader_header.description": "下にスクロールするとトップバーを隠し、上にスクロールすると再表示します。",
+  "appearance.auto_hide_reader_header.description": "下にスクロールするとトップバーと前後のエントリーへのボタンを隠し、上にスクロールすると再表示します。",
   "appearance.auto_hide_reader_header.label": "読書中にヘッダーを隠す",
   "appearance.code_highlight_theme.description": "コードハイライトテーマを調整",
   "appearance.code_highlight_theme.label": "コードハイライトテーマ",

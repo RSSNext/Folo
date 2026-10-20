@@ -148,7 +148,7 @@
   "appearance.accent_color.custom": "自定义颜色",
   "appearance.accent_color.description": "选择应用界面的强调色",
   "appearance.accent_color.label": "强调色",
-  "appearance.auto_hide_reader_header.description": "向下滚动时收起顶部栏，向上滚动时重新显示。",
+  "appearance.auto_hide_reader_header.description": "向下滚动时收起顶部栏和上一条、下一条按钮，向上滚动时重新显示。",
   "appearance.auto_hide_reader_header.label": "阅读时隐藏顶栏",
   "appearance.code_highlight_theme.description": "调整代码高亮主题",
   "appearance.code_highlight_theme.label": "代码高亮主题",

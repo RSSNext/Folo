@@ -1,4 +1,5 @@
 import { FeedViewType, UserRole } from "@follow/constants"
+import { getEntry } from "@follow/store/entry/getter"
 import { useEntry, useEntryReadHistory, usePrefetchEntryDetail } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -9,8 +10,10 @@ import { PortalProvider } from "@gorhom/portal"
 import { useQuery } from "@tanstack/react-query"
 import * as WebBrowser from "expo-web-browser"
 import { atom, useAtomValue, useSetAtom } from "jotai"
-import { useCallback, useEffect, useMemo } from "react"
+import { use, useCallback, useEffect, useMemo, useState } from "react"
 import { View } from "react-native"
+import type { SharedValue } from "react-native-reanimated"
+import Animated, { FadeInDown, FadeInUp, useSharedValue, withTiming } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useColor } from "react-native-uikit-colors"
 
@@ -19,6 +22,7 @@ import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { BottomTabBarHeightContext } from "@/src/components/layouts/tabbar/contexts/BottomTabBarHeightContext"
 import { SafeNavigationScrollView } from "@/src/components/layouts/views/SafeNavigationScrollView"
 import { EntryContentWebView } from "@/src/components/native/webview/EntryContentWebView"
+import { WebViewManager } from "@/src/components/native/webview/webview-manager"
 import { RelativeDateTime } from "@/src/components/ui/datetime/RelativeDateTime"
 import { FeedIcon } from "@/src/components/ui/icon/feed-icon"
 import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
@@ -27,10 +31,20 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { CalendarTimeAddCuteReIcon } from "@/src/icons/calendar_time_add_cute_re"
 import { Eye2CuteReIcon } from "@/src/icons/eye_2_cute_re"
 import { openLink } from "@/src/lib/native"
-import { useNavigation } from "@/src/lib/navigation/hooks"
+import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { isWebUrl } from "@/src/lib/web-url"
-import { EntryContentContext, useEntryContentContext } from "@/src/modules/entry-content/ctx"
+import {
+  EntryContentContext,
+  EntryReaderBarsHiddenContext,
+  useEntryContentContext,
+} from "@/src/modules/entry-content/ctx"
+import type { EntryNavigationDirection } from "@/src/modules/entry-content/entry-navigation/adjacent-entries"
+import { getAdjacentEntryIds } from "@/src/modules/entry-content/entry-navigation/adjacent-entries"
+import { ENTRY_NAVIGATION_CONTROL_INSET } from "@/src/modules/entry-content/entry-navigation/constants"
+import type { EntryListSource } from "@/src/modules/entry-content/entry-navigation/entry-list-source"
+import { useNavigableEntryIds } from "@/src/modules/entry-content/entry-navigation/entry-list-source"
+import { EntryNavigationControl } from "@/src/modules/entry-content/entry-navigation/EntryNavigationControl"
 import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
 import { useEntryExternalUrl } from "@/src/modules/entry-content/external-url"
@@ -40,12 +54,117 @@ import { useFloatingPlayerBarInset } from "@/src/modules/player/hooks"
 
 import { EntrySocialTitle, EntryTitle } from "../../../../modules/entry-content/EntryTitle"
 
+const BARS_ANIMATION = { duration: 200 }
+// The content comes in from the side the entry is on in the list
+const contentEntering = {
+  next: FadeInUp.duration(250),
+  previous: FadeInDown.duration(250),
+}
+
 export const EntryDetailScreen: NavigationControllerView<{
   entryId: string
   entryIds?: string[]
+  /** The list the entry was opened from, which loads the entries after `entryIds` */
+  entryListSource?: EntryListSource
   view: FeedViewType
   isInbox?: boolean
-}> = ({ entryId, entryIds, view: viewType, isInbox }) => {
+}> = ({ entryId: openedEntryId, entryIds, entryListSource, view, isInbox }) => {
+  // Previous and next swap the entry in place, so the screen pushed from the list stays with its
+  // back gesture and the controls stay under the thumb
+  const [reading, setReading] = useState<{
+    entryId: string
+    direction?: EntryNavigationDirection
+  }>({ entryId: openedEntryId })
+  const { entryId } = reading
+  const navigableEntryIds = useNavigableEntryIds(entryId, entryIds, entryListSource)
+  const { previousEntryId, nextEntryId } = useMemo(
+    () => getAdjacentEntryIds(navigableEntryIds, entryId),
+    [entryId, navigableEntryIds],
+  )
+  // The next entry is the one most often read after this one, so its content loads ahead
+  usePrefetchEntryDetail(nextEntryId, isInbox, { enabled: !!nextEntryId })
+
+  const insets = useSafeAreaInsets()
+  const floatingPlayerBarInset = useFloatingPlayerBarInset()
+  const hasNavigation = !!previousEntryId || !!nextEntryId
+  const { reAnimatedScrollY } = use(ScreenItemContext)
+  const barsHiddenProgress = useSharedValue(0)
+  const pullingUpProgress = useSharedValue(0)
+
+  const navigate = useCallback(
+    (direction: EntryNavigationDirection) => {
+      const targetEntryId = direction === "next" ? nextEntryId : previousEntryId
+      if (!targetEntryId) return
+      // Starts rendering it in the shared web view, as opening it from the list does
+      const targetEntry = getEntry(targetEntryId)
+      if (targetEntry) WebViewManager.setEntry(targetEntry)
+      // It opens at its top, where the header and the controls always show
+      reAnimatedScrollY.value = 0
+      barsHiddenProgress.value = withTiming(0, BARS_ANIMATION)
+      pullingUpProgress.value = withTiming(0, BARS_ANIMATION)
+      setReading({ entryId: targetEntryId, direction })
+      entryListSource?.revealEntry(targetEntryId)
+    },
+    [
+      barsHiddenProgress,
+      entryListSource,
+      nextEntryId,
+      previousEntryId,
+      pullingUpProgress,
+      reAnimatedScrollY,
+    ],
+  )
+  const navigateToNext = useCallback(() => navigate("next"), [navigate])
+
+  return (
+    <EntryReaderBarsHiddenContext value={barsHiddenProgress}>
+      <PortalProvider>
+        <BottomTabBarHeightContext
+          value={
+            insets.bottom +
+            floatingPlayerBarInset +
+            (hasNavigation ? ENTRY_NAVIGATION_CONTROL_INSET : 0)
+          }
+        >
+          <EntryReader
+            key={entryId}
+            entryId={entryId}
+            view={view}
+            isInbox={isInbox}
+            enteringDirection={reading.direction}
+            onPullUpToNext={nextEntryId ? navigateToNext : undefined}
+            pullingUpProgress={pullingUpProgress}
+          />
+          <EntryNavigationControl
+            canGoPrevious={!!previousEntryId}
+            canGoNext={!!nextEntryId}
+            onNavigate={navigate}
+            barsHiddenProgress={barsHiddenProgress}
+            pullingUpProgress={pullingUpProgress}
+          />
+        </BottomTabBarHeightContext>
+      </PortalProvider>
+    </EntryReaderBarsHiddenContext>
+  )
+}
+
+/** One entry in the reader, mounted afresh for each entry read in turn */
+const EntryReader = ({
+  entryId,
+  view: viewType,
+  isInbox,
+  enteringDirection,
+  onPullUpToNext,
+  pullingUpProgress,
+}: {
+  entryId: string
+  view: FeedViewType
+  isInbox?: boolean
+  enteringDirection?: EntryNavigationDirection
+  /** Pulling up past the end opens the next entry, when there is one */
+  onPullUpToNext?: () => void
+  pullingUpProgress: SharedValue<number>
+}) => {
   usePrefetchEntryDetail(entryId, isInbox)
   const entry = useEntry(entryId, (state) => ({
     title: state.title,
@@ -58,8 +177,6 @@ export const EntryDetailScreen: NavigationControllerView<{
   const externalUrl = useEntryExternalUrl(entryId)
   const isLoggedIn = useIsLoggedIn()
   useAutoMarkAsRead(entryId, !!entry && isLoggedIn)
-  const insets = useSafeAreaInsets()
-  const floatingPlayerBarInset = useFloatingPlayerBarInset()
   const ctxValue = useMemo(
     () => ({
       showAISummaryAtom: atom(entry?.summary || false),
@@ -70,81 +187,64 @@ export const EntryDetailScreen: NavigationControllerView<{
     }),
     [entry?.readability, entry?.sourceContent, entry?.summary, entry?.translation],
   )
-  const navigation = useNavigation()
-  const nextEntryId = useMemo(() => {
-    if (!entryIds) return
-    const currentEntryIdx = entryIds.indexOf(entryId)
-    return entryIds[currentEntryIdx + 1]
-  }, [entryId, entryIds])
   const {
     EntryPullUpToNext,
     scrollViewEventHandlers,
     pullUpViewProps,
     GestureWrapper,
     gestureWrapperProps,
+    isPulling,
   } = usePullUpToNext({
-    enabled: !!nextEntryId,
-    onRefresh: useCallback(() => {
-      if (!nextEntryId) return
-      navigation.replaceControllerView(
-        EntryDetailScreen,
-        {
-          entryId: nextEntryId,
-          entryIds,
-          view: viewType,
-        },
-        {
-          // Ensure that the replace animation is used
-          stackAnimation: "fade_from_bottom",
-          transitionDuration: 300,
-        },
-      )
-    }, [entryIds, navigation, nextEntryId, viewType]),
+    enabled: !!onPullUpToNext,
+    onRefresh: onPullUpToNext,
   })
+  // The pull-up indicator shows where the controls float, so they make way while pulling
+  useEffect(() => {
+    pullingUpProgress.value = withTiming(isPulling ? 1 : 0, BARS_ANIMATION)
+  }, [isPulling, pullingUpProgress])
+
   return (
     <EntryContentContext value={ctxValue}>
-      <PortalProvider>
-        <BottomTabBarHeightContext value={insets.bottom + floatingPlayerBarInset}>
-          <GestureWrapper {...gestureWrapperProps}>
-            <SafeNavigationScrollView
-              Header={<EntryNavigationHeader entryId={entryId} />}
-              ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
-              automaticallyAdjustContentInsets={false}
-              contentContainerMaxWidth={680}
-              contentContainerClassName="flex min-h-full pb-16"
-              {...scrollViewEventHandlers}
+      <GestureWrapper {...gestureWrapperProps}>
+        <SafeNavigationScrollView
+          Header={<EntryNavigationHeader entryId={entryId} />}
+          ScrollViewBottom={<EntryPullUpToNext {...pullUpViewProps} />}
+          automaticallyAdjustContentInsets={false}
+          contentContainerMaxWidth={680}
+          contentContainerClassName="flex min-h-full pb-16"
+          {...scrollViewEventHandlers}
+        >
+          <Animated.View entering={enteringDirection && contentEntering[enteringDirection]}>
+            <ItemPressable
+              itemStyle={ItemPressableStyle.UnStyled}
+              onPress={() => externalUrl && openLink(externalUrl)}
+              className="rounded-xl px-5 py-4"
             >
-              <ItemPressable
-                itemStyle={ItemPressableStyle.UnStyled}
-                onPress={() => externalUrl && openLink(externalUrl)}
-                className="rounded-xl px-5 py-4"
-              >
-                {viewType === FeedViewType.SocialMedia ? (
-                  <EntrySocialTitle entryId={entryId} />
-                ) : (
-                  <>
-                    <EntryTitle title={entry?.title || ""} entryId={entryId} />
-                    <EntryInfo entryId={entryId} />
-                  </>
-                )}
-              </ItemPressable>
-              <View className="px-5">
-                <EntryAISummary entryId={entryId} />
+              {viewType === FeedViewType.SocialMedia ? (
+                <EntrySocialTitle entryId={entryId} />
+              ) : (
+                <>
+                  <EntryTitle title={entry?.title || ""} entryId={entryId} />
+                  <EntryInfo entryId={entryId} />
+                </>
+              )}
+            </ItemPressable>
+            <View className="px-5">
+              <EntryAISummary entryId={entryId} />
+            </View>
+            {entry && (
+              <View className="mt-3 w-full px-5">
+                <EntryContentWebViewWithContext entryId={entryId} />
               </View>
-              {entry && (
-                <View className="mt-3 w-full px-5">
-                  <EntryContentWebViewWithContext entryId={entryId} />
-                </View>
-              )}
-              {viewType === FeedViewType.SocialMedia && (
-                <View className="mt-2 px-5">
-                  <EntryInfoSocial entryId={entryId} />
-                </View>
-              )}
-            </SafeNavigationScrollView>
-          </GestureWrapper>
-        </BottomTabBarHeightContext>
-      </PortalProvider>
+            )}
+            {viewType === FeedViewType.SocialMedia && (
+              <View className="mt-2 px-5">
+                <EntryInfoSocial entryId={entryId} />
+              </View>
+            )}
+          </Animated.View>
+        </SafeNavigationScrollView>
+      </GestureWrapper>
     </EntryContentContext>
   )
 }

@@ -5,6 +5,8 @@
   "ai.summary_upgrade_required_description": "Unlock unlimited AI summaries, translations, and more intelligent features with Pro plan.",
   "ai.summary_upgrade_required_title": "Start free trial to continue using AI summary",
   "ai.summary_upgrade_view_plans": "View Plans",
+  "entry.next_entry": "Next entry",
+  "entry.previous_entry": "Previous entry",
   "entry.pull_up_to_next_entry": "Pull up to go to the next entry",
   "entry.release_to_next_entry": "Release to go to the next entry",
   "entry_content.ai_summary": "AI Summary",

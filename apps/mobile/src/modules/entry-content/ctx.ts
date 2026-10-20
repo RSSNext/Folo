@@ -1,5 +1,6 @@
 import type { PrimitiveAtom } from "jotai"
 import { createContext, use } from "react"
+import type { SharedValue } from "react-native-reanimated"
 
 interface EntryContentContextType {
   showAISummaryAtom: PrimitiveAtom<boolean>
@@ -16,3 +17,9 @@ export const useEntryContentContext = () => {
   }
   return context
 }
+
+/**
+ * How far the reader's header and bottom controls have slid away while scrolling down, from 0
+ * shown to 1 hidden. The header drives it and the controls follow, across the entries read in turn.
+ */
+export const EntryReaderBarsHiddenContext = createContext<SharedValue<number> | null>(null)

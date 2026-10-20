@@ -148,7 +148,7 @@
   "appearance.accent_color.custom": "自訂顏色",
   "appearance.accent_color.description": "選擇應用程式介面的強調色。",
   "appearance.accent_color.label": "強調色",
-  "appearance.auto_hide_reader_header.description": "向下捲動時收起頂部欄，向上捲動時重新顯示。",
+  "appearance.auto_hide_reader_header.description": "向下捲動時收起頂部欄和上一條、下一條按鈕，向上捲動時重新顯示。",
   "appearance.auto_hide_reader_header.label": "閱讀時隱藏頂欄",
   "appearance.code_highlight_theme.description": "調整語法突顯主題",
   "appearance.code_highlight_theme.label": "語法突顯主題",

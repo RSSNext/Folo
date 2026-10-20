@@ -1,7 +1,6 @@
 import { FeedViewType } from "@follow/constants"
 import { useWhoami } from "@follow/store/user/hooks"
 import type { FlashListRef } from "@shopify/flash-list"
-import type { RefObject } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { useEffectiveEntrySortOrder, useGeneralSettingKey } from "@/src/atoms/settings/general"
@@ -9,11 +8,14 @@ import { withErrorBoundary } from "@/src/components/common/ErrorBoundary"
 import { NoLoginInfo } from "@/src/components/common/NoLoginInfo"
 import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import { useRegisterNavigationScrollView } from "@/src/components/layouts/tabbar/hooks"
-import { useNavigation } from "@/src/lib/navigation/hooks"
+import {
+  EntryListSourceContext,
+  useEntryListSourceValue,
+} from "@/src/modules/entry-content/entry-navigation/entry-list-source"
 import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
-import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { useEntries, useEntryListContext, useIsTimelineEntrySource } from "../screen/atoms"
+import { useHeaderHeight } from "../screen/hooks/useHeaderHeight"
 import { shouldSuspendMarkReadForScrollReset } from "../screen/scroll-reset"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
@@ -84,7 +86,7 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     requestScrollToTop()
   }, [requestScrollToTop, sortOrder, unreadOnly])
 
-  const { isReady } = useEntries({ viewId, active })
+  const { isReady, hasNextPage, fetchNextPage } = useEntries({ viewId, active })
   const hasResetAfterReadyRef = useRef(false)
   useEffect(() => {
     if (!active) return
@@ -99,18 +101,40 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
     hasResetAfterReadyRef.current = true
   }, [active, entryIds, isReady, requestScrollToTop, viewId])
 
-  useAutoScrollToEntryAfterPullUpToNext(ref, entryIds || [])
+  const headerHeight = useHeaderHeight()
+  const entryListSource = useEntryListSourceValue({
+    entryIds,
+    hasNextPage,
+    fetchNextPage,
+    // The reader keeps the list on the entry it moved to, so going back shows that one
+    revealEntry: useCallback(
+      (entryId: string) => {
+        const index = entryIds?.indexOf(entryId) ?? -1
+        if (index === -1) return
+        ref.current?.scrollToIndex({
+          index,
+          animated: false,
+          // FlashList adds the offset to the scroll position, so a negative one puts the entry
+          // below the header that covers the top of the list
+          viewOffset: -headerHeight,
+        })
+      },
+      [entryIds, headerHeight, ref],
+    ),
+  })
 
   return (
-    <ContentComponent
-      ref={ref}
-      entryIds={entryIds}
-      active={active}
-      view={viewId}
-      onResetScrollSignalConsumed={handleResetScrollSignalConsumed}
-      resetScrollSignal={resetScrollSignal}
-      suspendMarkRead={isScrollResetPending}
-    />
+    <EntryListSourceContext value={entryListSource}>
+      <ContentComponent
+        ref={ref}
+        entryIds={entryIds}
+        active={active}
+        view={viewId}
+        onResetScrollSignalConsumed={handleResetScrollSignalConsumed}
+        resetScrollSignal={resetScrollSignal}
+        suspendMarkRead={isScrollResetPending}
+      />
+    </EntryListSourceContext>
   )
 }
 
@@ -124,32 +148,3 @@ export const EntryListSelector = withErrorBoundary(
   },
   ListErrorView,
 )
-
-const useAutoScrollToEntryAfterPullUpToNext = (
-  ref: RefObject<FlashListRef<any> | null>,
-  entryIds: string[],
-) => {
-  const navigation = useNavigation()
-  useEffect(() => {
-    return navigation.on("screenChange", (payload) => {
-      if (!payload.route) return
-      if (payload.type !== "appear") return
-      if (payload.route.Component !== EntryDetailScreen) return
-      if (payload.route.screenOptions?.stackAnimation !== "fade_from_bottom") return
-      const nextEntryId =
-        payload.route.props &&
-        typeof payload.route.props === "object" &&
-        "entryId" in payload.route.props &&
-        typeof payload.route.props.entryId === "string"
-          ? payload.route.props.entryId
-          : undefined
-      const idx = nextEntryId ? (entryIds?.indexOf(nextEntryId || "") ?? -1) : -1
-      if (idx === -1) return
-      ref?.current?.scrollToIndex({
-        index: idx,
-        animated: false,
-        viewOffset: 70,
-      })
-    })
-  }, [entryIds, navigation, ref])
-}

@@ -142,6 +142,7 @@ export const usePullUpToNext = ({
   if (!enabled) {
     // Return empty implementation for non-Android platforms
     return {
+      isPulling: false,
       scrollViewEventHandlers: {},
       pullUpViewProps: {
         active: false,
@@ -157,6 +158,8 @@ export const usePullUpToNext = ({
   }
 
   return {
+    // The gesture only takes over at the end of the content, pulling up
+    isPulling: dragState,
     scrollViewEventHandlers: {
       onScroll: handleScroll,
     },

@@ -9,7 +9,7 @@ import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useRecyclingState } from "@shopify/flash-list"
 import { useEvent } from "expo"
 import { useVideoPlayer, VideoView } from "expo-video"
-import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { memo, use, useCallback, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ImageErrorEventData } from "react-native"
 import { View } from "react-native"
@@ -28,6 +28,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
 import { player, useAudioPlayState } from "@/src/lib/player"
 import { toast } from "@/src/lib/toast"
+import { EntryListSourceContext } from "@/src/modules/entry-content/entry-navigation/entry-list-source"
 import { usePreferredFeedTitle } from "@/src/modules/feed/feed-title"
 import { getEntryArtwork } from "@/src/modules/player/artwork"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
@@ -77,6 +78,7 @@ export const EntryNormalItem = memo(
     const feed = useFeedById(entry?.feedId as string)
     const feedTitle = usePreferredFeedTitle(entry?.feedId)
     const navigation = useNavigation()
+    const entryListSource = use(EntryListSourceContext)
     const handlePress = useCallback(() => {
       if (entry) {
         const fullEntry = getEntry(entryId)
@@ -88,10 +90,11 @@ export const EntryNormalItem = memo(
         navigation.pushControllerView(EntryDetailScreen, {
           entryId,
           entryIds: extraData.entryIds ?? [],
+          entryListSource,
           view,
         })
       }
-    }, [entry, navigation, entryId, extraData.entryIds, view])
+    }, [entry, navigation, entryId, extraData.entryIds, entryListSource, view])
     const audioOrVideo = entry?.attachments?.find(
       (attachment) =>
         attachment.mime_type?.startsWith("audio/") || attachment.mime_type?.startsWith("video/"),
