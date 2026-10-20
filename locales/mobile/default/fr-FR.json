@@ -9,6 +9,7 @@
   "entry.previous_entry": "Entrée précédente",
   "entry.pull_up_to_next_entry": "Tirez vers le haut pour passer à l'entrée suivante",
   "entry.release_to_next_entry": "Relâchez pour passer à l'entrée suivante",
+  "entry.select_to_read": "Sélectionnez une entrée à lire",
   "entry_content.ai_summary": "Résumé IA",
   "entry_content.header.more_actions": "Plus d'actions",
   "entry_content.header.open_in_browser": "Ouvrir dans le navigateur",

@@ -3,7 +3,7 @@ import { useEntry } from "@follow/store/entry/hooks"
 import { useAtomValue } from "jotai"
 import type { FC } from "react"
 import { use, useEffect, useState } from "react"
-import { StyleSheet, useWindowDimensions, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
 import Animated, {
   interpolate,
@@ -13,7 +13,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { useUISettingKey } from "@/src/atoms/settings/ui"
 import { ThemedBlurView } from "@/src/components/common/ThemedBlurView"
@@ -149,7 +149,8 @@ export const EntryNavigationHeader: FC<{
     },
     [titleHeight, headerHeight],
   )
-  const headerBarWidth = useWindowDimensions().width
+  // The reader's own width, which is less than the window's next to the list
+  const headerBarWidth = useSafeAreaFrame().width
 
   return (
     <>

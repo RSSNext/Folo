@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react"
 import type { ViewStyle } from "react-native"
 import { Dimensions, useWindowDimensions } from "react-native"
+import { useSafeAreaFrame } from "react-native-safe-area-context"
 
 import { isIOS } from "./platform"
 
@@ -57,8 +58,12 @@ export const useScaleHeight = () => {
  */
 export const isTabletLayoutWidth = (windowWidth: number) => isIOS && windowWidth >= tabletMinLength
 
+/**
+ * Whether the area a component lays out in gets the tablet layout: the window, or the side of the
+ * split layout it is in, whose list gets the phone layout next to the reader.
+ */
 export const useIsTabletLayout = () => {
-  const { width } = useWindowDimensions()
+  const { width } = useSafeAreaFrame()
   return isTabletLayoutWidth(width)
 }
 
@@ -83,7 +88,7 @@ export const getReadableContainerStyle = (
 }
 
 export const useReadableContainerStyle = (maxWidth: number, gutter = 24) => {
-  const { width } = useWindowDimensions()
+  const { width } = useSafeAreaFrame()
 
   return useMemo(
     () => getReadableContainerStyle(width, maxWidth, gutter),

@@ -9,6 +9,7 @@
   "entry.previous_entry": "Previous entry",
   "entry.pull_up_to_next_entry": "Pull up to go to the next entry",
   "entry.release_to_next_entry": "Release to go to the next entry",
+  "entry.select_to_read": "Select an entry to read",
   "entry_content.ai_summary": "AI Summary",
   "entry_content.header.more_actions": "More Actions",
   "entry_content.header.open_in_browser": "Open in Browser",

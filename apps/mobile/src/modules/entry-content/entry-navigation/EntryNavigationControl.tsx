@@ -29,12 +29,15 @@ const HIDDEN_EXTRA_OFFSET = 24
 export const EntryNavigationControl = ({
   canGoPrevious,
   canGoNext,
+  bottomInset,
   onNavigate,
   barsHiddenProgress,
   pullingUpProgress,
 }: {
   canGoPrevious: boolean
   canGoNext: boolean
+  /** Space below the control, when it is not the screen edge and the floating player bar */
+  bottomInset?: number
   onNavigate: (direction: EntryNavigationDirection) => void
   /** The header's auto hide while scrolling, which the control follows */
   barsHiddenProgress: SharedValue<number>
@@ -45,7 +48,9 @@ export const EntryNavigationControl = ({
   const insets = useSafeAreaInsets()
   // Above the floating player bar, which pushed screens show at the bottom while playing
   const floatingPlayerBarInset = useFloatingPlayerBarInset()
-  const bottom = Math.max(insets.bottom, CONTROL_SPACING) + floatingPlayerBarInset + CONTROL_SPACING
+  const bottom =
+    (bottomInset ?? Math.max(insets.bottom, CONTROL_SPACING) + floatingPlayerBarInset) +
+    CONTROL_SPACING
   const hiddenOffset = bottom + CONTROL_HEIGHT + HIDDEN_EXTRA_OFFSET
 
   // Slides instead of fading: glass and blur effects don't render under a parent with opacity

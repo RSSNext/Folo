@@ -9,6 +9,7 @@
   "entry.previous_entry": "前のエントリー",
   "entry.pull_up_to_next_entry": "引っ張って次のエントリーに移動",
   "entry.release_to_next_entry": "離して次のエントリーに移動",
+  "entry.select_to_read": "読むエントリーを選択してください",
   "entry_content.ai_summary": "AI 要約",
   "entry_content.header.more_actions": "その他の操作",
   "entry_content.header.open_in_browser": "ブラウザで開く",

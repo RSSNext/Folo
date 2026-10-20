@@ -9,6 +9,7 @@
   "entry.previous_entry": "上一條",
   "entry.pull_up_to_next_entry": "繼續上拉查看下一條內容",
   "entry.release_to_next_entry": "鬆開查看下一條內容",
+  "entry.select_to_read": "選擇一個條目開始閱讀",
   "entry_content.ai_summary": "AI 摘要",
   "entry_content.header.more_actions": "更多操作",
   "entry_content.header.open_in_browser": "在瀏覽器中開啟",

@@ -49,6 +49,7 @@ import { EntryAISummary } from "@/src/modules/entry-content/EntryAISummary"
 import { EntryNavigationHeader } from "@/src/modules/entry-content/EntryNavigationHeader"
 import { useEntryExternalUrl } from "@/src/modules/entry-content/external-url"
 import { usePullUpToNext } from "@/src/modules/entry-content/pull-up-navigation/use-pull-up-navigation"
+import { EntrySplitPaneContext } from "@/src/modules/entry-split/context"
 import { usePreferredFeedTitle } from "@/src/modules/feed/feed-title"
 import { useFloatingPlayerBarInset } from "@/src/modules/player/hooks"
 
@@ -86,6 +87,9 @@ export const EntryDetailScreen: NavigationControllerView<{
 
   const insets = useSafeAreaInsets()
   const floatingPlayerBarInset = useFloatingPlayerBarInset()
+  // Next to the list, the reader ends above the tab bar, which holds the player bar there
+  const splitPane = use(EntrySplitPaneContext)
+  const bottomInset = splitPane ? splitPane.bottomInset : insets.bottom + floatingPlayerBarInset
   const hasNavigation = !!previousEntryId || !!nextEntryId
   const { reAnimatedScrollY } = use(ScreenItemContext)
   const barsHiddenProgress = useSharedValue(0)
@@ -104,6 +108,7 @@ export const EntryDetailScreen: NavigationControllerView<{
       pullingUpProgress.value = withTiming(0, BARS_ANIMATION)
       setReading({ entryId: targetEntryId, direction })
       entryListSource?.revealEntry(targetEntryId)
+      splitPane?.onReadingEntryChange(targetEntryId)
     },
     [
       barsHiddenProgress,
@@ -112,6 +117,7 @@ export const EntryDetailScreen: NavigationControllerView<{
       previousEntryId,
       pullingUpProgress,
       reAnimatedScrollY,
+      splitPane,
     ],
   )
   const navigateToNext = useCallback(() => navigate("next"), [navigate])
@@ -120,11 +126,7 @@ export const EntryDetailScreen: NavigationControllerView<{
     <EntryReaderBarsHiddenContext value={barsHiddenProgress}>
       <PortalProvider>
         <BottomTabBarHeightContext
-          value={
-            insets.bottom +
-            floatingPlayerBarInset +
-            (hasNavigation ? ENTRY_NAVIGATION_CONTROL_INSET : 0)
-          }
+          value={bottomInset + (hasNavigation ? ENTRY_NAVIGATION_CONTROL_INSET : 0)}
         >
           <EntryReader
             key={entryId}
@@ -138,6 +140,7 @@ export const EntryDetailScreen: NavigationControllerView<{
           <EntryNavigationControl
             canGoPrevious={!!previousEntryId}
             canGoNext={!!nextEntryId}
+            bottomInset={splitPane?.bottomInset}
             onNavigate={navigate}
             barsHiddenProgress={barsHiddenProgress}
             pullingUpProgress={pullingUpProgress}
@@ -315,6 +318,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
     void refetchEntryDetail()
     if (showReadabilityOnce) void refetchReadability()
   }, [refetchEntryDetail, refetchReadability, showReadabilityOnce])
+  const webViewResendSignal = use(EntrySplitPaneContext)?.webViewResendSignal
 
   return (
     <EntryContentWebView
@@ -324,6 +328,7 @@ const EntryContentWebViewWithContext = ({ entryId }: { entryId: string }) => {
       // A retry of a failed request keeps its error until it settles, so it counts as pending
       isContentPending={showReadabilityOnce ? readabilityQuery.isFetching : isPending || isFetching}
       onRetry={retryContent}
+      resendSignal={webViewResendSignal}
     />
   )
 }

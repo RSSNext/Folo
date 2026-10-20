@@ -37,6 +37,9 @@ vi.mock("react-native", () => ({
   Dimensions: mocks.Dimensions,
   useWindowDimensions: () => mocks.Dimensions.get("window"),
 }))
+vi.mock("react-native-safe-area-context", () => ({
+  useSafeAreaFrame: () => mocks.Dimensions.get("window"),
+}))
 vi.mock("./platform", () => ({ isIOS: true }))
 
 describe("responsive", () => {

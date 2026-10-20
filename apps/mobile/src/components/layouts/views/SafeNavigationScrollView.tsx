@@ -236,24 +236,28 @@ export const NavigationBlurEffectHeader = ({
   const setSlot = useSetAtom(screenCtxValue.Slot)
   const store = useStore()
   useLayoutEffect(() => {
-    setSlot({
-      ...store.get(screenCtxValue.Slot),
-      header: (
-        <SetNavigationHeaderHeightContext value={setHeaderHeight}>
-          <InternalNavigationHeader
-            title={props.title}
-            headerRight={props.headerRight}
-            headerLeft={props.headerLeft}
-            hideableBottom={hideableBottom}
-            hideableBottomHeight={headerHideableBottomHeight}
-            headerTitleAbsolute={headerTitleAbsolute}
-            headerTitle={props.headerTitle}
-            promptBeforeLeave={props.promptBeforeLeave}
-            isLoading={props.isLoading}
-          />
-        </SetNavigationHeaderHeightContext>
-      ),
-    })
+    const header = (
+      <SetNavigationHeaderHeightContext value={setHeaderHeight}>
+        <InternalNavigationHeader
+          title={props.title}
+          headerRight={props.headerRight}
+          headerLeft={props.headerLeft}
+          hideableBottom={hideableBottom}
+          hideableBottomHeight={headerHideableBottomHeight}
+          headerTitleAbsolute={headerTitleAbsolute}
+          headerTitle={props.headerTitle}
+          promptBeforeLeave={props.promptBeforeLeave}
+          isLoading={props.isLoading}
+        />
+      </SetNavigationHeaderHeightContext>
+    )
+    setSlot({ ...store.get(screenCtxValue.Slot), header })
+    // The header leaves with this component, as when the list moves into a side of the split
+    // layout and writes its header there. One written since by another component stays.
+    return () => {
+      const slot = store.get(screenCtxValue.Slot)
+      if (slot.header === header) setSlot({ ...slot, header: null })
+    }
   }, [
     screenCtxValue.Slot,
     headerHideableBottomHeight,
