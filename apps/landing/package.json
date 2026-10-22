@@ -6,8 +6,8 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production vinext build",
     "cf:build": "cross-env NODE_ENV=production vinext build",
-    "cf:deploy": "pnpm exec vinext deploy",
-    "cf:deploy:dev": "pnpm exec vinext deploy --preview",
+    "cf:deploy": "pnpm run cf:build && cf deploy --prebuilt --mode production",
+    "cf:deploy:dev": "pnpm run cf:build --mode dev && cf deploy --prebuilt --mode dev",
     "dev": "cross-env NODE_ENV=development vinext dev -p 4399",
     "start": "cross-env NODE_ENV=production vinext start -p 4399",
     "test": "vitest run --config vitest.config.ts",

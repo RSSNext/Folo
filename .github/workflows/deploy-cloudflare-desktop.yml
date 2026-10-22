@@ -15,6 +15,7 @@ jobs:
     env:
       VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
       VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+      CF_SEND_TELEMETRY: "false"
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -50,20 +51,22 @@ jobs:
           VITE_API_URL: ${{ github.ref == 'refs/heads/dev' && 'https://api.dev.folo.is' || 'https://api.folo.is' }}
         run: pnpm run build:web
 
+      - name: Build desktop web Worker
+        working-directory: apps/desktop
+        run: pnpm exec cf build ${{ github.ref == 'refs/heads/dev' && '--mode dev' || '' }}
+
       - name: Deploy desktop web to Cloudflare (dev)
         if: github.ref == 'refs/heads/dev'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/desktop
-          command: deploy --env dev
+        working-directory: apps/desktop
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec cf deploy --prebuilt --mode dev
 
       - name: Deploy desktop web to Cloudflare (prod)
         if: github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/desktop
-          command: 'deploy --env=""'
+        working-directory: apps/desktop
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec cf deploy --prebuilt

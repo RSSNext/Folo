@@ -14,6 +14,12 @@ export default defineConfig({
       },
     }),
   ],
+  // The Cloudflare Vite plugin emits Worker source maps by default and `cf deploy` uploads them.
+  // The Worker has never uploaded source maps, so keep them off for its environments.
+  environments: {
+    rsc: { build: { sourcemap: false } },
+    ssr: { build: { sourcemap: false } },
+  },
   optimizeDeps: {
     exclude: [
       'next-intl',

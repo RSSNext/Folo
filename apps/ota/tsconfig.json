@@ -8,5 +8,5 @@
     "types": ["@cloudflare/workers-types", "vitest/globals", "node"],
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "cloudflare.config.ts", "wrangler.config.ts"]
 }

@@ -18,7 +18,7 @@
       "outputs": ["dist/**"]
     },
     "@follow/landing#cf:build": {
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".cloudflare/output/**"]
     },
     "build": {
       "outputs": ["dist/**"]

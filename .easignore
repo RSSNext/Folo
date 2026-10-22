@@ -39,6 +39,8 @@ apps/desktop/resources/cli
 .serena
 
 .wrangler
+# cf CLI build output, generated types and local state
+.cloudflare
 
 # Local agent artifacts
 .codex/

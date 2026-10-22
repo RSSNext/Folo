@@ -3,9 +3,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "deploy:dev": "wrangler deploy --env dev",
-    "deploy:prod": "wrangler deploy",
-    "dev": "wrangler dev --env dev",
+    "deploy:dev": "cf deploy --mode dev",
+    "deploy:prod": "cf deploy",
+    "dev": "cf dev --mode dev",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

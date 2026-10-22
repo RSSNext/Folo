@@ -5,8 +5,8 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build && tsx scripts/prepare-vercel-build.ts && tsdown && tsx scripts/cleanup-vercel-build.ts",
     "build:worker": "cross-env NODE_ENV=production vite build && tsx scripts/prepare-vercel-build.ts && tsx scripts/generate-font-data.ts && tsdown --config tsdown.worker.config.ts && tsx scripts/patch-worker-build.ts && cp -r dist/dist-external ../desktop/out/web/dist-external",
-    "deploy:dev": "wrangler deploy --env dev",
-    "deploy:prod": "wrangler deploy",
+    "deploy:dev": "cf deploy --mode dev",
+    "deploy:prod": "cf deploy",
     "dev": "cross-env NODE_ENV=development tsx watch --include \"src/**/*.ts\" --exclude \"./*.ts\" --exclude \"./*.mjs\" index.ts",
     "meta": "tsx helper/meta-map.ts --watch",
     "start": "tsx index.ts",

@@ -1,3 +1,5 @@
+// cf reads cloudflare.config.ts, not this file. It stays only for Wrangler commands that cf cannot
+// run yet, such as `wrangler tail`, until the Workers have been deployed to production with cf.
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "folo-ota",
