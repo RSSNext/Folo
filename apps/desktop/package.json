@@ -69,6 +69,7 @@
     "async-es": "3.2.6",
     "autoprefixer": "10.6.1",
     "bufferutil": "4.1.0",
+    "cf": "1.0.0-beta.20",
     "code-inspector-plugin": "2.0.9",
     "cssnano": "9.0.5",
     "drizzle-orm": "0.45.3",
@@ -98,7 +99,8 @@
     "vite-plugin-route-builder": "0.4.1",
     "vite-tsconfig-paths": "6.1.1",
     "workbox-build": "7.4.1",
-    "workbox-window": "7.4.1"
+    "workbox-window": "7.4.1",
+    "wrangler": "4.136.1"
   },
   "runtimeVersion": "1.16.0",
   "productName": "Folo",

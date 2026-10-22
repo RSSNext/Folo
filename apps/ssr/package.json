@@ -61,6 +61,7 @@
     "@tailwindcss/postcss": "4.3.3",
     "@types/html-minifier-terser": "7.0.2",
     "@vitejs/plugin-react": "6.1.1",
+    "cf": "1.0.0-beta.20",
     "chokidar": "5.0.0",
     "code-inspector-plugin": "2.0.9",
     "daisyui": "5.7.43",
