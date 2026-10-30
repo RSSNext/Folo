@@ -24,6 +24,8 @@ const mocks = vi.hoisted(() => {
     toast: vi.fn(),
     onSuccess: vi.fn(),
     feedError: null as Error | null,
+    isPaymentEnabled: false,
+    presentSettings: vi.fn(),
   }
 })
 
@@ -51,7 +53,7 @@ vi.mock("@follow/store/user/hooks", () => ({
 vi.mock("@follow/tracker", () => ({ tracker: { subscribeModalOpened: vi.fn() } }))
 vi.mock("sonner", () => ({ toast: mocks.toast }))
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
-vi.mock("~/atoms/server-configs", () => ({ useIsPaymentEnabled: () => false }))
+vi.mock("~/atoms/server-configs", () => ({ useIsPaymentEnabled: () => mocks.isPaymentEnabled }))
 vi.mock("~/components/ui/auto-completion", () => ({ Autocomplete: () => null }))
 vi.mock("~/components/ui/modal/stacked/hooks", () => ({
   useCurrentModal: () => ({ setClickOutSideToDismiss: () => {}, dismiss: () => {} }),
@@ -65,9 +67,13 @@ vi.mock("~/hooks/common", () => ({
 vi.mock("~/hooks/common/useFormHasChanges", () => ({ useFormHasChanges: () => false }))
 vi.mock("~/lib/error-parser", () => ({
   getFetchErrorMessage: (error: Error) => `translated ${error.message}`,
+  isPaidRSSHubRouteError: (error: unknown) =>
+    error instanceof Error && error.message === "paid route",
   toastFetchError: vi.fn(),
 }))
-vi.mock("~/modules/settings/modal/useSettingModal", () => ({ useSettingModal: () => () => {} }))
+vi.mock("~/modules/settings/modal/useSettingModal", () => ({
+  useSettingModal: () => mocks.presentSettings,
+}))
 vi.mock("~/queries/feed", () => ({
   feed: { byId: () => ({ invalidate: () => {} }) },
   useFeedQuery: () =>
@@ -128,6 +134,7 @@ describe("FeedForm", () => {
     vi.clearAllMocks()
     mocks.subscriptions.clear()
     mocks.feedError = null
+    mocks.isPaymentEnabled = false
   })
 
   afterEach(async () => {
@@ -177,6 +184,21 @@ describe("FeedForm", () => {
     expect(mocks.edit).toHaveBeenCalledTimes(1)
     expect(mocks.subscribe).not.toHaveBeenCalled()
     expect(mocks.toast).toHaveBeenCalledWith("feed_form.updated", { duration: 1000 })
+  })
+
+  test("asks to upgrade for a feed whose route is for paid plans", async () => {
+    mocks.feedError = new Error("paid route")
+    mocks.isPaymentEnabled = true
+    await render()
+
+    expect(host?.textContent).toContain("translated paid route")
+    expect(host?.textContent).not.toContain("feed_form.error_fetching_feed")
+    const upgrade = [...(host?.querySelectorAll("button") ?? [])].find((button) =>
+      button.textContent?.includes("subscription.actions.upgrade"),
+    )
+    expect(upgrade).toBeDefined()
+    act(() => upgrade?.click())
+    expect(mocks.presentSettings).toHaveBeenCalledWith("plan")
   })
 
   test("says why a feed could not be loaded", async () => {

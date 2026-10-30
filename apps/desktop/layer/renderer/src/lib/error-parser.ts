@@ -34,6 +34,13 @@ const getServerCode = (error: FollowAPIError) => {
   return error.code && !Number.isNaN(code) ? code : undefined
 }
 
+// ExceptionCodeMap.RSSHubRouteRequiresPaidPlan, which the installed SDK may not name yet
+const PAID_RSSHUB_ROUTE_ERROR_CODE = 2013
+
+/** The server refused a feed of a route that is for paid plans only, such as Twitter */
+export const isPaidRSSHubRouteError = (error: unknown) =>
+  error instanceof FollowAPIError && getServerCode(error) === PAID_RSSHUB_ROUTE_ERROR_CODE
+
 /** What to tell the user about an error the auth client resolved with, translated where it can */
 export const getAuthErrorMessage = (error: AuthClientError | null | undefined) =>
   describeAuthError(error, (key) => t(key, { ns: "common" }))

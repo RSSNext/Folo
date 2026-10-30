@@ -15,12 +15,18 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
 
 import { setApiUnreachable } from "~/atoms/api-connection"
 
-import { getFetchErrorMessage, toastFetchError } from "./error-parser"
+import { getFetchErrorMessage, isPaidRSSHubRouteError, toastFetchError } from "./error-parser"
 
 vi.mock("sonner", () => ({
   toast: {
     error: vi.fn(),
   },
+}))
+
+const payment = vi.hoisted(() => ({ enabled: false }))
+
+vi.mock("~/atoms/server-configs", () => ({
+  getIsPaymentEnabled: () => payment.enabled,
 }))
 
 describe("toastFetchError", () => {
@@ -180,6 +186,45 @@ describe("an error the SDK names its own way", () => {
     expect(toast.error).toHaveBeenCalledWith(
       "Unprocessable content",
       expect.objectContaining({ description: "`url`: Invalid URL" }),
+    )
+  })
+})
+
+describe("a route that needs a paid plan", () => {
+  const upgrade = "Please upgrade your plan."
+
+  beforeAll(async () => {
+    if (!i18next.isInitialized) await i18next.init({ lng: "en", resources: {} })
+    i18next.addResourceBundle("en", "errors", { 2013: enErrors["2013"] }, true, true)
+    i18next.addResourceBundle(
+      "en",
+      i18next.options.defaultNS as string,
+      { "request_error.upgrade_required": upgrade },
+      true,
+      true,
+    )
+  })
+
+  beforeEach(() => {
+    vi.mocked(toast.error).mockClear()
+    payment.enabled = true
+  })
+
+  test("is told apart from other refusals", () => {
+    expect(isPaidRSSHubRouteError(new FollowAPIError("paid route", 402, "2013"))).toBe(true)
+    expect(isPaidRSSHubRouteError(new FollowAPIError("limit", 402, "2012"))).toBe(false)
+    expect(isPaidRSSHubRouteError(new Error("2013"))).toBe(false)
+  })
+
+  test("says the route is for paid plans and offers an upgrade", () => {
+    toastFetchError(new FollowAPIError("This RSSHub route requires a paid plan", 402, "2013"))
+
+    expect(toast.error).toHaveBeenCalledWith(
+      enErrors["2013"],
+      expect.objectContaining({
+        description: upgrade,
+        action: expect.objectContaining({ onClick: expect.any(Function) }),
+      }),
     )
   })
 })

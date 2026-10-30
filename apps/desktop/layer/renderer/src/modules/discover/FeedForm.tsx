@@ -47,7 +47,7 @@ import {
 import { getRouteParams } from "~/hooks/biz/useRouteParams"
 import { useI18n } from "~/hooks/common"
 import { useFormHasChanges } from "~/hooks/common/useFormHasChanges"
-import { getFetchErrorMessage, toastFetchError } from "~/lib/error-parser"
+import { getFetchErrorMessage, isPaidRSSHubRouteError, toastFetchError } from "~/lib/error-parser"
 import { useSettingModal } from "~/modules/settings/modal/useSettingModal"
 import { feed as feedQuery, useFeedQuery } from "~/queries/feed"
 
@@ -89,6 +89,28 @@ export const PaidBadge = () => {
         <TooltipContent>{t("control.paid_badge.basic_or_higher")}</TooltipContent>
       </TooltipPortal>
     </Tooltip>
+  )
+}
+
+/** The preview of a feed whose route is for paid plans only, such as Twitter */
+const PaidRouteRequired = ({ error }: { error: Error }) => {
+  const { t } = useTranslation("settings")
+  const settingModalPresent = useSettingModal()
+  const isPaymentEnabled = useIsPaymentEnabled()
+
+  return (
+    <div className="center grow flex-col gap-3 px-8 text-center">
+      <i className="i-mgc-power size-7 text-accent" />
+      <p>{getFetchErrorMessage(error)}</p>
+      {isPaymentEnabled && (
+        <>
+          <p className="text-sm text-text-secondary">{t("control.paid_badge.basic_or_higher")}</p>
+          <Button onClick={() => settingModalPresent("plan")}>
+            {t("subscription.actions.upgrade")}
+          </Button>
+        </>
+      )}
+    </div>
   )
 }
 
@@ -174,6 +196,9 @@ export const FeedForm: Component<{
                 <LoadingCircle size="large" />
               </div>
             )
+          }
+          case isPaidRSSHubRouteError(feedQuery.error): {
+            return <PaidRouteRequired error={feedQuery.error!} />
           }
           case !!feedQuery.error: {
             return (
