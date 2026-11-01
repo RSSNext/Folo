@@ -353,6 +353,8 @@
   "general.auto_expand_long_social_media.label": "ソーシャルメディアを展開",
   "general.auto_group.description": "サイトのドメインごとに自動でグループ化する。",
   "general.auto_group.label": "サイトごとにフィードを自動グループ化",
+  "general.auto_play_video.description": "動画とホバープレビューを自動再生します。オフにすると、クリックするまで再生されません。",
+  "general.auto_play_video.label": "動画を自動再生",
   "general.content": "コンテンツ",
   "general.data": "データ",
   "general.dim_read.description": "タイムラインで既読のエントリーの色を薄くします。",

@@ -4,6 +4,7 @@ export const transformVideoUrl = ({
   isIframe = false,
   attachments,
   lang,
+  autoPlay = true,
 }: {
   url: string
   mini?: boolean
@@ -15,6 +16,7 @@ export const transformVideoUrl = ({
       }[]
     | null
   lang?: string
+  autoPlay?: boolean
 }): string | null => {
   if (url?.match(/\/\/www.bilibili.com\/video\/BV\w+/)) {
     const player = isIframe
@@ -22,7 +24,7 @@ export const transformVideoUrl = ({
       : "https://www.bilibili.com/blackboard/newplayer.html"
     return `${player}?${new URLSearchParams({
       isOutside: "true",
-      autoplay: "true",
+      autoplay: String(autoPlay),
       danmaku: "true",
       muted: mini ? "true" : "false",
       highQuality: "true",
@@ -34,7 +36,7 @@ export const transformVideoUrl = ({
     const videoId = url.match(/\/\/www.youtube.com\/(?:watch\?v=|shorts\/)([-\w]+)/)?.[1]
     return `https://www.youtube-nocookie.com/embed/${videoId}?${new URLSearchParams({
       controls: mini ? "0" : "1",
-      autoplay: "1",
+      autoplay: autoPlay ? "1" : "0",
       mute: mini ? "1" : "0",
       hl: lang ?? "en-US",
       cc_lang_pref: lang ?? "en-US",
@@ -47,7 +49,7 @@ export const transformVideoUrl = ({
     } else {
       return `https://www.pornhub.com/embed/${url.match(/\/\/www.pornhub.com\/view_video.php\?viewkey=(\w+)/)?.[1]}?${new URLSearchParams(
         {
-          autoplay: "1",
+          autoplay: autoPlay ? "1" : "0",
         },
       ).toString()}`
     }

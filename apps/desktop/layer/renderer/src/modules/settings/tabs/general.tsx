@@ -151,6 +151,10 @@ export const SettingGeneral = () => {
             label: t("general.auto_expand_long_social_media.label"),
             description: t("general.auto_expand_long_social_media.description"),
           }),
+          defineSettingItem("autoPlayVideo", {
+            label: t("general.auto_play_video.label"),
+            description: t("general.auto_play_video.description"),
+          }),
           defineSettingItem("dimRead", {
             label: t("general.dim_read.label"),
             description: t("general.dim_read.description"),

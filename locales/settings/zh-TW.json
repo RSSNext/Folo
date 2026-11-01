@@ -353,6 +353,8 @@
   "general.auto_expand_long_social_media.label": "拓展長社群媒體",
   "general.auto_group.description": "自動依照網址域名分類 RSS 摘要。",
   "general.auto_group.label": "依網站自動分類 RSS 摘要",
+  "general.auto_play_video.description": "自動播放影片和懸停預覽。關閉後，影片需要點擊才會播放。",
+  "general.auto_play_video.label": "自動播放影片",
   "general.content": "內容",
   "general.data": "資料",
   "general.dim_read.description": "淡化時間軸上已讀條目的顏色。",

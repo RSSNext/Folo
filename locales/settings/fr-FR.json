@@ -353,6 +353,8 @@
   "general.auto_expand_long_social_media.label": "Développer longs réseaux sociaux",
   "general.auto_group.description": "Grouper les flux du même domaine de site web ensemble.",
   "general.auto_group.label": "Grouper auto. les flux par site",
+  "general.auto_play_video.description": "Lire automatiquement les vidéos et les aperçus au survol. Désactivez pour attendre un clic avant la lecture.",
+  "general.auto_play_video.label": "Lecture auto. des vidéos",
   "general.content": "Contenu",
   "general.data": "Données",
   "general.dim_read.description": "Atténuer la couleur des entrées lues dans la chronologie.",

@@ -146,6 +146,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
   }, [simple, translation?.description, translation?.title, bilingual])
 
   const dimRead = useGeneralSettingKey("dimRead")
+  const autoPlayVideo = useGeneralSettingKey("autoPlayVideo")
   // NOTE: prevent 0 height element, react virtuoso will not stop render any more
   if (!entry || !(feed || inbox)) return null
 
@@ -169,7 +170,7 @@ export function AllItem({ entryId, translation, currentFeedTitle }: UniversalIte
       )}
       <div className={cn("flex h-fit min-w-0 flex-1 items-center truncate text-sm leading-tight")}>
         {entry.firstAudio && <AudioIcon entryId={entryId} src={entry.firstAudio.url} />}
-        {entry.video && <VideoIcon src={entry.video} />}
+        {entry.video && <VideoIcon src={entry.video} autoPlay={autoPlayVideo} />}
         <div
           className={cn(
             "relative flex items-center",
@@ -305,13 +306,14 @@ function AudioIcon({ entryId, src }: { entryId: string; src: string }) {
   )
 }
 
-function VideoIcon({ src }: { src: string }) {
+function VideoIcon({ src, autoPlay }: { src: string; autoPlay: boolean }) {
+  const icon = <i className="i-mgc-video-cute-fi mr-1 shrink-0 text-base text-text/90" />
+  if (!autoPlay) return icon
+
   return (
     <Tooltip>
       <TooltipRoot>
-        <TooltipTrigger asChild>
-          <i className="i-mgc-video-cute-fi mr-1 shrink-0 text-base text-text/90" />
-        </TooltipTrigger>
+        <TooltipTrigger asChild>{icon}</TooltipTrigger>
         <TooltipPortal>
           <TooltipContent className="flex-col gap-1" side={"bottom"}>
             <div className="flex items-center gap-1">

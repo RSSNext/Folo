@@ -14,6 +14,7 @@ import { Trans, useTranslation } from "react-i18next"
 import type { ReactZoomPanPinchRef, ReactZoomPanPinchState } from "react-zoom-pan-pinch"
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { m } from "~/components/common/Motion"
 import { GlassButton } from "~/components/ui/button/GlassButton"
 import { COPY_MAP } from "~/constants"
@@ -268,6 +269,7 @@ export const PreviewMediaContent: FC<{
   onZoomChange?: (isZoomed: boolean) => void
 }> = ({ media, initialIndex = 0, children, onZoomChange }) => {
   const { t } = useTranslation()
+  const autoPlayVideo = useGeneralSettingKey("autoPlayVideo")
   const videoRefs = useRef<(VideoPlayerRef | null)[]>([])
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex: initialIndex }, [
     WheelGesturesPlugin(),
@@ -313,10 +315,10 @@ export const PreviewMediaContent: FC<{
       video?.controls.pause()
     })
     const currentVideo = videoRefs.current[currentSlideIndex]
-    if (currentVideo) {
+    if (currentVideo && autoPlayVideo) {
       currentVideo.controls.play()
     }
-  }, [currentSlideIndex])
+  }, [autoPlayVideo, currentSlideIndex])
 
   if (media.length === 0) return null
   if (media.length === 1) {
@@ -331,7 +333,7 @@ export const PreviewMediaContent: FC<{
               <VideoPlayer
                 src={src}
                 controls
-                autoPlay
+                autoPlay={autoPlayVideo}
                 autoFocus
                 muted
                 className={cn("h-full w-auto object-contain", !!children && "rounded-l-xl")}

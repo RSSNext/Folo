@@ -353,6 +353,8 @@
   "general.auto_expand_long_social_media.label": "展开长社交媒体",
   "general.auto_group.description": "自动按网站域名分组订阅源。",
   "general.auto_group.label": "按网站自动分组订阅源",
+  "general.auto_play_video.description": "自动播放视频和悬停预览。关闭后，视频需要点击才会播放。",
+  "general.auto_play_video.label": "自动播放视频",
   "general.content": "内容",
   "general.data": "数据",
   "general.dim_read.description": "淡化时间线中已读条目的显示颜色。",

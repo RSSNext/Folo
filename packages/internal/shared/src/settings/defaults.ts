@@ -30,6 +30,7 @@ export const defaultGeneralSettings: GeneralSettings = {
   // timeline
   groupByDate: false,
   autoExpandLongSocialMedia: false,
+  autoPlayVideo: true,
   dimRead: false,
 
   // Secure

@@ -8,6 +8,7 @@ import { Blurhash, BlurhashCanvas } from "react-blurhash"
 import { Trans, useTranslation } from "react-i18next"
 import { useEventCallback } from "usehooks-ts"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useGetImageProxyUrl } from "~/lib/img-proxy"
 import { saveImageDimensionsToDb } from "~/store/image/db"
 
@@ -517,6 +518,7 @@ const VideoPreview: FC<{
   thumbnail?: boolean
   videoClassName?: string
 }> = ({ src, previewImageUrl, thumbnail = false, videoClassName }) => {
+  const autoPlayVideo = useGeneralSettingKey("autoPlayVideo")
   const [isInitVideoPlayer, setIsInitVideoPlayer] = useState(!previewImageUrl)
 
   const [videoRef, setVideoRef] = useState<VideoPlayerRef | null>(null)
@@ -526,6 +528,7 @@ const VideoPreview: FC<{
     <div
       className="size-full"
       onMouseEnter={() => {
+        if (!autoPlayVideo) return
         videoRef?.controls.play()?.then(forceUpdate)
       }}
       onMouseLeave={() => {
@@ -538,6 +541,7 @@ const VideoPreview: FC<{
           src={previewImageUrl}
           className={cn("size-full object-cover", videoClassName)}
           onMouseEnter={() => {
+            if (!autoPlayVideo) return
             setIsInitVideoPlayer(true)
           }}
         />

@@ -353,6 +353,8 @@
   "general.auto_expand_long_social_media.label": "Expand long social media",
   "general.auto_group.description": "Group feeds from the same website domain together.",
   "general.auto_group.label": "Auto Group feeds by site",
+  "general.auto_play_video.description": "Automatically play videos and hover previews. Turn off to wait for a click before playing.",
+  "general.auto_play_video.label": "Autoplay videos",
   "general.content": "Content",
   "general.data": "Data",
   "general.dim_read.description": "Dim the color of entries in the timeline that have been read.",
