@@ -18,6 +18,7 @@ import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
+import { EntryListNextPageError } from "./EntryListNextPageError"
 import { useOnViewableItemsChanged } from "./hooks"
 import {
   shouldAnimateLoadingPlaceholder,
@@ -25,6 +26,7 @@ import {
 } from "./placeholder-animation"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
 import type { EntryExtraData } from "./types"
+import { useNextPage } from "./use-next-page"
 
 const ARTICLE_SKELETON_KEYS = [
   "article-skeleton-1",
@@ -58,6 +60,7 @@ export const EntryListContentArticle = ({
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
+    isFetchNextPageError,
     refetch,
     isRefetching,
     hasNextPage,
@@ -88,18 +91,42 @@ export const EntryListContentArticle = ({
     active,
     isFetchingNextPage,
   })
-  const ListFooterComponent = useMemo(
-    () =>
-      hasNextPage ? (
-        <EntryItemSkeleton animated={animateNextPagePlaceholder} />
-      ) : (
-        <View>
-          <EntryListFooter fetchedTime={fetchedTime} />
-          {hasEndSpacer && <EntryListEndScrollSpacer />}
-        </View>
-      ),
-    [hasEndSpacer, hasNextPage, fetchedTime, animateNextPagePlaceholder],
-  )
+  const {
+    footerState: nextPageFooterState,
+    retry: retryNextPage,
+    loadMore: handleEndReached,
+  } = useNextPage({
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  })
+  const ListFooterComponent = useMemo(() => {
+    switch (nextPageFooterState) {
+      case "error": {
+        return <EntryListNextPageError error={entriesError} onRetry={retryNextPage} />
+      }
+      case "loading":
+      case "idle": {
+        return <EntryItemSkeleton animated={animateNextPagePlaceholder} />
+      }
+      case "end": {
+        return (
+          <View>
+            <EntryListFooter fetchedTime={fetchedTime} />
+            {hasEndSpacer && <EntryListEndScrollSpacer />}
+          </View>
+        )
+      }
+    }
+  }, [
+    animateNextPagePlaceholder,
+    entriesError,
+    fetchedTime,
+    hasEndSpacer,
+    nextPageFooterState,
+    retryNextPage,
+  ])
 
   const ref = useRef<FlashListRef<any>>(null)
 
@@ -107,6 +134,8 @@ export const EntryListContentArticle = ({
     // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
     disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
+    entryCount: entryIds?.length ?? 0,
+    onReachEnd: active === false ? undefined : handleEndReached,
   })
 
   useImperativeHandle(forwardRef, () => ref.current!)
@@ -153,7 +182,7 @@ export const EntryListContentArticle = ({
       extraData={extraData}
       keyExtractor={defaultKeyExtractor}
       renderItem={renderItem}
-      onEndReached={fetchNextPage}
+      onEndReached={handleEndReached}
       onScroll={onScroll}
       onViewableItemsChanged={onViewableItemsChanged}
       ListFooterComponent={ListFooterComponent}

@@ -21,6 +21,7 @@
   "2010": "Ownership challenge failed",
   "2011": "Subscription limit exceeded",
   "2012": "RSSHub feed subscription limit exceeded",
+  "2013": "This RSSHub route is available on paid plans only",
   "3000": "Entry not found",
   "4000": "Already claimed",
   "4001": "User wallet error",

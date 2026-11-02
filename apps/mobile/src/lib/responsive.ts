@@ -1,13 +1,16 @@
 import { useCallback, useMemo } from "react"
 import type { ViewStyle } from "react-native"
 import { Dimensions, useWindowDimensions } from "react-native"
+import { useSafeAreaFrame } from "react-native-safe-area-context"
 
 import { isIOS } from "./platform"
 
 const baseWidth = 375
 const baseHeight = 812
 const maxResponsiveHeight = 932
-const tabletMinLength = 744
+// iPhone Duo's inner display is 669 pt wide in portrait; its 466 pt outer display stays on the
+// phone layout.
+const tabletMinLength = 669
 
 // Both read the window on every call. Keeping the window object Dimensions hands out and refreshing
 // it in place broke useWindowDimensions, which compares each change against that same object:
@@ -52,13 +55,17 @@ export const useScaleHeight = () => {
 }
 
 /**
- * Whether a window this wide gets the tablet layout. It goes by the window, not the device: an iPad
- * window as narrow as a phone, in Split View, Slide Over or a resized window, gets the phone layout.
+ * Whether a window this wide gets the tablet layout. It goes by the window, not the device, so the
+ * iPhone Duo inner display gets it too. Narrower iPad windows still get the phone layout.
  */
 export const isTabletLayoutWidth = (windowWidth: number) => isIOS && windowWidth >= tabletMinLength
 
+/**
+ * Whether the area a component lays out in gets the tablet layout: the window, or the side of the
+ * split layout it is in, whose list gets the phone layout next to the reader.
+ */
 export const useIsTabletLayout = () => {
-  const { width } = useWindowDimensions()
+  const { width } = useSafeAreaFrame()
   return isTabletLayoutWidth(width)
 }
 
@@ -83,7 +90,7 @@ export const getReadableContainerStyle = (
 }
 
 export const useReadableContainerStyle = (maxWidth: number, gutter = 24) => {
-  const { width } = useWindowDimensions()
+  const { width } = useSafeAreaFrame()
 
   return useMemo(
     () => getReadableContainerStyle(width, maxWidth, gutter),

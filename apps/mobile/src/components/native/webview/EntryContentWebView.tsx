@@ -1,3 +1,4 @@
+import { useRefValue } from "@follow/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
@@ -37,6 +38,11 @@ type EntryContentWebViewProps = {
   isContentPending?: boolean
   /** Requests the content again, offered with the message for missing content */
   onRetry?: () => void
+  /**
+   * Shows the entry in the shared web view again each time it changes, after another reader that
+   * covered this one showed its own entry there
+   */
+  resendSignal?: number
 }
 
 // Export for backward compatibility
@@ -51,6 +57,14 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const isLoading = isContentMissing && props.isContentPending !== false
   const { handleModeSwitch, mode } = useWebViewMode()
   const externalUrl = useEntryExternalUrl(props.entryId)
+
+  const entryInWebviewRef = useRefValue(entryInWebview)
+  const resendSignalRef = React.useRef(props.resendSignal)
+  useEffect(() => {
+    if (props.resendSignal === resendSignalRef.current) return
+    resendSignalRef.current = props.resendSignal
+    WebViewManager.setEntry(entryInWebviewRef.current)
+  }, [entryInWebviewRef, props.resendSignal])
 
   const handleSeekAudio = useCallback(
     async (e: AudioSeekEvent) => {

@@ -17,6 +17,7 @@ import { getResetScrollSignalForContent } from "../screen/scroll-reset"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
+import { EntryListNextPageError } from "./EntryListNextPageError"
 import { useOnViewableItemsChanged } from "./hooks"
 import { ItemSeparatorFullWidth } from "./ItemSeparator"
 import {
@@ -25,6 +26,7 @@ import {
 } from "./placeholder-animation"
 import { EntrySocialItem } from "./templates/EntrySocialItem"
 import type { EntryExtraData } from "./types"
+import { useNextPage } from "./use-next-page"
 
 // The same centred column as the Articles view on iPad, so posts don't run the full screen width
 const READABLE_MAX_WIDTH = 860
@@ -58,6 +60,7 @@ export const EntryListContentSocial = ({
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
+    isFetchNextPageError,
     refetch,
     isRefetching,
     hasNextPage,
@@ -89,20 +92,47 @@ export const EntryListContentSocial = ({
     active,
     isFetchingNextPage,
   })
-  const ListFooterComponent = useMemo(
-    () =>
-      hasNextPage ? (
-        <View style={readableItemStyle}>
-          <EntryItemSkeleton animated={animateNextPagePlaceholder} />
-        </View>
-      ) : (
-        <View>
-          <EntryListFooter fetchedTime={fetchedTime} />
-          {hasEndSpacer && <EntryListEndScrollSpacer />}
-        </View>
-      ),
-    [hasEndSpacer, hasNextPage, fetchedTime, animateNextPagePlaceholder, readableItemStyle],
-  )
+  const {
+    footerState: nextPageFooterState,
+    retry: retryNextPage,
+    loadMore: handleEndReached,
+  } = useNextPage({
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  })
+  const ListFooterComponent = useMemo(() => {
+    switch (nextPageFooterState) {
+      case "error": {
+        return <EntryListNextPageError error={entriesError} onRetry={retryNextPage} />
+      }
+      case "loading":
+      case "idle": {
+        return (
+          <View style={readableItemStyle}>
+            <EntryItemSkeleton animated={animateNextPagePlaceholder} />
+          </View>
+        )
+      }
+      case "end": {
+        return (
+          <View>
+            <EntryListFooter fetchedTime={fetchedTime} />
+            {hasEndSpacer && <EntryListEndScrollSpacer />}
+          </View>
+        )
+      }
+    }
+  }, [
+    animateNextPagePlaceholder,
+    entriesError,
+    fetchedTime,
+    hasEndSpacer,
+    nextPageFooterState,
+    readableItemStyle,
+    retryNextPage,
+  ])
   const animateLoadingPlaceholder = shouldAnimateLoadingPlaceholder({ active })
   const renderLoadingSkeleton = useCallback(
     () => (
@@ -117,6 +147,8 @@ export const EntryListContentSocial = ({
     // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
     disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
+    entryCount: entryIds?.length ?? 0,
+    onReachEnd: active === false ? undefined : handleEndReached,
   })
 
   const translation = useGeneralSettingKey("translation")
@@ -173,7 +205,7 @@ export const EntryListContentSocial = ({
       extraData={extraData}
       keyExtractor={(id) => id}
       renderItem={renderItem}
-      onEndReached={fetchNextPage}
+      onEndReached={handleEndReached}
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
       ItemSeparatorComponent={ReadableItemSeparator}

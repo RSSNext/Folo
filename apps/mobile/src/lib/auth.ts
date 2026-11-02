@@ -5,13 +5,14 @@ import { invalidateSessionUser, onLocalDataOfAnotherAccount } from "@follow/stor
 import { isNewUserQueryKey } from "@follow/store/user/constants"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { userActions } from "@follow/store/user/store"
-import { createMobileAPIHeaders } from "@follow/utils/headers"
+import { APP_LANGUAGE_HEADER, createMobileAPIHeaders } from "@follow/utils/headers"
 import { useQuery } from "@tanstack/react-query"
 import type { BetterAuthClientOptions } from "better-auth/client"
 import { createAuthClient } from "better-auth/react"
 import { nativeApplicationVersion } from "expo-application"
 import Storage from "expo-sqlite/kv-store"
 import * as WebBrowser from "expo-web-browser"
+import i18next from "i18next"
 import { Platform } from "react-native"
 import DeviceInfo from "react-native-device-info"
 
@@ -180,6 +181,10 @@ export const authClient = createAuthClient<MobileAuthClientOptions>({
         ctx.headers.set(key, value)
       })
       ctx.headers.set("User-Agent", await getUserAgent())
+      // Read per request, so emails follow a language switched after start-up.
+      if (i18next.language) {
+        ctx.headers.set(APP_LANGUAGE_HEADER, i18next.language)
+      }
 
       const value = Storage.getItemSync("referral-code")
       if (value) {

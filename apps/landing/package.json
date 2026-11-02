@@ -6,10 +6,10 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production vinext build",
     "cf:build": "cross-env NODE_ENV=production vinext build",
-    "cf:deploy": "pnpm exec vinext deploy",
-    "cf:deploy:dev": "pnpm exec vinext deploy --preview",
+    "cf:deploy": "pnpm run cf:build && cf deploy --prebuilt --mode production",
+    "cf:deploy:dev": "pnpm run cf:build --mode dev && cf deploy --prebuilt --mode dev",
     "dev": "cross-env NODE_ENV=development vinext dev -p 4399",
-    "start": "cross-env NODE_ENV=production vinext start -p 4399",
+    "start": "cross-env NODE_ENV=production vite preview --port 4399",
     "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsc --noEmit"
   },
@@ -59,7 +59,7 @@
     "vinext": "1.0.0-beta.11"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.57.1",
+    "@cloudflare/vite-plugin": "2.0.0-beta.v.3",
     "@egoist/tailwindcss-icons": "1.9.2",
     "@iconify-json/lucide": "1.2.135",
     "@iconify-json/mingcute": "1.2.8",
@@ -77,6 +77,7 @@
     "@vitejs/plugin-rsc": "0.5.35",
     "autoprefixer": "10.6.1",
     "babel-plugin-react-compiler": "1.0.0",
+    "cf": "1.0.0-beta.20",
     "code-inspector-plugin": "2.0.9",
     "cross-env": "10.1.0",
     "dotenv": "18.0.2",

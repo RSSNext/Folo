@@ -1,14 +1,18 @@
+import type { AIShortcut } from "@follow/shared/settings/interface"
 import { getSyncModelHandler } from "@follow/store/sync/model-registry"
 import type { SyncAction } from "@follow/store/sync/types"
 import { getStorageNS } from "@follow/utils/ns"
 import { FollowAPIError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
+import type { ServerConfigs } from "~/atoms/server-configs"
+import { setServerConfigs } from "~/atoms/server-configs"
 import {
   clearAISettings,
   getAISettings,
   initializeDefaultAISettings,
   setAISetting,
+  syncServerShortcuts,
 } from "~/atoms/settings/ai"
 import {
   clearGeneralSettings,
@@ -81,6 +85,38 @@ const createRule = () => ({
   color: "#FDE68A",
 })
 
+const serverShortcuts: ServerConfigs["AI_SHORTCUTS"] = [
+  {
+    id: "default-summarize-timeline",
+    name: "Summarize",
+    defaultPrompt: "Summarize the timeline.",
+    displayTargets: ["list"],
+  },
+  {
+    id: "default-analyze",
+    name: "Analyze",
+    defaultPrompt: "Analyze this content.",
+    displayTargets: ["entry"],
+  },
+]
+
+const customShortcut: AIShortcut = {
+  id: "1760000000000",
+  name: "Translate",
+  prompt: "Translate this entry into French.",
+  enabled: true,
+  icon: "i-mgc-translate-2-cute-re",
+  displayTargets: ["entry"],
+}
+
+// Every device adds the server's shortcuts to its own, signed in or not, as the server configs
+// provider does once the configs load.
+const addServerShortcuts = () => {
+  setServerConfigs({ AI_SHORTCUTS: serverShortcuts } as ServerConfigs)
+  syncServerShortcuts(serverShortcuts)
+  return getAISettings().shortcuts
+}
+
 describe("desktop spotlight setting sync", () => {
   beforeEach(() => {
     const eventTarget = new EventTarget()
@@ -128,6 +164,7 @@ describe("desktop spotlight setting sync", () => {
     vi.clearAllMocks()
     settingSyncQueue.teardown()
     settingSyncQueue.queue = []
+    setServerConfigs(null)
     localStorage.clear()
     initializeDefaultUISettings()
     initializeDefaultGeneralSettings()
@@ -523,6 +560,58 @@ describe("desktop spotlight setting sync", () => {
 
     expect(getGeneralSettings().actionLanguage).toBe("ja")
     expect(settingsUpdateMock).not.toHaveBeenCalled()
+  })
+
+  test("a fresh device takes the account's AI shortcuts instead of uploading the built-in ones", async () => {
+    // Signing out clears the local settings and the once-per-account upload mark, and a new
+    // browser starts without them too.
+    localStorage.clear()
+    const builtInShortcuts = addServerShortcuts()
+    vi.useFakeTimers()
+
+    await settingSyncQueue.init()
+    settingSyncQueue.applyRemoteSettings({
+      code: 0,
+      settings: { ai: { shortcuts: [customShortcut, ...builtInShortcuts] } },
+      updated: { ai: "2030-04-14T12:00:00.000Z" },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+    await Promise.resolve()
+
+    expect(settingsUpdateMock).not.toHaveBeenCalled()
+    expect(getAISettings().shortcuts).toEqual([customShortcut, ...builtInShortcuts])
+  })
+
+  test.each([
+    ["a shortcut of its own", (shortcuts: AIShortcut[]) => [...shortcuts, customShortcut]],
+    [
+      "a built-in shortcut it turned off",
+      (shortcuts: AIShortcut[]) =>
+        shortcuts.map((shortcut) =>
+          shortcut.id === "default-analyze" ? { ...shortcut, enabled: false } : shortcut,
+        ),
+    ],
+  ])("once per account, a device with %s still uploads its AI shortcuts", async (_, change) => {
+    localStorage.clear()
+    const builtInShortcuts = addServerShortcuts()
+    const localShortcuts = change(builtInShortcuts)
+    setAISetting("shortcuts", localShortcuts)
+    vi.useFakeTimers()
+
+    await settingSyncQueue.init()
+    settingSyncQueue.applyRemoteSettings({
+      code: 0,
+      settings: { ai: { shortcuts: builtInShortcuts } },
+      updated: { ai: "2030-04-14T12:00:00.000Z" },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+    await Promise.resolve()
+
+    expect(settingsUpdateMock).toHaveBeenCalledTimes(1)
+    expect(settingsUpdateMock).toHaveBeenCalledWith({ tab: "ai", shortcuts: localShortcuts })
+    expect(getAISettings().shortcuts).toEqual(localShortcuts)
   })
 
   test("replaceRemoteIfEmpty does not overwrite existing remote settings", async () => {

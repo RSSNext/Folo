@@ -407,4 +407,62 @@ describe("useEntriesQuery", () => {
       expect(entriesQuery?.queryKey.at(-1)).toBe("asc")
     })
   })
+
+  test("keeps a failed next page retryable instead of ending the list", async () => {
+    const nextPageError = new Error("next page failed")
+    const fetchEntriesSpy = vi
+      .spyOn(entrySyncServices, "fetchEntries")
+      .mockImplementation(async (props) => {
+        if (props.pageParam) {
+          throw nextPageError
+        }
+        return createEntriesResponse("entry-1", "2026-05-14T00:00:00.000Z")
+      })
+
+    let entriesQuery: ReturnType<typeof useEntriesQuery> | undefined
+    const EntriesQueryConsumer = () => {
+      entriesQuery = useEntriesQuery({
+        feedId: "feed-1",
+        view: FeedViewType.Articles,
+      })
+
+      return null
+    }
+
+    container = document.createElement("div")
+    document.body.append(container)
+    root = createRoot(container)
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+
+    await act(async () => {
+      root?.render(
+        <QueryClientProvider client={queryClient!}>
+          <EntriesQueryConsumer />
+        </QueryClientProvider>,
+      )
+    })
+    await vi.waitFor(() => {
+      expect(entriesQuery?.isSuccess).toBe(true)
+    })
+
+    await act(async () => {
+      await entriesQuery?.fetchNextPage()
+    })
+    await vi.waitFor(() => {
+      expect(entriesQuery?.isFetchNextPageError).toBe(true)
+    })
+
+    // The list still has a next page, so the footer can offer a retry rather than ending
+    expect(entriesQuery?.isError).toBe(true)
+    expect(entriesQuery?.entriesIds).toEqual(["entry-1"])
+    expect(entriesQuery?.hasNextPage).toBe(true)
+    expect(entriesQuery?.isFetchingNextPage).toBe(false)
+    expect(fetchEntriesSpy).toHaveBeenCalledTimes(2)
+  })
 })

@@ -7,7 +7,6 @@ import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescri
 import { PullUpIndicatorIos } from "./PullUpIndicatorIos"
 import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./types"
 
-// eslint-disable-next-line react-refresh/only-export-components
 const EmptyGestureWrapper: UsePullUpToNextReturn["GestureWrapper"] = ({
   children,
 }: {
@@ -23,10 +22,12 @@ export const usePullUpToNext = ({
   const isOverThreshold = useRef(false)
   const [dragState, setDragState] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [isPulling, setIsPulling] = useState(false)
   const onScroll = useCallback(
     (e: ReanimatedScrollEvent) => {
       if (!dragging.current) return
       const overOffset = e.contentOffset.y - e.contentSize.height + e.layoutMeasurement.height
+      setIsPulling(overOffset > 0)
 
       // Ratio used to determine when to deactivate the pulling threshold
       const thresholdRatio = 0.95
@@ -66,6 +67,7 @@ export const usePullUpToNext = ({
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       dragging.current = false
       setDragState(false)
+      setIsPulling(false)
       const velocity = event.nativeEvent.velocity?.y || 0
       if (isOverThreshold.current && velocity < 3) {
         onRefresh?.()
@@ -78,6 +80,7 @@ export const usePullUpToNext = ({
   const translateY = useSharedValue(0)
   if (!enabled) {
     return {
+      isPulling: false,
       scrollViewEventHandlers: {},
       pullUpViewProps: {
         active: false,
@@ -92,6 +95,7 @@ export const usePullUpToNext = ({
     }
   }
   return {
+    isPulling,
     scrollViewEventHandlers: {
       onScroll,
       onScrollBeginDrag,

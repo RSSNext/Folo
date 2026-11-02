@@ -19,12 +19,14 @@ import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { GridEntryListFooter } from "./EntryListFooter"
+import { EntryListNextPageError } from "./EntryListNextPageError"
 import { useOnViewableItemsChanged } from "./hooks"
 import {
   shouldAnimateLoadingPlaceholder,
   shouldAnimateNextPagePlaceholder,
 } from "./placeholder-animation"
 import { EntryVideoItem } from "./templates/EntryVideoItem"
+import { useNextPage } from "./use-next-page"
 
 const VIDEO_SKELETON_KEYS = ["video-skeleton-1", "video-skeleton-2", "video-skeleton-3"] as const
 
@@ -56,6 +58,7 @@ export const EntryListContentVideo = ({
     isRefetching,
     isFetching,
     isFetchingNextPage,
+    isFetchNextPageError,
     hasNextPage,
     isReady,
     fetchedTime,
@@ -63,10 +66,22 @@ export const EntryListContentVideo = ({
     viewId: view,
     active,
   })
+  const {
+    footerState: nextPageFooterState,
+    retry: retryNextPage,
+    loadMore: handleEndReached,
+  } = useNextPage({
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
     disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
+    entryCount: entryIds?.length ?? 0,
+    onReachEnd: active === false ? undefined : handleEndReached,
   })
 
   const translation = useGeneralSettingKey("translation")
@@ -90,21 +105,37 @@ export const EntryListContentVideo = ({
     active,
     isFetchingNextPage,
   })
-  const ListFooterComponent = useMemo(
-    () =>
-      hasNextPage ? (
-        <View className="flex flex-row justify-between">
-          <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
-          <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
-        </View>
-      ) : (
-        <View>
-          <GridEntryListFooter fetchedTime={fetchedTime} />
-          {hasEndSpacer && <EntryListEndScrollSpacer />}
-        </View>
-      ),
-    [animateNextPagePlaceholder, hasEndSpacer, hasNextPage, fetchedTime],
-  )
+  const ListFooterComponent = useMemo(() => {
+    switch (nextPageFooterState) {
+      case "error": {
+        return <EntryListNextPageError error={entriesError} onRetry={retryNextPage} />
+      }
+      case "loading":
+      case "idle": {
+        return (
+          <View className="flex flex-row justify-between">
+            <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
+            <EntryVideoItemSkeleton animated={animateNextPagePlaceholder} />
+          </View>
+        )
+      }
+      case "end": {
+        return (
+          <View>
+            <GridEntryListFooter fetchedTime={fetchedTime} />
+            {hasEndSpacer && <EntryListEndScrollSpacer />}
+          </View>
+        )
+      }
+    }
+  }, [
+    animateNextPagePlaceholder,
+    entriesError,
+    fetchedTime,
+    hasEndSpacer,
+    nextPageFooterState,
+    retryNextPage,
+  ])
 
   const renderItem = useTypeScriptHappyCallback(({ item }: { item: string }) => {
     return <EntryVideoItem id={item} />
@@ -149,7 +180,7 @@ export const EntryListContentVideo = ({
       keyExtractor={defaultKeyExtractor}
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
-      onEndReached={fetchNextPage}
+      onEndReached={handleEndReached}
       numColumns={isTablet ? 3 : 2}
       ListFooterComponent={ListFooterComponent}
       {...rest}

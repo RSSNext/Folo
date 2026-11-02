@@ -53,6 +53,7 @@ export const pickTimelineEntries = (
         refetch: remote.refetch,
         isFetching: remote.isFetching,
         isRefetching: remote.isRefetching,
+        isFetchNextPageError: remote.isFetchNextPageError,
         error: remote.error,
         isReady: true,
       },
@@ -67,5 +68,6 @@ export const pickTimelineEntries = (
     isLoading: remote.isLoading,
     isFetching: remote.isFetching,
     isRefetching: remote.isRefetching,
+    isFetchNextPageError: remote.isFetchNextPageError,
   }
 }

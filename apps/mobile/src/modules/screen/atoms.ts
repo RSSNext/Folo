@@ -238,6 +238,7 @@ function useRemoteEntries(props?: UseEntriesProps): RemoteTimelineEntries {
       isLoading: !query.isError,
       isRefetching: query.isRefetching,
       isFetching: query.isFetching,
+      isFetchNextPageError: query.isFetchNextPageError,
       error: query.isError ? query.error : null,
     }
   }
@@ -250,8 +251,10 @@ function useRemoteEntries(props?: UseEntriesProps): RemoteTimelineEntries {
     fetchNextPage,
     isLoading: query.isFetching,
     isRefetching: query.isRefetching,
-    isReady: query.isSuccess,
+    // A failed next page keeps the loaded pages usable; only a first page without data is not ready.
+    isReady: Boolean(query.data),
     isFetchingNextPage: query.isFetchingNextPage,
+    isFetchNextPageError: query.isFetchNextPageError,
     isFetching: query.isFetching,
     hasNextPage: query.hasNextPage,
     error: query.isError ? query.error : null,
@@ -259,7 +262,14 @@ function useRemoteEntries(props?: UseEntriesProps): RemoteTimelineEntries {
   }
 }
 
-function useLocalEntries(props?: UseEntriesProps): UseEntriesReturn {
+// Shared so a disabled local list keeps the same identity instead of re-rendering its readers
+const EMPTY_ENTRY_IDS: string[] = []
+
+function useLocalEntries(
+  props?: UseEntriesProps,
+  localOptions?: { enabled?: boolean },
+): UseEntriesReturn {
+  const enabled = localOptions?.enabled ?? true
   const entryListContext = useEntryListContext()
   const selectedFeed = useSelectedFeed()
   const selectedView = useSelectedView()
@@ -295,6 +305,9 @@ function useLocalEntries(props?: UseEntriesProps): UseEntriesReturn {
   const allEntries = useEntryStore(
     useCallback(
       (state) => {
+        // The server's entries win once its first page is in, so the local list is not read then
+        if (!enabled) return EMPTY_ENTRY_IDS
+
         const ids = isCollection
           ? entryIdsByCollections
           : showEntriesByView
@@ -320,6 +333,7 @@ function useLocalEntries(props?: UseEntriesProps): UseEntriesReturn {
           .filter((id) => typeof id === "string")
       },
       [
+        enabled,
         entryIdsByCategory,
         entryIdsByCollections,
         entryIdsByFeedId,
@@ -373,6 +387,7 @@ function useLocalEntries(props?: UseEntriesProps): UseEntriesReturn {
     isRefetching: false,
     isReady: true,
     isFetchingNextPage: false,
+    isFetchNextPageError: false,
     isFetching: false,
     hasNextPage: page < totalPage,
     error: null,
@@ -386,7 +401,7 @@ function getEntryIdsFromMultiplePlace(...entryIds: Array<string[] | undefined | 
 export function useEntries(props?: UseEntriesProps): UseEntriesReturn {
   const { viewId, active = true } = props || {}
   const remoteQuery = useRemoteEntries({ viewId, active })
-  const localQuery = useLocalEntries({ viewId, active })
+  const localQuery = useLocalEntries({ viewId, active }, { enabled: !remoteQuery.isReady })
   const entryListContext = useEntryListContext()
   const selectedFeed = useSelectedFeed()
 

@@ -20,6 +20,13 @@ const getServerCode = (error: FollowAPIError) => {
   return error.code && !Number.isNaN(code) ? code : undefined
 }
 
+// ExceptionCodeMap.RSSHubRouteRequiresPaidPlan, which the installed SDK may not name yet
+const PAID_RSSHUB_ROUTE_ERROR_CODE = 2013
+
+/** The server refused a feed of a route that is for paid plans only, such as Twitter */
+export const isPaidRSSHubRouteError = (error: unknown) =>
+  error instanceof FollowAPIError && getServerCode(error) === PAID_RSSHUB_ROUTE_ERROR_CODE
+
 // A refused session asks to sign in, whether the server said 1008 (a guest's change) or 1000
 // (no session): the translation of 1000 is a bare "Unauthorized" that says nothing to do.
 const SIGN_IN_REQUIRED_MESSAGE_KEY = "errors:1008"

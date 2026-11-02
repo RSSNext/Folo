@@ -14,10 +14,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { Alert, View } from "react-native"
+import { Alert, Pressable, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { z } from "zod"
 
+import { useIsPaymentEnabled } from "@/src/atoms/server-configs"
 import { ListErrorView } from "@/src/components/errors/ListErrorView"
 import { HeaderSubmitTextButton } from "@/src/components/layouts/header/HeaderElements"
 import {
@@ -32,10 +33,16 @@ import { TextField } from "@/src/components/ui/form/TextField"
 import { GroupedInsetListCard } from "@/src/components/ui/grouped/GroupedList"
 import { PlatformActivityIndicator } from "@/src/components/ui/loading/PlatformActivityIndicator"
 import { Text } from "@/src/components/ui/typography/Text"
+import { PowerIcon } from "@/src/icons/power"
 import { SafeAlertCuteReIcon } from "@/src/icons/safe_alert_cute_re"
 import { SafetyCertificateCuteReIcon } from "@/src/icons/safety_certificate_cute_re"
 import { User3CuteReIcon } from "@/src/icons/user_3_cute_re"
-import { isNotFoundError, toastFetchError } from "@/src/lib/error-parser"
+import {
+  getFetchErrorMessage,
+  isNotFoundError,
+  isPaidRSSHubRouteError,
+  toastFetchError,
+} from "@/src/lib/error-parser"
 import { destination } from "@/src/lib/navigation/biz/Destination"
 import { useCanDismiss, useNavigation } from "@/src/lib/navigation/hooks"
 import { useSetModalScreenOptions } from "@/src/lib/navigation/ScreenOptionsContext"
@@ -43,7 +50,8 @@ import { toast } from "@/src/lib/toast"
 import { FeedSummary } from "@/src/modules/discover/FeedSummary"
 import { FollowStateView } from "@/src/modules/feed/FollowStateView"
 import { FeedViewSelector } from "@/src/modules/feed/view-selector"
-import { useColor } from "@/src/theme/colors"
+import { navigateToPlanScreen } from "@/src/modules/settings/routes/navigateToPlanScreen"
+import { accentColor, useColor } from "@/src/theme/colors"
 
 const formSchema = z.object({
   view: z.coerce.number(),
@@ -63,6 +71,38 @@ const FeedNotFound = ({ id }: { id: string }) => {
   const { t } = useTranslation()
   return <Text className="mt-24 px-4 text-center text-label">{t("feed.not_found", { id })}</Text>
 }
+/** A feed whose route is for paid plans only, such as Twitter, which the server would not preview */
+const PaidRouteRequired = ({ error }: { error: Error }) => {
+  const { t } = useTranslation("settings")
+  const isPaymentEnabled = useIsPaymentEnabled()
+  return (
+    <View className="flex-1 items-center justify-center p-4">
+      <View className="w-full max-w-[300px] items-center rounded-2xl bg-secondary-system-grouped-background p-6">
+        <View className="mb-4 items-center justify-center rounded-3xl bg-quaternary-system-fill p-3">
+          <PowerIcon color={accentColor} height={48} width={48} />
+        </View>
+        <Text className="mb-2 text-center text-lg font-semibold text-label">
+          {getFetchErrorMessage(error)}
+        </Text>
+        {isPaymentEnabled && (
+          <>
+            <Text className="mb-4 text-center text-base text-secondary-label">
+              {t("subscription.summary.free_description")}
+            </Text>
+            <Pressable
+              className="w-full rounded-xl bg-accent px-6 py-3"
+              onPress={() => void navigateToPlanScreen()}
+            >
+              <Text className="text-center text-base font-semibold text-white">
+                {t("subscription.actions.upgrade")}
+              </Text>
+            </Pressable>
+          </>
+        )}
+      </View>
+    </View>
+  )
+}
 const FeedLoadState = ({
   id,
   isFetching,
@@ -79,6 +119,8 @@ const FeedLoadState = ({
     <FollowStateView>
       {isFetching ? (
         <LoadingIndicator />
+      ) : error && isPaidRSSHubRouteError(error) ? (
+        <PaidRouteRequired error={error} />
       ) : error && !isNotFoundError(error) ? (
         <ListErrorView error={error} resetError={onRetry} description={t("feed.fetch_failed")} />
       ) : (

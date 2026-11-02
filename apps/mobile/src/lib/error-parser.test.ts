@@ -6,7 +6,12 @@ import {
 } from "@follow-app/client-sdk"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getFetchErrorMessage, isNotFoundError, toastFetchError } from "./error-parser"
+import {
+  getFetchErrorMessage,
+  isNotFoundError,
+  isPaidRSSHubRouteError,
+  toastFetchError,
+} from "./error-parser"
 
 const mocks = vi.hoisted(() => ({
   isPaymentEnabled: false,
@@ -18,6 +23,9 @@ vi.mock("i18next", () => ({
   t: (key: string) => {
     if (key === "errors:2012") {
       return "RSSHub feed subscription limit exceeded"
+    }
+    if (key === "errors:2013") {
+      return "This RSSHub route is available on paid plans only"
     }
     if (key === "errors:3") {
       return "Unprocessable content"
@@ -58,6 +66,19 @@ describe("toastFetchError", () => {
 
     expect(mocks.showUpgradeRequiredDialog).toHaveBeenCalledWith({
       title: "RSSHub feed subscription limit exceeded",
+      message: "settings:subscription.summary.free_description",
+    })
+    expect(mocks.toastError).not.toHaveBeenCalled()
+  })
+
+  it("asks a free user to upgrade for a route that needs a paid plan", () => {
+    mocks.isPaymentEnabled = true
+    const error = new FollowAPIError("This RSSHub route requires a paid plan", 402, "2013")
+
+    toastFetchError(error)
+
+    expect(mocks.showUpgradeRequiredDialog).toHaveBeenCalledWith({
+      title: "This RSSHub route is available on paid plans only",
       message: "settings:subscription.summary.free_description",
     })
     expect(mocks.toastError).not.toHaveBeenCalled()
@@ -238,5 +259,13 @@ describe("isNotFoundError", () => {
     expect(isNotFoundError(new FollowAPIError("List not found", 404, "8000"))).toBe(true)
     expect(isNotFoundError(new FollowAPIError("Service Unavailable", 503, "503"))).toBe(false)
     expect(isNotFoundError(new Error("fetch failed: offline"))).toBe(false)
+  })
+})
+
+describe("isPaidRSSHubRouteError", () => {
+  it("tells a route that needs a paid plan apart from other refusals", () => {
+    expect(isPaidRSSHubRouteError(new FollowAPIError("paid route", 402, "2013"))).toBe(true)
+    expect(isPaidRSSHubRouteError(new FollowAPIError("limit", 402, "2012"))).toBe(false)
+    expect(isPaidRSSHubRouteError(new Error("2013"))).toBe(false)
   })
 })

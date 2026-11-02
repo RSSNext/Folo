@@ -11,7 +11,6 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 const nextConfig = {
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
-  output: 'standalone',
 
   reactCompiler: true,
   assetPrefix: isProd ? env.ASSETPREFIX || undefined : undefined,

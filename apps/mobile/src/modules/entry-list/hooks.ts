@@ -8,6 +8,7 @@ import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 
 import { useGeneralSettingKey } from "@/src/atoms/settings/general"
 
+import { isLastEntryViewable } from "./next-page"
 import {
   getPendingMarkReadItems,
   shouldCollectViewableItemsForMarkRead,
@@ -19,11 +20,17 @@ export function useOnViewableItemsChanged({
   idExtractor = defaultIdExtractor,
   onScroll: onScrollProp,
   refreshing,
+  entryCount = 0,
+  onReachEnd,
 }: {
   disabled?: boolean
   idExtractor?: (item: ViewToken<string>) => string
   onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void
   refreshing?: boolean
+  /** How many entries the list holds, to tell when the last one becomes viewable */
+  entryCount?: number
+  /** Asks for the next page when the last entry is on screen, even if `onEndReached` did not fire */
+  onReachEnd?: () => void
 } = {}) {
   const orientation = useRef<"down" | "up">("down")
   const lastOffset = useRef(0)
@@ -42,9 +49,21 @@ export function useOnViewableItemsChanged({
     viewableItems: ViewToken<string>[]
     changed: ViewToken<string>[]
   }) => void = useNonReactiveCallback(({ viewableItems, changed }) => {
-    setViewableItems(viewableItems)
+    // FlashList may report the same set again; keeping it would re-render the whole list
+    setViewableItems((previous) =>
+      previous.length === viewableItems.length &&
+      previous.every((item, index) => item.key === viewableItems[index]?.key)
+        ? previous
+        : viewableItems,
+    )
 
     debouncedFetchEntryContentByStream(viewableItems.map((item) => stableIdExtractor(item)))
+
+    // The footer placeholder can sit on screen without FlashList ever calling onEndReached
+    if (onReachEnd && isLastEntryViewable(viewableItems, entryCount)) {
+      onReachEnd()
+    }
+
     const removed = changed.filter((item) => !item.isViewable)
 
     if (disabled) {
@@ -62,7 +81,10 @@ export function useOnViewableItemsChanged({
         offset: lastOffset.current,
       })
     ) {
-      setLastViewableItems(viewableItems)
+      // Only rendering marks these read, so the default setting does not track them
+      if (markAsReadWhenRendering) {
+        setLastViewableItems(viewableItems)
+      }
       if (pauseScrollMarkRead) {
         setLastRemovedItems(null)
         return

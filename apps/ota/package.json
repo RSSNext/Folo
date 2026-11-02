@@ -3,9 +3,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "deploy:dev": "wrangler deploy --env dev",
-    "deploy:prod": "wrangler deploy",
-    "dev": "wrangler dev --env dev",
+    "deploy:dev": "cf deploy --mode dev",
+    "deploy:prod": "cf deploy",
+    "dev": "cf dev --mode dev",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
@@ -19,6 +19,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "5.20260922.1",
     "@types/tar-stream": "3.1.4",
+    "cf": "1.0.0-beta.20",
     "typescript": "catalog:",
     "vitest": "5.0.1",
     "wrangler": "4.136.1"

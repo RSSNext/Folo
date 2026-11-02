@@ -150,6 +150,7 @@ export const useLocalEntries = ({
     isRefetching: false,
     isReady: true,
     isFetchingNextPage: false,
+    isFetchNextPageError: false,
     isFetching: false,
     hasNextPage: page < totalPage,
     error: null,
