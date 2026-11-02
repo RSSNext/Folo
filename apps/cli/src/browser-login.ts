@@ -3,7 +3,7 @@ import { createServer } from "node:http"
 import type { AddressInfo } from "node:net"
 
 import { DEFAULT_VALUES } from "../../../packages/internal/shared/src/env.common"
-import { CLIError } from "./output"
+import { CLIError, readJSONBody, toInvalidResponseError, toNetworkError } from "./output"
 
 const LOCAL_CALLBACK_HOST = "127.0.0.1"
 const LOCAL_CALLBACK_PATH = "/callback"
@@ -162,6 +162,10 @@ const extractErrorMessage = async (response: Response): Promise<string | undefin
   return text || undefined
 }
 
+/**
+ * Whether the API knows `token` as a session. An answer that says nothing about the token, such
+ * as a 404 or a page that is not JSON, comes from something else than the API and is thrown.
+ */
 const hasValidSessionToken = async (apiUrl: string, token: string): Promise<boolean> => {
   const response = await fetch(resolveAuthEndpointUrl(apiUrl, SESSION_CHECK_PATH), {
     headers: {
@@ -171,12 +175,25 @@ const hasValidSessionToken = async (apiUrl: string, token: string): Promise<bool
     method: "GET",
   })
 
-  if (!response.ok) {
+  if (response.status === 401 || response.status === 403) {
     return false
   }
+  if (!response.ok) {
+    throw new CLIError(
+      `HTTP_${response.status}`,
+      `Session check failed with HTTP ${response.status}.`,
+    )
+  }
 
-  const data = (await response.json().catch(() => null)) as unknown
+  const data = await readJSONBody(response, apiUrl)
   return isRecord(data) && Boolean(data.user) && Boolean(data.session)
+}
+
+const toLoginNetworkError = (apiUrl: string, error: unknown, action: string) => {
+  const networkError = toNetworkError(error, apiUrl)
+  return networkError
+    ? new CLIError(networkError.code, networkError.message)
+    : new CLIError("NETWORK_ERROR", `${action}: ${(error as Error).message}`)
 }
 
 export const resolveBrowserLoginToken = async (apiUrl: string, token: string): Promise<string> => {
@@ -196,10 +213,7 @@ export const resolveBrowserLoginToken = async (apiUrl: string, token: string): P
       body: requestBody,
     })
   } catch (error) {
-    throw new CLIError(
-      "NETWORK_ERROR",
-      `Failed to apply browser login token: ${(error as Error).message}`,
-    )
+    throw toLoginNetworkError(apiUrl, error, "Failed to apply browser login token")
   }
 
   if (response.ok) {
@@ -208,11 +222,9 @@ export const resolveBrowserLoginToken = async (apiUrl: string, token: string): P
       extractSessionTokenFromSetCookie(readSetCookieValues(response)) ??
       extractSessionTokenFromBody(data)
 
+    // The API answers an accepted token with the session cookie
     if (!sessionToken) {
-      throw new CLIError(
-        "UNAUTHORIZED",
-        "Browser login token apply succeeded without returning a session token.",
-      )
+      throw toInvalidResponseError(apiUrl, "accepted the login token without returning a session")
     }
 
     return sessionToken
@@ -230,10 +242,7 @@ export const resolveBrowserLoginToken = async (apiUrl: string, token: string): P
         body: requestBody,
       })
     } catch (error) {
-      throw new CLIError(
-        "NETWORK_ERROR",
-        `Failed to verify browser login token: ${(error as Error).message}`,
-      )
+      throw toLoginNetworkError(apiUrl, error, "Failed to verify browser login token")
     }
 
     if (response.ok) {
@@ -243,10 +252,7 @@ export const resolveBrowserLoginToken = async (apiUrl: string, token: string): P
         extractSessionTokenFromBody(data)
 
       if (!sessionToken) {
-        throw new CLIError(
-          "UNAUTHORIZED",
-          "Browser login verification succeeded without returning a session token.",
-        )
+        throw toInvalidResponseError(apiUrl, "accepted the login token without returning a session")
       }
 
       return sessionToken
@@ -259,8 +265,12 @@ export const resolveBrowserLoginToken = async (apiUrl: string, token: string): P
     if (await hasValidSessionToken(apiUrl, token)) {
       return token
     }
-  } catch {
-    // Ignore fallback probe failures and surface the original verification error below.
+  } catch (error) {
+    // An answer from something else than the API: the API URL is wrong, not the token
+    if (error instanceof CLIError) {
+      throw error
+    }
+    // Ignore other fallback probe failures and surface the original verification error below.
   }
 
   throw new CLIError(

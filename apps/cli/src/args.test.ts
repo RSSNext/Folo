@@ -1,6 +1,14 @@
+import { InvalidArgumentError } from "commander"
 import { describe, expect, it } from "vitest"
 
-import { parseFormat, parseISODate, parseNonNegativeInt, parsePositiveInt, parseView } from "./args"
+import {
+  parseChoice,
+  parseFormat,
+  parseISODate,
+  parseNonNegativeInt,
+  parsePositiveInt,
+  parseView,
+} from "./args"
 
 describe("args parsers", () => {
   it("parses named view values", () => {
@@ -25,11 +33,19 @@ describe("args parsers", () => {
   it("parses positive integers", () => {
     expect(parsePositiveInt("1")).toBe(1)
     expect(parsePositiveInt("99")).toBe(99)
+    expect(parsePositiveInt(" 20 ")).toBe(20)
   })
 
   it("throws for non-positive integers", () => {
     expect(() => parsePositiveInt("0")).toThrowError(/positive integer/)
     expect(() => parsePositiveInt("-1")).toThrowError(/positive integer/)
+  })
+
+  it("rejects values that only start with an integer", () => {
+    for (const value of ["1e3", "7abc", "1.5", "0x10", "", "abc", "99999999999999999999"]) {
+      expect(() => parsePositiveInt(value), value).toThrowError(/positive integer/)
+      expect(() => parseNonNegativeInt(value), value).toThrowError(/non-negative integer/)
+    }
   })
 
   it("parses non-negative integers", () => {
@@ -57,5 +73,28 @@ describe("args parsers", () => {
 
   it("throws for invalid output format", () => {
     expect(() => parseFormat("yaml")).toThrowError(/Invalid format/)
+  })
+
+  it("accepts one of the given choices", () => {
+    const parseTarget = parseChoice("target", ["feed", "list", "url"])
+
+    expect(parseTarget("list")).toBe("list")
+    expect(() => parseTarget("banana")).toThrowError("Invalid target. Use feed, list or url.")
+  })
+
+  // Commander names the option of an InvalidArgumentError in its usage error
+  it("reports invalid values as invalid arguments", () => {
+    const parsers: Array<() => unknown> = [
+      () => parseView("foo"),
+      () => parsePositiveInt("abc"),
+      () => parseNonNegativeInt("-1"),
+      () => parseISODate("not-a-date"),
+      () => parseFormat("yaml"),
+      () => parseChoice("target", ["feed"])("list"),
+    ]
+
+    for (const parse of parsers) {
+      expect(parse).toThrowError(InvalidArgumentError)
+    }
   })
 })

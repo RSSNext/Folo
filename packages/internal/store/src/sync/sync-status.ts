@@ -7,12 +7,27 @@
  * as the fallback for servers that do not expose the sync endpoints yet.
  */
 let active = false
+let bootstrapping = false
 
 export const isSyncEngineActive = () => active
 
 export const setSyncEngineActive = (next: boolean) => {
   active = next
 }
+
+/**
+ * The engine took its first cursor from the server and is loading the snapshots. Once done, it
+ * reads the change log from that cursor, which was taken before anything acknowledged now.
+ */
+export const setSyncEngineBootstrapping = (next: boolean) => {
+  bootstrapping = next
+}
+
+/**
+ * Whether the change log will report what a batch the server numbered really changed: the
+ * engine is running, or bootstrapping from a cursor taken before the batch was acknowledged.
+ */
+export const willSyncEngineDeliver = () => active || bootstrapping
 
 /**
  * The parts of the sync engine that hooks and services need. They are reached through this

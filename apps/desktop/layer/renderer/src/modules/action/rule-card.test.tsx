@@ -28,6 +28,9 @@ vi.mock("~/components/ui/modal/stacked/hooks", () => ({
   ["useDialog"]: () => ({
     ask: vi.fn(),
   }),
+  ["useModalStack"]: () => ({
+    present: vi.fn(),
+  }),
 }))
 
 vi.mock("../settings/modal/useSettingModal", () => ({

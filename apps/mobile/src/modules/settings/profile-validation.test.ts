@@ -5,7 +5,7 @@ import enCommon from "../../../../../locales/common/en.json"
 import enSettings from "../../../../../locales/settings/en.json"
 import { getProfileFieldError, getServerProfileFieldError } from "./profile-validation"
 
-const INVALID_HANDLE = "Don't use spaces or invisible characters."
+const INVALID_HANDLE = "Use only letters, numbers and underscores."
 
 describe("getProfileFieldError", () => {
   beforeAll(async () => {
@@ -44,20 +44,39 @@ describe("getProfileFieldError", () => {
     expect(getProfileFieldError("handle", "  ", "folo")).toBeUndefined()
   })
 
-  it("refuses a new handle with spaces or invisible characters, as the server does", () => {
-    for (const handle of ["Ta ken", "Taken\u200B", "\u202ETaken", "fo\u3164lo", "fo\u2800lo"]) {
+  it("takes a new handle of letters A-Z, digits and underscores only, as the server does", () => {
+    for (const handle of ["folo_2", "Folo", "f", "_", "0".repeat(36)]) {
+      expect(getProfileFieldError("handle", handle, "old"), handle).toBeUndefined()
+    }
+    for (const handle of [
+      "Ta ken",
+      "Taken\u200B",
+      "\u202ETaken",
+      "fo\u3164lo",
+      "fo\u2800lo",
+      "fo.lo-2",
+      "\u30D5\u30A9\u30ED",
+      "caf\u00E9",
+      // Characters \w takes with the u and i flags
+      "\u212Aelvin",
+      "\u017Folo",
+    ]) {
       expect(getProfileFieldError("handle", handle, "folo"), handle).toBe(INVALID_HANDLE)
       expect(getProfileFieldError("handle", handle, null), handle).toBe(INVALID_HANDLE)
     }
-    // Other characters are the server's to accept
-    expect(getProfileFieldError("handle", "fo.lo-2", "folo")).toBeUndefined()
-    expect(getProfileFieldError("handle", "\u30D5\u30A9\u30ED", "folo")).toBeUndefined()
   })
 
   it("keeps a handle older clients saved without the check until the user changes it", () => {
     expect(getProfileFieldError("handle", "Ta ken", "Ta ken")).toBeUndefined()
+    expect(getProfileFieldError("handle", "fo.lo-2", "fo.lo-2")).toBeUndefined()
+    expect(
+      getProfileFieldError("handle", "\u30D5\u30A9\u30ED", "\u30D5\u30A9\u30ED"),
+    ).toBeUndefined()
     expect(getProfileFieldError("handle", "folo", " folo")).toBeUndefined()
     expect(getProfileFieldError("handle", "Ta ken2", "Ta ken")).toBe(INVALID_HANDLE)
+    expect(getProfileFieldError("handle", "\u30D5\u30A9", "\u30D5\u30A9\u30ED")).toBe(
+      INVALID_HANDLE,
+    )
   })
 })
 
@@ -68,6 +87,10 @@ describe("getServerProfileFieldError", () => {
       message: "This handle is already taken.",
     })
     expect(getServerProfileFieldError("HANDLE_INVALID_CHARACTERS")).toEqual({
+      field: "handle",
+      message: INVALID_HANDLE,
+    })
+    expect(getServerProfileFieldError("HANDLE_INVALID")).toEqual({
       field: "handle",
       message: INVALID_HANDLE,
     })

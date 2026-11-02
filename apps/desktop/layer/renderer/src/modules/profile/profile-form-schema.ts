@@ -32,6 +32,8 @@ const withMaxLength = (schema: z.ZodString, field: ProfileTextField) =>
 
 const invalidHandleMessage = () => i18next.t("profile.handle.invalid", { ns: "settings" })
 
+// What a new or changed handle is made of, as on mobile and the server: A-Z, a-z, 0-9 and _ only,
+// which \w is without the u flag. With it and the i flag, \w would also take K and ſ look-alikes.
 const HANDLE_PATTERN = /^\w+$/
 
 /**
@@ -64,8 +66,10 @@ const SERVER_FIELD_ERRORS: Record<string, { field: ProfileTextField; message: ()
     field: "handle",
     message: () => i18next.t("profile.handle.taken", { ns: "settings" }),
   },
-  // Spaces or invisible characters in a handle; the form's own check refuses them first
+  // Spaces or invisible characters in a new handle, and any other character than A-Z, a-z, 0-9
+  // and _; the form's own check refuses both first
   HANDLE_INVALID_CHARACTERS: { field: "handle", message: invalidHandleMessage },
+  HANDLE_INVALID: { field: "handle", message: invalidHandleMessage },
   NAME_CANNOT_BE_EMPTY: {
     field: "name",
     message: () => i18next.t("validation.required", { ns: "common" }),

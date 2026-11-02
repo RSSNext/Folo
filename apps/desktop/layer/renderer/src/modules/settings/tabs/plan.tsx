@@ -19,6 +19,8 @@ import { followClient } from "~/lib/api-client"
 import { subscription } from "~/lib/auth"
 
 const APPLE_SUBSCRIPTION_MANAGEMENT_URL = "https://apps.apple.com/account/subscriptions"
+const GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL =
+  "https://play.google.com/store/account/subscriptions?package=is.follow"
 const ACTIVE_STRIPE_SUBSCRIPTION_EXISTS_ERROR_CODE = "ACTIVE_STRIPE_SUBSCRIPTION_EXISTS"
 
 type BillingPortalResponse = {
@@ -30,7 +32,7 @@ type BillingPortalResponse = {
 }
 
 type ActiveSubscription = {
-  source: "stripe" | "apple" | null
+  source: "stripe" | "apple" | "google" | null
   plan: string | null
   status: string | null
   productId: string | null
@@ -428,7 +430,12 @@ const PlanAction = ({
   const { data: activeSubscription } = useActiveSubscription()
   const billingPortalMutation = useBillingPortal()
   const canManageSubscription = !!activeSubscription?.canManage
-  const isAppleSubscription = activeSubscription?.source === "apple"
+  const storeSubscriptionManagementUrl =
+    activeSubscription?.source === "apple"
+      ? APPLE_SUBSCRIPTION_MANAGEMENT_URL
+      : activeSubscription?.source === "google"
+        ? GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL
+        : null
 
   // Determine subscription status info
   const isCanceled = activeSubscription?.status === "canceled"
@@ -553,8 +560,8 @@ const PlanAction = ({
         onClick={
           actionType === "current" && canManageSubscription
             ? () => {
-                if (isAppleSubscription) {
-                  window.open(APPLE_SUBSCRIPTION_MANAGEMENT_URL, "_blank")
+                if (storeSubscriptionManagementUrl) {
+                  window.open(storeSubscriptionManagementUrl, "_blank")
                   return
                 }
 

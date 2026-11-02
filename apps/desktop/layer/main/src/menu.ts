@@ -1,6 +1,5 @@
 import { callWindowExpose } from "@follow/shared/bridge"
 import { DEV } from "@follow/shared/constants"
-import { dispatchEventOnWindow } from "@follow/shared/event"
 import { name } from "@pkg"
 import type { BrowserWindow, MenuItem, MenuItemConstructorOptions } from "electron"
 import { Menu } from "electron"
@@ -9,6 +8,7 @@ import { isMacOS, isMAS } from "./env"
 import { clearAllDataAndConfirm } from "./lib/cleaner"
 import { t } from "./lib/i18n"
 import { revealLogFile } from "./logger"
+import { FindBarManager } from "./manager/find-bar"
 import { WindowManager } from "./manager/window"
 import { checkForAppUpdatesFromMenu, quitAndInstall } from "./updater"
 
@@ -99,7 +99,7 @@ export const registerAppMenu = () => {
           accelerator: "CmdOrCtrl+F",
           click(_e, window) {
             if (!window) return
-            dispatchEventOnWindow(window as BrowserWindow, "OpenSearch")
+            FindBarManager.open(window as BrowserWindow)
           },
         },
         ...((isMacOS

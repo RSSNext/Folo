@@ -27,7 +27,8 @@ import { BottomTabBarBackgroundContext } from "./contexts/BottomTabBarBackground
 import { BottomTabBarVisibleContext } from "./contexts/BottomTabBarVisibleContext"
 
 export const Tabbar: FC<{
-  onPress?: (index: number) => void
+  /** `wasSelected` tells a tap on the tab already shown */
+  onPress?: (index: number, wasSelected: boolean) => void
 }> = ({ onPress: onPressProp }) => {
   const setTabBarHeight = use(SetBottomTabBarHeightContext)
   const insets = useSafeAreaInsets()
@@ -57,8 +58,9 @@ export const Tabbar: FC<{
   }, [])
   const renderTabScreens = tabScreens.length > 0 ? tabScreens : placeholderTabScreens
   const onPress = useEventCallback((index: number) => {
+    const wasSelected = index === selectedIndex
     setSelectedIndex(index)
-    onPressProp?.(index)
+    onPressProp?.(index, wasSelected)
   })
   return (
     <Animated.View

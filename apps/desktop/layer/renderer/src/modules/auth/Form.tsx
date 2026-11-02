@@ -13,6 +13,7 @@ import type { LoginRuntime } from "@follow/shared/auth"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { env } from "@follow/shared/env.desktop"
 import { userActions } from "@follow/store/user/store"
+import { createAppLanguageHeaders } from "@follow/utils/headers"
 import type { AuthUser } from "@follow-app/client-sdk"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { TFunction } from "i18next"
@@ -22,11 +23,13 @@ import { Trans, useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
+import { getGeneralSettings } from "~/atoms/settings/general"
 import { useModalStack } from "~/components/ui/modal/stacked/hooks"
 import { useRecaptchaToken } from "~/hooks/common"
 import { loginHandler, signUp, twoFactor } from "~/lib/auth"
 import { ipcServices } from "~/lib/client"
 import { setAuthSessionToken } from "~/lib/client-session"
+import { getAuthErrorMessage } from "~/lib/error-parser"
 import { handleSessionChanges } from "~/queries/auth"
 
 import { TOTPForm } from "../profile/two-factor"
@@ -201,11 +204,12 @@ export function LoginWithPassword({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const recaptchaToken = await requestRecaptchaToken("desktop_login")
-    const headers = recaptchaToken
-      ? {
-          "x-token": `r3:${recaptchaToken}`,
-        }
-      : undefined
+    // Electron sends credential requests from the main process, which cannot read the
+    // app's language, so it travels with the other headers.
+    const headers = {
+      ...createAppLanguageHeaders(getGeneralSettings().language),
+      ...(recaptchaToken ? { "x-token": `r3:${recaptchaToken}` } : {}),
+    }
 
     if (!IN_ELECTRON && (!values.password || values.password.trim() === "")) {
       const result = await loginHandler("magicLink", runtime, {
@@ -214,7 +218,7 @@ export function LoginWithPassword({
       })
 
       if (result?.error) {
-        toast.error(result.error.message)
+        toast.error(getAuthErrorMessage(result.error))
         return
       }
 
@@ -237,7 +241,7 @@ export function LoginWithPassword({
           headers,
         })
     if (res?.error) {
-      toast.error(res.error.message)
+      toast.error(getAuthErrorMessage(res.error))
       return
     }
 
@@ -425,11 +429,12 @@ export function RegisterForm({
 
   async function onSubmit(values: RegisterFormValues) {
     const recaptchaToken = await requestRecaptchaToken("desktop_register")
-    const headers = recaptchaToken
-      ? {
-          "x-token": `r3:${recaptchaToken}`,
-        }
-      : undefined
+    // Electron sends credential requests from the main process, which cannot read the
+    // app's language, so it travels with the other headers.
+    const headers = {
+      ...createAppLanguageHeaders(getGeneralSettings().language),
+      ...(recaptchaToken ? { "x-token": `r3:${recaptchaToken}` } : {}),
+    }
 
     if (!IN_ELECTRON && (!values.password || values.password.trim() === "")) {
       const result = await loginHandler("magicLink", runtime, {
@@ -438,7 +443,7 @@ export function RegisterForm({
       })
 
       if (result?.error) {
-        toast.error(result.error.message)
+        toast.error(getAuthErrorMessage(result.error))
         return
       }
 
@@ -465,13 +470,15 @@ export function RegisterForm({
           },
           {
             onError(context) {
-              toast.error(context.error.message)
+              toast.error(getAuthErrorMessage(context.error))
             },
             headers,
           },
         )
 
     if (result?.error) {
+      // The web client's onError above already said why
+      if (IN_ELECTRON) toast.error(getAuthErrorMessage(result.error))
       return result
     }
 

@@ -11,6 +11,7 @@ import type {
 import { createContext, use, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import { InteractionManager, Platform } from "react-native"
 
+import { rememberHandledLaunchLink } from "@/src/lib/launch-link"
 import { proxyEnv } from "@/src/lib/proxy-env"
 
 import type { StorePolicyResponse } from "./client"
@@ -334,7 +335,11 @@ export const OtaProvider = ({ children }: PropsWithChildren) => {
         runSafeReloadUpdate({
           isEnabled: Updates.isEnabled,
           pendingVersion: currentPendingVersion,
-          reload: () => Updates.reloadAsync(),
+          reload: async () => {
+            // The updated app would report the same launch link and open it again
+            await rememberHandledLaunchLink()
+            await Updates.reloadAsync()
+          },
         }),
     }
   }, [currentPendingVersion, isUpdatePending])

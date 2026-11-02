@@ -1,7 +1,7 @@
 import { app, protocol } from "electron"
 import path from "pathe"
 
-const e2eUserDataDir = process.env.FOLO_E2E_USER_DATA_DIR
+import { e2eUserDataDir } from "./env"
 
 if (e2eUserDataDir) {
   app.setPath("userData", e2eUserDataDir)

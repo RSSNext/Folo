@@ -54,6 +54,15 @@ const commonHeaders = {
   "Cache-Control": "no-store",
 }
 
+/**
+ * The language the app shows. The server writes the emails a request makes it send, such as
+ * sign-in links and verification emails, in this language.
+ */
+export const APP_LANGUAGE_HEADER = "X-App-Language"
+
+export const createAppLanguageHeaders = (language?: string | null): Record<string, string> =>
+  language ? { [APP_LANGUAGE_HEADER]: language } : {}
+
 export const createAuthRequestOriginHeaders = (webUrl: string): Record<string, string> => {
   try {
     const { origin } = new URL(webUrl)

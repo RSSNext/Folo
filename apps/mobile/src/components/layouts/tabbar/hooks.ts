@@ -1,14 +1,13 @@
-import type { RefObject } from "react"
 import { use, useCallback, useEffect, useLayoutEffect, useRef } from "react"
 import type { FlatList, ScrollView } from "react-native"
 import { findNodeHandle, Platform } from "react-native"
 
 import { performNativeScrollToTop } from "@/src/lib/native"
-import {
-  SetAttachNavigationScrollViewContext,
-  useAttachNavigationScrollView,
-} from "@/src/lib/navigation/AttachNavigationScrollViewContext"
 import { useScreenIsAppeared, useTabScreenIsFocused } from "@/src/lib/navigation/bottom-tab/hooks"
+import type { TabScreenContextType } from "@/src/lib/navigation/bottom-tab/TabScreenContext"
+import { TabScreenContext } from "@/src/lib/navigation/bottom-tab/TabScreenContext"
+import { getNativeScrollView } from "@/src/lib/navigation/navigation-scroll-targets"
+import { useNavigationScrollTargets } from "@/src/lib/navigation/NavigationScrollTargetsContext"
 
 import { BottomTabBarBackgroundContext } from "./contexts/BottomTabBarBackgroundContext"
 import { BottomTabBarHeightContext } from "./contexts/BottomTabBarHeightContext"
@@ -18,62 +17,81 @@ export const useBottomTabBarHeight = () => {
   return height
 }
 
-export const useNavigationScrollToTop = (
-  overrideScrollerRef?: React.RefObject<ScrollView> | React.RefObject<FlatList<any>> | null,
-) => {
-  const attachNavigationScrollViewRef = useAttachNavigationScrollView()
-  return useCallback(() => {
-    const $scroller = overrideScrollerRef?.current ?? attachNavigationScrollViewRef?.current
-    if (!$scroller) return
+const scrollToTop = (scroller: object) => {
+  const scrollView = getNativeScrollView(scroller)
+  // Nothing to scroll once the list's scroll view unmounted
+  if (!scrollView) return
 
-    if (Platform.OS === "ios") {
-      const reactTag = findNodeHandle($scroller)
-      if (reactTag) {
-        performNativeScrollToTop(reactTag)
-        return
-      }
+  if (Platform.OS === "ios") {
+    const reactTag = findNodeHandle(scrollView as ScrollView)
+    if (reactTag) {
+      performNativeScrollToTop(reactTag)
+      return
     }
+  }
 
-    if ("scrollTo" in $scroller) {
-      void ($scroller as ScrollView).scrollTo({
-        y: 0,
-        animated: true,
-      })
-    } else if ("scrollToIndex" in $scroller) {
-      void ($scroller as FlatList<any>).scrollToIndex({
-        index: 0,
-        animated: true,
-      })
-    } else if ("scrollToOffset" in $scroller) {
-      void ($scroller as FlatList<any>).scrollToOffset({
-        offset: 0,
-        animated: true,
-      })
-    }
-    return
-  }, [attachNavigationScrollViewRef, overrideScrollerRef])
+  if ("scrollTo" in scroller) {
+    void (scroller as ScrollView).scrollTo({
+      y: 0,
+      animated: true,
+    })
+  } else if ("scrollToIndex" in scroller) {
+    void (scroller as FlatList<unknown>).scrollToIndex({
+      index: 0,
+      animated: true,
+    })
+  } else if ("scrollToOffset" in scroller) {
+    void (scroller as FlatList<unknown>).scrollToOffset({
+      offset: 0,
+      animated: true,
+    })
+  }
 }
 
+/** Scrolls the shown list of a tab to the top, for a tap on that tab while it is selected */
+export const useNavigationScrollToTop = () => {
+  const targets = useNavigationScrollTargets()
+  return useCallback(
+    (tabScreenIndex: number) => {
+      const scroller = targets?.get(tabScreenIndex)?.current
+      if (typeof scroller === "object" && scroller !== null) {
+        scrollToTop(scroller)
+      }
+    },
+    [targets],
+  )
+}
+
+/**
+ * Makes the list the one its tab scrolls to the top while `active`. A list on a screen pushed
+ * over the tab bar, outside every tab, is left out.
+ */
 export const useRegisterNavigationScrollView = <T = unknown>(active = true) => {
   const scrollViewRef = useRef<T>(null)
-  const tabScreenIsFocused = useScreenIsAppeared()
-  const setAttachNavigationScrollViewRef = use(SetAttachNavigationScrollViewContext)
+  const isAppeared = useScreenIsAppeared()
+  const targets = useNavigationScrollTargets()
+  // Null outside a tab screen
+  const tabScreen = use(TabScreenContext) as TabScreenContextType | null
+  const tabScreenIndex = tabScreen?.tabScreenIndex
 
   useEffect(() => {
-    if (!active) return
-    if (!setAttachNavigationScrollViewRef) return
-    if (!tabScreenIsFocused) return
-    if (
-      scrollViewRef.current &&
-      typeof scrollViewRef.current === "object" &&
-      "checkScrollToBottom" in scrollViewRef.current &&
-      typeof scrollViewRef.current.checkScrollToBottom === "function"
-    ) {
-      scrollViewRef.current.checkScrollToBottom()
-    }
+    if (!active || !targets || tabScreenIndex === undefined) return
+    return targets.register(tabScreenIndex, scrollViewRef)
+  }, [active, scrollViewRef, tabScreenIndex, targets])
 
-    setAttachNavigationScrollViewRef(scrollViewRef as unknown as RefObject<ScrollView>)
-  }, [setAttachNavigationScrollViewRef, scrollViewRef, active, tabScreenIsFocused])
+  useEffect(() => {
+    if (!active || !isAppeared) return
+    const scrollView = scrollViewRef.current
+    if (
+      scrollView &&
+      typeof scrollView === "object" &&
+      "checkScrollToBottom" in scrollView &&
+      typeof scrollView.checkScrollToBottom === "function"
+    ) {
+      scrollView.checkScrollToBottom()
+    }
+  }, [active, isAppeared])
+
   return scrollViewRef
 }
 

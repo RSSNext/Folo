@@ -1,7 +1,9 @@
 import { FeedViewType } from "@follow/constants"
 import { SubscriptionService } from "@follow/database/services/subscription"
 import { tracker } from "@follow/tracker"
+import type { WithLastSyncId } from "@follow-app/client-sdk"
 import { omit } from "es-toolkit"
+import { t } from "i18next"
 
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
@@ -16,7 +18,7 @@ import {
 } from "../../sync/overlay-keys"
 import { catchUpThroughEngine, ensureSyncedThroughEngine } from "../../sync/sync-status"
 import type { AcknowledgedChangeKind } from "../../sync/transaction-queue"
-import { readLastSyncId, transactionQueue } from "../../sync/transaction-queue"
+import { transactionQueue } from "../../sync/transaction-queue"
 import { invalidateEntriesQuery } from "../entry/hooks"
 import { getFeedById, getFeedServerId } from "../feed/getter"
 import { feedActions } from "../feed/store"
@@ -31,6 +33,21 @@ import { getDefaultCategory, getSubscriptionDBId, getSubscriptionStoreId } from 
 
 type FeedId = string
 type ListId = string
+
+/** Enough for a delta pull; a slow network does not hold a rename back for longer. */
+const CATCH_UP_BEFORE_RENAME_MS = 2000
+
+/** Pull the change log, but give up waiting for it after a moment. */
+const catchUpBeforeRename = async () => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  await Promise.race([
+    catchUpThroughEngine(0),
+    new Promise<void>((resolve) => {
+      timer = setTimeout(() => resolve(), CATCH_UP_BEFORE_RENAME_MS)
+    }),
+  ])
+  clearTimeout(timer)
+}
 
 export interface SubscriptionState {
   /**
@@ -144,6 +161,37 @@ const clearUnreadOfFeedsOnlyInLists = (unfollowedLists: SubscriptionModel[]) => 
   }
 }
 
+/**
+ * Forget a category name no subscription uses any more: in its view once no subscription there
+ * has it, and in the All view, which lists every view's folders, once none has it at all.
+ * Menus such as "Move to Category" list these names, so a renamed-away one would come back.
+ */
+const dropUnusedCategory = (
+  draft: SubscriptionState,
+  category: string | null | undefined,
+  view: FeedViewType,
+) => {
+  if (!category) return
+  const subscriptions = Object.values(draft.data)
+  if (!subscriptions.some((s) => s.view === view && s.category === category)) {
+    draft.categories[view]?.delete(category)
+  }
+  if (!subscriptions.some((s) => s.category === category)) {
+    draft.categories[FeedViewType.All]?.delete(category)
+  }
+}
+
+const KNOWN_VIEWS = new Set<number>(
+  Object.values(FeedViewType).filter((value): value is FeedViewType => typeof value === "number"),
+)
+
+/**
+ * Whether the store keeps indexes for a view. A subscription in any other one, such as a row a
+ * server stored before it checked views, would fail every update of the store and empty the app.
+ */
+const isKnownView = (view: unknown): view is FeedViewType =>
+  typeof view === "number" && KNOWN_VIEWS.has(view)
+
 // Put back subscriptions whose unfollow the server refused
 const restoreInSession = (subscriptions: SubscriptionModel[]) => {
   immerSet((draft) => {
@@ -167,10 +215,37 @@ const restoreInSession = (subscriptions: SubscriptionModel[]) => {
   })
 }
 
-/** A body of DELETE /subscriptions that the server handles, and the subscriptions it unfollows */
-interface UnfollowRequest {
-  subscriptions: SubscriptionModel[]
-  body: { feedIdList: string[] } | { listId: string }
+type EditableSubscriptionField = "view" | "category" | "isPrivate" | "hideFromTimeline" | "title"
+
+/**
+ * How each editable field is compared. Forms write "no value" in their own ways: an empty
+ * string or `null` for no category or title, `undefined` or `false` for an unset flag.
+ */
+const editableSubscriptionFields: Record<
+  EditableSubscriptionField,
+  (value: SubscriptionModel[EditableSubscriptionField]) => unknown
+> = {
+  view: (value) => value,
+  category: (value) => value || null,
+  title: (value) => value || null,
+  isPrivate: (value) => !!value,
+  hideFromTimeline: (value) => !!value,
+}
+
+/**
+ * The fields an edit really changes. A form fills every field from the local copy, which can
+ * be a pull behind an edit made on another device, so sending the fields the user left alone
+ * would write their old values back over that edit.
+ */
+export const getSubscriptionChanges = (current: SubscriptionModel, next: SubscriptionModel) => {
+  const changes: Partial<Record<EditableSubscriptionField, unknown>> = {}
+  for (const field of Object.keys(editableSubscriptionFields) as EditableSubscriptionField[]) {
+    const normalize = editableSubscriptionFields[field]
+    if (normalize(next[field]) !== normalize(current[field])) {
+      changes[field] = next[field]
+    }
+  }
+  return changes as Partial<Pick<SubscriptionModel, EditableSubscriptionField>>
 }
 
 /** A follow or unfollow of a feed or list that the server confirmed to this device. */
@@ -203,10 +278,10 @@ const confirmedSubscriptionChangeKind: AcknowledgedChangeKind<ConfirmedSubscript
 
 const trackConfirmedChanges = (
   changes: ConfirmedSubscriptionChanges["changes"],
-  response: unknown,
+  response: WithLastSyncId,
 ) => {
   if (changes.length === 0) return
-  const syncId = readLastSyncId(response)
+  const syncId = response.lastSyncId
   transactionQueue.trackAcknowledged(confirmedSubscriptionChangeKind, { changes, syncId }, syncId)
 }
 
@@ -246,6 +321,12 @@ class SubscriptionActions implements Hydratable, Resetable {
   async upsertManyInSession(subscriptions: SubscriptionModel[]) {
     immerSet((draft) => {
       for (const subscription of subscriptions) {
+        if (!isKnownView(subscription.view)) {
+          console.warn(
+            `[subscription] Skipped ${getSubscriptionStoreId(subscription)} in unknown view ${subscription.view}`,
+          )
+          continue
+        }
         const subscriptionSetId = getSubscriptionDBId(subscription)
         const subscriptionStoreId = getSubscriptionStoreId(subscription)
 
@@ -301,7 +382,9 @@ class SubscriptionActions implements Hydratable, Resetable {
       if (!current) return
 
       const definedPatch = Object.fromEntries(
-        Object.entries(patch).filter(([, value]) => value !== undefined),
+        Object.entries(patch).filter(
+          ([key, value]) => value !== undefined && (key !== "view" || isKnownView(value)),
+        ),
       ) as Partial<SubscriptionModel>
       const next: SubscriptionModel = { ...current, ...definedPatch }
 
@@ -321,6 +404,10 @@ class SubscriptionActions implements Hydratable, Resetable {
       }
 
       draft.data[storeId] = next
+      // A rename made on another device arrives as a category change of each of its feeds.
+      if (current.category !== next.category || current.view !== next.view) {
+        dropUnusedCategory(draft, current.category, current.view)
+      }
     })
   }
 
@@ -446,43 +533,51 @@ class SubscriptionSyncService {
     if (!current) {
       return
     }
+    const changes = getSubscriptionChanges(current, subscription)
+    if (Object.keys(changes).length === 0) {
+      return
+    }
+    const next: SubscriptionModel = { ...current, ...changes }
     const tx = createTransaction(current)
 
     let addNewCategory = false
     tx.store(() => {
       immerSet((draft) => {
-        if (
-          subscription.category &&
-          !draft.categories[subscription.view]!.has(subscription.category)
-        ) {
+        if (next.category && !draft.categories[next.view]!.has(next.category)) {
           addNewCategory = true
-          draft.categories[subscription.view]!.add(subscription.category)
+          draft.categories[next.view]!.add(next.category)
         }
 
-        if (subscription.type === "feed") {
+        if (next.type === "feed") {
           draft.feedIdByView[current.view]!.delete(current.feedId!)
-          draft.feedIdByView[subscription.view]!.add(subscription.feedId!)
+          draft.feedIdByView[next.view]!.add(next.feedId!)
         }
-        if (subscription.type === "list") {
+        if (next.type === "list") {
           draft.listIdByView[current.view]!.delete(current.listId!)
-          draft.listIdByView[subscription.view]!.add(subscription.listId!)
+          draft.listIdByView[next.view]!.add(next.listId!)
         }
 
-        draft.data[subscriptionId] = subscription
+        draft.data[subscriptionId] = next
+        if (current.category !== next.category || current.view !== next.view) {
+          dropUnusedCategory(draft, current.category, current.view)
+        }
       })
     })
     tx.rollback((current) => {
       immerSet((draft) => {
-        if (addNewCategory && subscription.category) {
-          draft.categories[subscription.view]!.delete(subscription.category)
+        if (addNewCategory && next.category) {
+          draft.categories[next.view]!.delete(next.category)
+        }
+        if (current.category) {
+          draft.categories[current.view]!.add(current.category)
         }
 
-        if (subscription.type === "feed") {
-          draft.feedIdByView[subscription.view]!.delete(subscription.feedId!)
+        if (next.type === "feed") {
+          draft.feedIdByView[next.view]!.delete(next.feedId!)
           draft.feedIdByView[current.view]!.add(current.feedId!)
         }
-        if (subscription.type === "list") {
-          draft.listIdByView[subscription.view]!.delete(subscription.listId!)
+        if (next.type === "list") {
+          draft.listIdByView[next.view]!.delete(next.listId!)
           draft.listIdByView[current.view]!.add(current.listId!)
         }
 
@@ -491,19 +586,19 @@ class SubscriptionSyncService {
     })
     tx.request(async () => {
       await api().subscriptions.update({
-        ...subscription,
-        feedId: subscription.feedId ?? undefined,
-        listId: subscription.listId ?? undefined,
+        ...changes,
+        feedId: current.feedId ?? undefined,
+        listId: current.listId ?? undefined,
       })
     })
 
     tx.persist(() => {
-      return SubscriptionService.patch(storeDbMorph.toSubscriptionSchema(subscription))
+      return SubscriptionService.patch(storeDbMorph.toSubscriptionSchema(next))
     })
 
     await tx.run()
 
-    invalidateViews(current.view, subscription.view)
+    invalidateViews(current.view, next.view)
   }
 
   async subscribe(subscription: SubscriptionForm) {
@@ -513,6 +608,11 @@ class SubscriptionSyncService {
       feedId: getFeedServerId(subscription.feedId),
     }
     const data = await api().subscriptions.create(body)
+    // The server can answer without following anything, as when two accounts follow the same
+    // new feed at once; a retry follows it
+    if (!data.feed && !data.list) {
+      throw new Error(t("feed.follow_failed", { ns: "common" }))
+    }
 
     if (data.feed) {
       feedActions.upsertMany([data.feed as any])
@@ -570,45 +670,38 @@ class SubscriptionSyncService {
 
     subscriptionActions.removeManyInSession(normalizedIds)
 
-    // DELETE /subscriptions unfollows every feed of `feedIdList` at once but only one list, and
-    // ignores `listId` next to `feedIdList`, so each list is unfollowed in a request of its own
+    // One request unfollows the feeds and the lists together, or nothing of them
     const feedSubscriptions = subscriptionList.filter((i) => i.type === "feed" && !!i.feedId)
     const listSubscriptions = subscriptionList.filter((i) => i.type === "list" && !!i.listId)
-    const requests: UnfollowRequest[] = []
-    if (feedSubscriptions.length > 0) {
-      requests.push({
-        subscriptions: feedSubscriptions,
-        body: { feedIdList: feedSubscriptions.map((s) => s.feedId!) },
-      })
-    }
-    for (const subscription of listSubscriptions) {
-      requests.push({ subscriptions: [subscription], body: { listId: subscription.listId! } })
-    }
-
-    const failed = new Set<SubscriptionModel>()
+    const requested = [...feedSubscriptions, ...listSubscriptions]
     let requestError: unknown
-    // One request after another, as the server counts what is left of the previous one
-    for (const { subscriptions, body } of requests) {
+    let failed = false
+    if (requested.length > 0) {
       try {
-        const response = await api().subscriptions.delete(body)
+        const response = await api().subscriptions.delete({
+          ...(feedSubscriptions.length > 0 && {
+            feedIdList: feedSubscriptions.map((s) => s.feedId!),
+          }),
+          ...(listSubscriptions.length > 0 && {
+            listIdList: listSubscriptions.map((s) => s.listId!),
+          }),
+        })
         trackConfirmedChanges(
-          subscriptions.map((subscription) => ({
+          requested.map((subscription) => ({
             id: getSubscriptionStoreId(subscription),
             subscription: null,
           })),
           response,
         )
       } catch (error) {
-        subscriptions.forEach((subscription) => failed.add(subscription))
-        requestError ??= error
+        restoreInSession(requested)
+        requestError = error
+        failed = true
       }
     }
-
-    // A failed request puts back only what it was about
-    if (failed.size > 0) {
-      restoreInSession(Array.from(failed))
-    }
-    const unfollowed = subscriptionList.filter((subscription) => !failed.has(subscription))
+    const unfollowed = failed
+      ? subscriptionList.filter((subscription) => !requested.includes(subscription))
+      : subscriptionList
 
     if (unfollowed.length > 0) {
       await SubscriptionService.delete(unfollowed.map((i) => buildSubscriptionDbId(i)))
@@ -620,7 +713,7 @@ class SubscriptionSyncService {
       clearUnreadOfFeedsOnlyInLists(unfollowed.filter((i) => i.type === "list"))
     }
 
-    if (failed.size > 0) throw requestError
+    if (failed) throw requestError
     return feedsAndLists
   }
 
@@ -854,22 +947,33 @@ class SubscriptionSyncService {
     newCategory: string
     view: FeedViewType
   }) {
-    const feedIds = getCategoryFeedIds(lastCategory, view)
+    // Updated once the change log was pulled, below.
+    const feedIds = [...getCategoryFeedIds(lastCategory, view)]
     const categoryViews = getCategoryViews(get(), feedIds, view)
+    // A folder the feeds are filed under by name is renamed by name. An auto-grouped folder also
+    // holds feeds by their site, which have no category on the server, so those are named.
+    const isFiledByName = (ids: string[]) =>
+      ids.every((id) => get().data[id]?.category === lastCategory)
+    let renameByName = isFiledByName(feedIds)
 
-    const tx = createTransaction()
-    tx.store(() => {
+    const renameInSession = (ids: string[], views: Iterable<FeedViewType>) => {
       immerSet((draft) => {
-        for (const id of feedIds) {
+        for (const id of ids) {
           const subscription = draft.data[id]
           if (!subscription) continue
           subscription.category = newCategory
         }
-        for (const categoryView of categoryViews) {
+        for (const categoryView of views) {
           draft.categories[categoryView]!.add(newCategory)
           draft.categories[categoryView]!.delete(lastCategory)
         }
+      })
+    }
 
+    const tx = createTransaction()
+    tx.store(() => {
+      renameInSession(feedIds, categoryViews)
+      immerSet((draft) => {
         const lastCategoryOpenState = draft.categoryOpenStateByView[view]![lastCategory]
         if (typeof lastCategoryOpenState === "boolean") {
           draft.categoryOpenStateByView[view]![newCategory] = lastCategoryOpenState
@@ -879,10 +983,27 @@ class SubscriptionSyncService {
     })
 
     tx.request(async () => {
-      await api().categories.update({
-        feedIdList: feedIds,
-        category: newCategory,
-      })
+      // Another device may have moved a feed into the category since the last pull, or out of
+      // it. Pull first, so this device shows the feeds that are in the category now. A rename
+      // by name also takes the feeds moved in after the pull; one by the feeds names only
+      // those, and a feed moved in later would keep the old name and split the category.
+      await catchUpBeforeRename()
+      const { data } = get()
+      const stillNamedBefore = getCategoryFeedIds(lastCategory, view)
+      renameByName &&= isFiledByName(stillNamedBefore)
+      const renamed = feedIds.filter((id) => data[id]?.category === newCategory)
+      feedIds.splice(0, feedIds.length, ...new Set([...renamed, ...stillNamedBefore]))
+      if (stillNamedBefore.length > 0) {
+        const views = getCategoryViews(get(), stillNamedBefore, view)
+        for (const categoryView of views) categoryViews.add(categoryView)
+        renameInSession(stillNamedBefore, views)
+      }
+
+      await api().categories.update(
+        renameByName
+          ? { from: lastCategory, to: newCategory, view }
+          : { feedIdList: feedIds, category: newCategory },
+      )
     })
 
     tx.rollback(() => {

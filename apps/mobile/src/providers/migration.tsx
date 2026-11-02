@@ -1,5 +1,3 @@
-// The root export only keeps stubs of the legacy API that throw
-import { deleteAsync } from "expo-file-system/legacy"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button, View } from "react-native"
@@ -7,9 +5,9 @@ import { Button, View } from "react-native"
 import { Text } from "@/src/components/ui/typography/Text"
 
 import { PlatformActivityIndicator } from "../components/ui/loading/PlatformActivityIndicator"
-import { getDbPath } from "../database"
 import { BugCuteReIcon } from "../icons/bug_cute_re"
 import { useDatabaseMigration } from "../initialize/migration"
+import { scheduleLocalDataReset } from "../lib/local-data-reset"
 import { reloadApp } from "../lib/reload-app"
 
 export const MigrationProvider = ({ children }: { children: ReactNode }) => {
@@ -27,9 +25,7 @@ export const MigrationProvider = ({ children }: { children: ReactNode }) => {
         <Button
           title={t("migration.reset_database")}
           onPress={async () => {
-            const dbPath = getDbPath()
-            await deleteAsync(dbPath, { idempotent: true })
-            // Reload the app
+            scheduleLocalDataReset()
             await reloadApp("Clear Sqlite Data")
           }}
         />

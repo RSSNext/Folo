@@ -25,13 +25,12 @@ import {
 } from "@/src/lib/messaging-registration"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { requestNotificationPermission } from "@/src/lib/permission"
+import { PUSH_TOKEN_STORAGE_KEY } from "@/src/lib/push-token"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
-
-const FIREBASE_MESSAGING_TOKEN_STORAGE_KEY = "firebase_messaging_token"
 
 async function saveMessagingToken(token: string) {
   await followClient.api.messaging.createToken({ token, channel: Platform.OS })
-  kv.set(FIREBASE_MESSAGING_TOKEN_STORAGE_KEY, token)
+  kv.set(PUSH_TOKEN_STORAGE_KEY, token)
 }
 
 export function useUpdateMessagingToken() {

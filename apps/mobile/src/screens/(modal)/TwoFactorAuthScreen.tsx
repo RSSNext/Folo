@@ -1,3 +1,4 @@
+import { whoami } from "@follow/store/user/getters"
 import { whoamiQueryKey } from "@follow/store/user/hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useRef } from "react"
@@ -18,7 +19,13 @@ import { queryClient } from "@/src/lib/query-client"
 import { toast } from "@/src/lib/toast"
 import { accentColor } from "@/src/theme/colors"
 
-export const TwoFactorAuthScreen: NavigationControllerView = () => {
+export const TwoFactorAuthScreen: NavigationControllerView<{
+  /**
+   * Opened by signing in, where the sign-in screen closes itself and this one once the session is
+   * in, keeping what was open under it, such as the follow form of a link
+   */
+  isSignIn?: boolean
+}> = ({ isSignIn }) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const label = useColor("label")
@@ -48,6 +55,8 @@ export const TwoFactorAuthScreen: NavigationControllerView = () => {
       )
     },
     onSuccess() {
+      // Without the session yet, as when it failed to load, everything closes as it used to
+      if (isSignIn && whoami()) return
       navigation.popToRoot()
     },
   })

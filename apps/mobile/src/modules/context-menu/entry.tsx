@@ -8,7 +8,7 @@ import { unreadSyncService } from "@follow/store/unread/store"
 import { useIsLoggedIn } from "@follow/store/user/hooks"
 import { PortalProvider } from "@gorhom/portal"
 import type { PropsWithChildren } from "react"
-import { useCallback } from "react"
+import { use, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { Platform, Share, View } from "react-native"
 
@@ -23,6 +23,8 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { createLinkShareContent } from "@/src/lib/share"
 import { toast } from "@/src/lib/toast"
+import { useEntryExternalUrl } from "@/src/modules/entry-content/external-url"
+import { EntrySplitContext } from "@/src/modules/entry-split/context"
 import { playEntryTts } from "@/src/modules/player/entry-tts"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
@@ -55,11 +57,13 @@ export const EntryItemContextMenu = ({
     feedId: state.feedId,
     title: state.title,
     publishedAt: state.publishedAt,
-    url: state.url,
   }))
+  // Onboarding entries have no link outside the app, and relative links resolve first
+  const externalUrl = useEntryExternalUrl(id)
   const feedId = entry?.feedId
   const isEntryStarred = useIsEntryStarred(id)
   const navigation = useNavigation()
+  const isNextToReader = !!use(EntrySplitContext)
   const handlePressPreview = useCallback(() => {
     if (entry) {
       const fullEntry = getEntry(id)
@@ -78,18 +82,27 @@ export const EntryItemContextMenu = ({
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
 
       <ContextMenu.Content>
-        <ContextMenu.Preview size="STRETCH" onPress={handlePressPreview}>
-          {() => (
-            <PortalProvider>
-              <View className="flex-1 bg-system-background">
-                <Text className="mt-5 p-4 text-2xl font-semibold text-label" numberOfLines={2}>
-                  {entry.title?.trim()}
-                </Text>
-                <EntryContentWebView entryId={id} />
-              </View>
-            </PortalProvider>
-          )}
-        </ContextMenu.Preview>
+        {/* Next to the reader, a preview would take the shared web view away from it */}
+        {!isNextToReader && (
+          <ContextMenu.Preview size="STRETCH" onPress={handlePressPreview}>
+            {() => (
+              <PortalProvider>
+                <View className="flex-1 bg-system-background">
+                  <Text
+                    className="mt-5 px-5 py-4 text-2xl font-semibold text-label"
+                    numberOfLines={2}
+                  >
+                    {entry.title?.trim()}
+                  </Text>
+                  {/* The content has no side padding of its own; the entry screen gives it the same */}
+                  <View className="px-5">
+                    <EntryContentWebView entryId={id} />
+                  </View>
+                </View>
+              </PortalProvider>
+            )}
+          </ContextMenu.Preview>
+        )}
 
         {isLoggedIn && (
           <>
@@ -216,16 +229,15 @@ export const EntryItemContextMenu = ({
           <ContextMenu.ItemTitle>{t("entry_content.header.play_tts")}</ContextMenu.ItemTitle>
         </ContextMenu.Item>
 
-        {entry.url && (
+        {externalUrl && (
           <ContextMenu.Item
             key="Share"
             onSelect={async () => {
-              if (!entry.url) return
               await Share.share(
                 createLinkShareContent({
                   platform: Platform.OS,
                   title: entry.title || t("operation.share_title.link"),
-                  url: entry.url,
+                  url: externalUrl,
                 }),
               )
             }}

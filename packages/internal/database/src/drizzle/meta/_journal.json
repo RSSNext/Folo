@@ -281,6 +281,13 @@
       "when": 1789572921040,
       "tag": "0039_sync_meta",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "6",
+      "when": 1792290533785,
+      "tag": "0040_sync_transaction_owner",
+      "breakpoints": true
     }
   ]
 }

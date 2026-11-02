@@ -4,11 +4,11 @@ import { useEffect } from "react"
 
 import { api, queryClient } from "../../context"
 import type { GeneralQueryOptions } from "../../types"
-import { isNewUserQueryKey } from "./constants"
+import { isNewUserQueryKey, whoamiQueryKey } from "./constants"
 import type { UserStore } from "./store"
 import { userSyncService, useUserStore } from "./store"
 
-export const whoamiQueryKey = ["user", "whoami"]
+export { whoamiQueryKey } from "./constants"
 
 export const invalidateUserSession = () => {
   queryClient().invalidateQueries({

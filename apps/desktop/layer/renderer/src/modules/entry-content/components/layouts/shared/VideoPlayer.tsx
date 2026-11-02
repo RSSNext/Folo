@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { AudioPlayer } from "~/atoms/player"
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { useSpotlightSettingKey } from "~/atoms/settings/spotlight"
 import { m } from "~/components/common/Motion"
 import { HTML } from "~/components/ui/markdown/HTML"
@@ -59,6 +60,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   })
 
   const lang = getDefaultLanguage()
+  const autoPlayVideo = useGeneralSettingKey("autoPlayVideo")
   const [miniIframeSrc, iframeSrc] = useMemo(
     () => [
       transformVideoUrl({
@@ -67,15 +69,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         isIframe: !IN_ELECTRON,
         attachments: entry?.attachments,
         lang,
+        autoPlay: autoPlayVideo,
       }),
       transformVideoUrl({
         url: entry?.url ?? "",
         isIframe: !IN_ELECTRON,
         attachments: entry?.attachments,
         lang,
+        autoPlay: autoPlayVideo,
       }),
     ],
-    [entry?.attachments, entry?.url, lang],
+    [autoPlayVideo, entry?.attachments, entry?.url, lang],
   )
 
   const modalStack = useModalStack()
@@ -93,7 +97,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const [showPreview, setShowPreview] = useState(false)
   useEffect(() => {
-    if (hovered) {
+    if (hovered && autoPlayVideo) {
       const timer = setTimeout(() => {
         setShowPreview(true)
       }, 500)
@@ -102,7 +106,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       setShowPreview(false)
       return () => {}
     }
-  }, [hovered])
+  }, [autoPlayVideo, hovered])
 
   if (!entry) return null
 

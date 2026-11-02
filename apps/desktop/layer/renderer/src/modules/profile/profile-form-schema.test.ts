@@ -37,8 +37,21 @@ describe("createProfileFormSchema", () => {
     )
   })
 
-  test("refuses a handle with spaces or invisible characters, as the server does", () => {
-    for (const handle of ["Ta ken", "Taken\u200B", "\u202ETaken"]) {
+  test("takes a new handle of letters A-Z, digits and underscores only, as the server does", () => {
+    for (const handle of ["folo_2", "Folo", "_", "0".repeat(36)]) {
+      expect(errorOf({ handle }, "old"), handle).toBeUndefined()
+    }
+    for (const handle of [
+      "Ta ken",
+      "Taken\u200B",
+      "\u202ETaken",
+      "fo.lo-2",
+      "\u30D5\u30A9\u30ED",
+      "caf\u00E9",
+      // Characters \w takes with the u and i flags
+      "\u212Aelvin",
+      "\u017Folo",
+    ]) {
       expect(errorOf({ handle }), handle).toBe("Use only letters, numbers and underscores.")
       expect(errorOf({ handle }, null), handle).toBe("Use only letters, numbers and underscores.")
     }
@@ -75,6 +88,10 @@ describe("getProfileFieldError", () => {
       message: "Use at most 256 characters.",
     })
     expect(getProfileFieldError("HANDLE_INVALID_CHARACTERS")).toEqual({
+      field: "handle",
+      message: "Use only letters, numbers and underscores.",
+    })
+    expect(getProfileFieldError("HANDLE_INVALID")).toEqual({
       field: "handle",
       message: "Use only letters, numbers and underscores.",
     })

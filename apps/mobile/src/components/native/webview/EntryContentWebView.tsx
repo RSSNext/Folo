@@ -1,3 +1,4 @@
+import { useRefValue } from "@follow/hooks"
 import { getFeedById } from "@follow/store/feed/getter"
 import { EventBus } from "@follow/utils/event-bus"
 import { Portal } from "@gorhom/portal"
@@ -11,6 +12,7 @@ import { runOnJS, runOnUI } from "react-native-reanimated"
 
 import { openLink } from "@/src/lib/native"
 import { player } from "@/src/lib/player"
+import { useEntryExternalUrl } from "@/src/modules/entry-content/external-url"
 import { getEntryArtwork } from "@/src/modules/player/artwork"
 
 import { useLightboxControls } from "../../ui/lightbox/lightboxState"
@@ -34,6 +36,13 @@ type EntryContentWebViewProps = {
    * message instead of the spinner. Without it, the spinner shows while the content is missing.
    */
   isContentPending?: boolean
+  /** Requests the content again, offered with the message for missing content */
+  onRetry?: () => void
+  /**
+   * Shows the entry in the shared web view again each time it changes, after another reader that
+   * covered this one showed its own entry there
+   */
+  resendSignal?: number
 }
 
 // Export for backward compatibility
@@ -47,6 +56,15 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   const { entryInWebview, isLoading: isContentMissing } = useWebViewEntry(props)
   const isLoading = isContentMissing && props.isContentPending !== false
   const { handleModeSwitch, mode } = useWebViewMode()
+  const externalUrl = useEntryExternalUrl(props.entryId)
+
+  const entryInWebviewRef = useRefValue(entryInWebview)
+  const resendSignalRef = React.useRef(props.resendSignal)
+  useEffect(() => {
+    if (props.resendSignal === resendSignalRef.current) return
+    resendSignalRef.current = props.resendSignal
+    WebViewManager.setEntry(entryInWebviewRef.current)
+  }, [entryInWebviewRef, props.resendSignal])
 
   const handleSeekAudio = useCallback(
     async (e: AudioSeekEvent) => {
@@ -129,29 +147,32 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
 
   return (
     <>
-      <View
-        key={`${mode}-${props.entryId}`}
-        style={{ width: "100%", height: contentHeight, transform: [{ translateY: 0 }] }}
-        onLayout={() => {
-          WebViewManager.setEntry(entryInWebview)
-        }}
-      >
-        <NativeWebView
-          style={styles.webView}
-          onContentHeightChange={(e) => {
-            setContentHeight(e.nativeEvent.height)
+      {isContentMissing && !isLoading ? (
+        // In the content's place, below the title and the AI summary rather than over them
+        <ContentUnavailable url={externalUrl} onRetry={props.onRetry} />
+      ) : (
+        <View
+          key={`${mode}-${props.entryId}`}
+          style={{ width: "100%", height: contentHeight, transform: [{ translateY: 0 }] }}
+          onLayout={() => {
+            WebViewManager.setEntry(entryInWebview)
           }}
-          onSeekAudio={handleSeekAudio}
-        />
-      </View>
+        >
+          <NativeWebView
+            style={styles.webView}
+            onContentHeightChange={(e) => {
+              setContentHeight(e.nativeEvent.height)
+            }}
+            onSeekAudio={handleSeekAudio}
+          />
+        </View>
+      )}
 
       <Portal>
-        {isLoading ? (
+        {isLoading && (
           <View className="absolute inset-0 items-center justify-center">
             <PlatformActivityIndicator />
           </View>
-        ) : (
-          isContentMissing && <ContentUnavailable url={entryInWebview?.url} />
         )}
       </Portal>
       <DebugPanel mode={mode} onModeToggle={handleModeToggle} />
@@ -159,24 +180,37 @@ export function EntryContentWebView(props: EntryContentWebViewProps) {
   )
 }
 
-const ContentUnavailable = ({ url }: { url?: string | null }) => {
+const ContentUnavailable = ({ url, onRetry }: { url?: string | null; onRetry?: () => void }) => {
   const { t } = useTranslation()
   return (
-    <View className="absolute inset-x-0 top-1/3 items-center gap-3 px-8">
+    <View className="items-center gap-3 px-8 py-16">
       <Text className="text-center text-base text-secondary-label">
         {t("entry_content.unavailable")}
       </Text>
-      {!!url && (
-        <Pressable
-          accessibilityRole="link"
-          className="rounded-full bg-secondary-system-fill px-4 py-2"
-          onPress={() => openLink(url)}
-        >
-          <Text className="text-base font-medium text-accent">
-            {t("entry_content.header.open_in_browser")}
-          </Text>
-        </Pressable>
-      )}
+      <View className="flex-row flex-wrap justify-center gap-3">
+        {onRetry && (
+          <Pressable
+            accessibilityRole="button"
+            className="rounded-full bg-secondary-system-fill px-4 py-2"
+            onPress={onRetry}
+          >
+            <Text className="text-base font-medium text-accent">
+              {t("retry", { ns: "common" })}
+            </Text>
+          </Pressable>
+        )}
+        {!!url && (
+          <Pressable
+            accessibilityRole="link"
+            className="rounded-full bg-secondary-system-fill px-4 py-2"
+            onPress={() => openLink(url)}
+          >
+            <Text className="text-base font-medium text-accent">
+              {t("entry_content.header.open_in_browser")}
+            </Text>
+          </Pressable>
+        )}
+      </View>
     </View>
   )
 }

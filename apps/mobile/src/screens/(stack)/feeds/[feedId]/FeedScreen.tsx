@@ -13,6 +13,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { EntryListSelector } from "@/src/modules/entry-list/EntryListSelector"
+import { EntrySplitView } from "@/src/modules/entry-split/EntrySplitView"
 import { useFloatingPlayerBarInset } from "@/src/modules/player/hooks"
 import { EntryListContext, useEntries, useSelectedView } from "@/src/modules/screen/atoms"
 import { TimelineHeader } from "@/src/modules/screen/TimelineSelectorProvider"
@@ -40,30 +41,32 @@ export const FeedScreen: NavigationControllerView<{
   return (
     <EntryListContext value={entryListContextValue}>
       <BottomTabBarHeightContext value={insets.bottom + floatingPlayerBarInset}>
-        <TimelineHeader feedId={feed?.id} />
-        <FeedScreenEntryList />
-        {isPreview && (
-          <Pressable
-            className="absolute left-1/2 z-10 min-w-[112px] -translate-x-1/2 items-center justify-center overflow-hidden rounded-full bg-accent px-5 py-3"
-            hitSlop={12}
-            style={{
-              bottom: Math.max(20, insets.bottom + 12) + floatingPlayerBarInset,
-            }}
-            onPress={() => {
-              navigation.presentControllerView(FollowScreen, {
-                id: feedIdentifier,
-                type: "feed",
-              })
-            }}
-          >
-            <ThemedBlurView
-              useGlass
-              style={StyleSheet.absoluteFill}
-              tintColor={withOpacity(accentColor, 0.6)}
-            />
-            <Text className="font-bold text-white">{t("words.follow")}</Text>
-          </Pressable>
-        )}
+        <EntrySplitView>
+          <TimelineHeader feedId={feed?.id} />
+          <FeedScreenEntryList />
+          {isPreview && (
+            <Pressable
+              className="absolute left-1/2 z-10 min-w-[112px] -translate-x-1/2 items-center justify-center overflow-hidden rounded-full bg-accent px-5 py-3"
+              hitSlop={12}
+              style={{
+                bottom: Math.max(20, insets.bottom + 12) + floatingPlayerBarInset,
+              }}
+              onPress={() => {
+                navigation.presentControllerView(FollowScreen, {
+                  id: feedIdentifier,
+                  type: "feed",
+                })
+              }}
+            >
+              <ThemedBlurView
+                useGlass
+                style={StyleSheet.absoluteFill}
+                tintColor={withOpacity(accentColor, 0.6)}
+              />
+              <Text className="font-bold text-white">{t("words.follow")}</Text>
+            </Pressable>
+          )}
+        </EntrySplitView>
       </BottomTabBarHeightContext>
     </EntryListContext>
   )

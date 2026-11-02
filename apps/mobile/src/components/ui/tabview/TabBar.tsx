@@ -15,6 +15,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-na
 import { Text } from "@/src/components/ui/typography/Text"
 import { accentColor, useColor } from "@/src/theme/colors"
 
+import { getPagerTabIndex } from "./pager-tab-index"
 import type { Tab } from "./types"
 
 interface TabBarProps {
@@ -83,17 +84,20 @@ export const TabBar = ({
   )
   useEffect(() => {
     if (!pagerOffsetX) return
-    const listener = pagerOffsetX.addListener(
-      debounce(({ value }) => {
-        // Calculate which tab should be active based on scroll position
-        const tabIndex = Math.round(value / tabBarWidth)
-        if (tabIndex !== currentTab) {
-          handleChangeTabIndex(tabIndex)
-        }
-      }, 36),
-    )
-    return () => pagerOffsetX.removeListener(listener)
-  }, [currentTab, handleChangeTabIndex, onTabItemPress, pagerOffsetX, tabBarWidth])
+    const onPagerOffsetChange = debounce(({ value }: { value: number }) => {
+      // Calculate which tab should be active based on scroll position
+      const tabIndex = getPagerTabIndex(value, tabBarWidth, tabs.length)
+      if (tabIndex !== undefined && tabIndex !== currentTab) {
+        handleChangeTabIndex(tabIndex)
+      }
+    }, 36)
+    const listener = pagerOffsetX.addListener(onPagerOffsetChange)
+    return () => {
+      // A call still waiting would run with this render's width and tab
+      onPagerOffsetChange.cancel()
+      pagerOffsetX.removeListener(listener)
+    }
+  }, [currentTab, handleChangeTabIndex, pagerOffsetX, tabBarWidth, tabs.length])
   useImperativeHandle(ref, () => tabRef.current!)
   useEffect(() => {
     if (tabWidths.length > 0) {
@@ -142,19 +146,20 @@ export const TabBar = ({
     })
   }, [])
   const indicatorStyle = useAnimatedStyle(() => {
-    const scrollProgress = Math.max(sharedPagerOffsetX.value / tabBarWidth, 0)
-    const currentIndex = Math.floor(scrollProgress)
-    const nextIndex = Math.min(currentIndex + 1, tabs.length - 1)
-    const progress = scrollProgress - currentIndex
+    // Before the first layout there is no width to tell the pager's page by
+    const scrollProgress = tabBarWidth > 0 ? Math.max(sharedPagerOffsetX.value / tabBarWidth, 0) : 0
+    const lastIndex = Math.max(tabs.length - 1, 0)
+    const currentIndex = Math.min(Math.floor(scrollProgress), lastIndex)
+    const nextIndex = Math.min(currentIndex + 1, lastIndex)
+    const progress = Math.min(scrollProgress - currentIndex, 1)
 
     // Interpolate between current and next tab positions
-    const xPosition =
-      tabPositions[currentIndex]! +
-      (tabPositions[nextIndex]! - tabPositions[currentIndex]!) * progress
+    const currentX = tabPositions[currentIndex] ?? 0
+    const xPosition = currentX + ((tabPositions[nextIndex] ?? currentX) - currentX) * progress
 
     // Interpolate between current and next tab widths
-    const width =
-      tabWidths[currentIndex]! + (tabWidths[nextIndex]! - tabWidths[currentIndex]!) * progress
+    const currentWidth = tabWidths[currentIndex] ?? 0
+    const width = currentWidth + ((tabWidths[nextIndex] ?? currentWidth) - currentWidth) * progress
     return {
       transform: [
         {
@@ -162,7 +167,7 @@ export const TabBar = ({
         },
       ],
       width,
-      backgroundColor: tabs[currentTab]!.activeColor || accentColor,
+      backgroundColor: tabs[currentTab]?.activeColor || accentColor,
     }
   })
   return (

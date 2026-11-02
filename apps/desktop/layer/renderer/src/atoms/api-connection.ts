@@ -2,4 +2,6 @@ import { atom } from "jotai"
 
 import { createAtomHooks } from "~/lib/jotai"
 
-export const [, , useApiUnreachable, , , setApiUnreachable] = createAtomHooks(atom(false))
+export const [, , useApiUnreachable, , getApiUnreachable, setApiUnreachable] = createAtomHooks(
+  atom(false),
+)

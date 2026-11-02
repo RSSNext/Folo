@@ -1,45 +1,26 @@
-import type {
-  InboxSubscriptionResponse,
-  ListSubscriptionResponse,
-  SubscriptionWithFeed,
-} from "@follow-app/client-sdk"
 import type { Command } from "commander"
 
 import { parseView, viewHelp } from "../args"
 import { runCommand } from "../command"
+import type { AnySubscription } from "../subscriptions"
+import { getSubscriptionTitle, isInboxSubscription, isListSubscription } from "../subscriptions"
 
 interface UnreadListOptions {
   view?: number
 }
 
-const isInboxSubscription = (
-  value: SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse,
-): value is InboxSubscriptionResponse => {
-  return "inboxes" in value
-}
-
-const isListSubscription = (
-  value: SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse,
-): value is ListSubscriptionResponse => {
-  return "lists" in value
-}
-
-const resolveTitle = (
-  value: SubscriptionWithFeed | ListSubscriptionResponse | InboxSubscriptionResponse,
-): string | null => {
-  if (value.title) {
-    return value.title
+/**
+ * Where the unread counts of a subscription are: GET /reads counts unread entries by feed and
+ * by inbox, so a list's are those of its feeds, as the app counts them.
+ */
+const getUnreadKeys = (subscription: AnySubscription): string[] => {
+  if (isInboxSubscription(subscription)) {
+    return [subscription.inboxId]
   }
-  if ("feeds" in value) {
-    return value.feeds.title ?? null
+  if (isListSubscription(subscription)) {
+    return subscription.lists.feedIds
   }
-  if ("lists" in value) {
-    return value.lists.title ?? null
-  }
-  if ("inboxes" in value) {
-    return value.inboxes.title ?? null
-  }
-  return null
+  return [subscription.feedId]
 }
 
 export const registerUnreadCommand = (program: Command) => {
@@ -67,12 +48,18 @@ export const registerUnreadCommand = (program: Command) => {
         ])
 
         const unreadMap = unreadResponse.data
-        const items = subscriptionsResponse.data
+        const countUnread = (keys: Iterable<string>) => {
+          let count = 0
+          for (const key of keys) {
+            count += unreadMap[key] ?? 0
+          }
+          return count
+        }
+
+        const subscriptions = subscriptionsResponse.data
+        const items = subscriptions
           .map((subscription) => {
-            const unreadKey = isInboxSubscription(subscription)
-              ? subscription.inboxId
-              : subscription.feedId
-            const unreadCount = unreadMap[unreadKey] ?? 0
+            const unreadCount = countUnread(getUnreadKeys(subscription))
 
             return {
               sourceType: isInboxSubscription(subscription)
@@ -86,7 +73,7 @@ export const registerUnreadCommand = (program: Command) => {
                   ? subscription.listId
                   : subscription.feedId,
               feedId: subscription.feedId,
-              title: resolveTitle(subscription),
+              title: getSubscriptionTitle(subscription),
               category: subscription.category ?? null,
               view: subscription.view,
               unreadCount,
@@ -97,7 +84,10 @@ export const registerUnreadCommand = (program: Command) => {
           .sort((left, right) => right.unreadCount - left.unreadCount)
 
         return {
-          total: items.reduce((sum, item) => sum + item.unreadCount, 0),
+          // A feed followed both directly and through a list counts in both rows, but its
+          // entries count once in the total. It agrees with `unread count` but for the entries
+          // of inboxes, which GET /reads/total-count leaves out.
+          total: countUnread(new Set(subscriptions.flatMap(getUnreadKeys))),
           items,
         }
       })

@@ -1,5 +1,6 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import type { LinkProps } from "@follow/components/ui/link/LinkWithTooltip.js"
+import { useScrollViewElement } from "@follow/components/ui/scroll-area/hooks.js"
 import {
   Tooltip,
   TooltipContent,
@@ -10,6 +11,7 @@ import { useCorrectZIndex } from "@follow/components/ui/z-index/ctx.js"
 import { env } from "@follow/shared/env.desktop"
 import { feedSyncServices } from "@follow/store/feed/store"
 import { cn, parseSafeUrl, stopPropagation } from "@follow/utils"
+import { springScrollToElement } from "@follow/utils/scroller"
 import type { MouseEvent } from "react"
 import { use, useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -18,14 +20,27 @@ import { toast } from "sonner"
 import { navigateEntry } from "~/hooks/biz/useNavigateEntry"
 import { ClipboardError, copyToClipboard } from "~/lib/clipboard"
 
-import { MarkdownRenderActionContext } from "../context"
+import { MarkdownRenderActionContext, MarkdownRenderContainerRefContext } from "../context"
+import { findFragmentTarget, isFragmentLink } from "./fragment-target"
 
-export const MarkdownLink: Component<LinkProps> = (props) => {
+export const MarkdownLink: Component<
+  LinkProps & {
+    /** Targets of in-page links, e.g. footnote references */
+    id?: string
+    /** Older content names its targets */
+    name?: string
+  }
+> = (props) => {
   const { transformUrl, isAudio, ensureAndRenderTimeStamp } = use(MarkdownRenderActionContext)
+  const renderContainer = use(MarkdownRenderContainerRefContext)
+  const scroller = useScrollViewElement()
   const { t } = useTranslation()
 
   const populatedFullHref = transformUrl(props.href)
   const shareFeedInfo = parseShareFeedInfo(populatedFullHref)
+  // Links within the entry, like footnotes or a table of contents
+  const fragmentHref = isFragmentLink(props.href) ? props.href : null
+  const targetId = props.id ?? props.name
 
   const handleCopyLink = useCallback(async () => {
     try {
@@ -45,6 +60,14 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
     async (event: MouseEvent<HTMLAnchorElement>) => {
       stopPropagation(event)
 
+      if (fragmentHref) {
+        // The app's own URL would take the fragment, and as a new window the link is blocked
+        event.preventDefault()
+        const target = renderContainer && findFragmentTarget(renderContainer, fragmentHref)
+        if (target) springScrollToElement(target, -100, scroller ?? undefined)
+        return
+      }
+
       if (!shareFeedInfo) {
         return
       }
@@ -57,7 +80,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
         view,
       })
     },
-    [shareFeedInfo],
+    [fragmentHref, renderContainer, scroller, shareFeedInfo],
   )
 
   const parseTimeStamp = isAudio(populatedFullHref)
@@ -71,6 +94,24 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
     }
   }
 
+  if (fragmentHref) {
+    return (
+      <a
+        draggable="false"
+        className={cn(
+          "follow-link--underline font-semibold text-text no-underline",
+          props.className,
+        )}
+        href={fragmentHref}
+        id={targetId}
+        title={props.title}
+        onClick={handleClickLink}
+      >
+        {props.children}
+      </a>
+    )
+  }
+
   return (
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>
@@ -81,6 +122,7 @@ export const MarkdownLink: Component<LinkProps> = (props) => {
             props.className,
           )}
           href={populatedFullHref}
+          id={targetId}
           title={props.title}
           target="_blank"
           rel="noreferrer"

@@ -14,11 +14,7 @@ import {
   recordUnreadSnapshotThroughEngine,
   requestUnreadCalibration,
 } from "../../sync/sync-status"
-import {
-  defineTransactionKind,
-  readLastSyncId,
-  transactionQueue,
-} from "../../sync/transaction-queue"
+import { defineTransactionKind, transactionQueue } from "../../sync/transaction-queue"
 import { getEntry } from "../entry/getter"
 import { entryActions } from "../entry/store"
 import { setFeedUnreadDirty } from "../feed/hooks"
@@ -139,7 +135,7 @@ export const markEntriesReadTransaction = defineTransactionKind<
       entryIds: mergeEntryIds(payloads),
       isInbox: payloads[0]!.isInbox,
     })
-    return { lastSyncId: readLastSyncId(res) }
+    return { lastSyncId: res.lastSyncId }
   },
   syncIdOf: (result) => result.lastSyncId,
   async persist(payloads, _result, { awaitsSync }) {
@@ -193,7 +189,7 @@ export const markEntryUnreadTransaction = defineTransactionKind<
       entryId: payload.entryId,
       isInbox: payload.isInbox,
     })
-    return { lastSyncId: readLastSyncId(res) }
+    return { lastSyncId: res.lastSyncId }
   },
   syncIdOf: (result) => result.lastSyncId,
   async persist(payloads, _result, { awaitsSync }) {
@@ -239,13 +235,17 @@ export const markAllReadTransaction = defineTransactionKind<
       entryIds: payload.entryIds,
       read: false,
     })
+    // `apply` only changed the displayed counts, and the queue no longer holds this
+    // transaction, so deriving them again from the confirmed ones undoes it. The recount
+    // after it may find the confirmed counts unchanged, or not get an answer at all.
+    unreadActions.syncDisplayedCounts(payload.ids)
     await unreadSyncService.resetFromRemote().catch((error) => {
       console.error(error)
     })
   },
   async execute(payloads) {
     const res = await api().reads.markAllAsRead(payloads[0]!.args)
-    return { read: res.data.read, lastSyncId: readLastSyncId(res) }
+    return { read: res.data.read, lastSyncId: res.lastSyncId }
   },
   syncIdOf: (result) => result.lastSyncId,
   async persist(payloads, { read }, { awaitsSync }) {
@@ -309,10 +309,16 @@ class UnreadSyncService {
    */
   async resetFromRemote({ fallbackSyncId }: { fallbackSyncId?: number } = {}) {
     const res = await api().reads.get({})
-    const snapshotSyncId = readLastSyncId(res) ?? fallbackSyncId
+    const snapshotSyncId = res.lastSyncId ?? fallbackSyncId
+    // Marks the server numbered up to the snapshot are counted by it, so they are not taken
+    // off it again, as when a replayed mark was acknowledged while the first sync loaded.
+    const countsAcknowledged =
+      snapshotSyncId !== undefined && transactionQueue.markUnreadSnapshot(snapshotSyncId)
 
     if (!unreadActions.isConfirmedEqual(res.data)) {
       await unreadActions.upsertMany(res.data, { reset: true })
+    } else if (countsAcknowledged) {
+      unreadActions.syncDisplayedCounts()
     }
     if (snapshotSyncId !== undefined) {
       await recordUnreadSnapshotThroughEngine(snapshotSyncId)

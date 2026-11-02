@@ -8,6 +8,7 @@ import { useHover } from "@use-gesture/react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { RelativeTime } from "~/components/ui/datetime"
 import { Media } from "~/components/ui/media/Media"
 import { useRouteParamsSelector } from "~/hooks/biz/useRouteParams"
@@ -39,6 +40,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
   })
 
   const isActive = useRouteParamsSelector(({ entryId }) => entryId === entry?.id)
+  const autoPlayVideo = useGeneralSettingKey("autoPlayVideo")
 
   const [miniIframeSrc] = useMemo(
     () => [
@@ -47,14 +49,16 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
         mini: true,
         isIframe: !IN_ELECTRON,
         attachments: entry?.attachments,
+        autoPlay: autoPlayVideo,
       }),
       transformVideoUrl({
         url: entry?.url ?? "",
         isIframe: !IN_ELECTRON,
         attachments: entry?.attachments,
+        autoPlay: autoPlayVideo,
       }),
     ],
-    [entry?.attachments, entry?.url],
+    [autoPlayVideo, entry?.attachments, entry?.url],
   )
 
   const ref = useRef<HTMLDivElement>(null)
@@ -70,7 +74,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
 
   const [showPreview, setShowPreview] = useState(false)
   useEffect(() => {
-    if (hovered) {
+    if (hovered && autoPlayVideo) {
       const timer = setTimeout(() => {
         setShowPreview(true)
       }, 500)
@@ -79,7 +83,7 @@ export function VideoItem({ entryId, translation }: UniversalItemProps) {
       setShowPreview(false)
       return () => {}
     }
-  }, [hovered])
+  }, [autoPlayVideo, hovered])
 
   if (!entry) return null
   return (

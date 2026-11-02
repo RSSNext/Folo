@@ -3,6 +3,7 @@ import { FollowAPIError } from "@follow-app/client-sdk"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiContext } from "../../context"
+import { clearAccountInSession, startSessionCheck } from "../../sync/account"
 import { transactionQueue } from "../../sync/transaction-queue"
 import type { FollowAPI } from "../../types"
 import { useEntryStore } from "../entry/store"
@@ -20,6 +21,15 @@ vi.mock("@follow/database/services/collection", () => ({
     reset: vi.fn(),
     upsertMany: collectionUpsertManyMock,
     deleteMany: collectionDeleteManyMock,
+  },
+}))
+
+vi.mock("@follow/database/services/sync-meta", () => ({
+  SyncMetaService: {
+    get: vi.fn(async () => null),
+    set: vi.fn(async () => {}),
+    delete: vi.fn(async () => {}),
+    reset: vi.fn(async () => {}),
   },
 }))
 
@@ -53,6 +63,9 @@ describe("collectionSyncService", () => {
     vi.useFakeTimers()
     vi.clearAllMocks()
     transactionQueue.clearInSession()
+    // Signed in as the account the local data belongs to.
+    clearAccountInSession()
+    startSessionCheck().confirm("user-1")
     useCollectionStore.setState({ collections: {} })
     useEntryStore.setState((state) => ({
       ...state,

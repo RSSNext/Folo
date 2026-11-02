@@ -39,6 +39,8 @@
     "./types/**/*.d.ts",
     "vite.config.mts",
     "vitest.config.ts",
+    "cloudflare.config.ts",
+    "wrangler.config.ts",
     "./tailwind.config.ts",
     "./helper/**/*.ts"
   ],

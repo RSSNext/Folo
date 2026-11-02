@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run"
+  },
   "peerDependencies": {
     "posthog-js": "1.255.0",
     "posthog-react-native": "4.75.0"

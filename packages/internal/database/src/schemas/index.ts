@@ -222,6 +222,8 @@ export const syncTransactionsTable = sqliteTable(
     kind: t.text("kind").notNull(),
     payload: t.text("payload", { mode: "json" }).$type<unknown>().notNull(),
     createdAt: t.integer("created_at", { mode: "timestamp_ms" }).notNull(),
+    /** The account that made the change. Only that account's session may send it. */
+    userId: t.text("user_id"),
   }),
   (table) => [index("idx_sync_transactions_created_at").on(table.createdAt)],
 )

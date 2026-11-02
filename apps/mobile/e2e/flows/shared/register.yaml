@@ -1,6 +1,14 @@
 appId: is.follow
 ---
 - runFlow: open-auth.yaml
+# A device someone signed in on before opens the screen on signing in
+- runFlow:
+    when:
+      visible: Don't have an account? Sign up
+    commands:
+      - tapOn:
+          id: auth-toggle-mode
+      - waitForAnimationToEnd
 - tapOn:
     id: login-provider-credential
 - extendedWaitUntil:

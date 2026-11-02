@@ -19,6 +19,7 @@ import { useColorsVariants, useCurrentColorsVariants } from "react-native-uikit-
 import { ErrorBoundary } from "../components/common/ErrorBoundary"
 import { GlobalErrorScreen } from "../components/errors/GlobalErrorScreen"
 import { LightboxStateProvider } from "../components/ui/lightbox/lightboxState"
+import { getMobileBillingProvider } from "../lib/payment"
 import { queryClient } from "../lib/query-client"
 import { getUIKitAlphaVariables } from "../lib/uikit-colors"
 import { TtsStreamProvider } from "../modules/player/TtsStreamProvider"
@@ -26,8 +27,17 @@ import { TimelineSelectorDragProgressProvider } from "../modules/screen/atoms"
 import { ApiConnectionNotice } from "./ApiConnectionNotice"
 import { AppleIAPProvider } from "./AppleIAPProvider"
 import { FontScalingProvider } from "./FontScalingProvider"
+import { GooglePlayBillingProvider } from "./GooglePlayBillingProvider"
 import { MigrationProvider } from "./migration"
 import { ServerConfigsLoader } from "./ServerConfigsLoader"
+
+// Only the store this build sells through connects its billing library. Android installs from
+// outside Google Play use Stripe and mount neither.
+const storeBillingContexts = {
+  "app-store": [<AppleIAPProvider children={null} />],
+  "google-play": [<GooglePlayBillingProvider children={null} />],
+  stripe: [],
+}[getMobileBillingProvider()]
 
 const contexts = [
   <MigrationProvider children={null} />,
@@ -35,7 +45,7 @@ const contexts = [
   <ErrorBoundary fallbackRender={GlobalErrorScreen} children={null} />,
   <KeyboardProvider children={null} />,
   <QueryClientProvider client={queryClient} />,
-  <AppleIAPProvider children={null} />,
+  ...storeBillingContexts,
   <GestureHandlerRootView />,
   <SheetProvider children={null} />,
   <ActionSheetProvider children={null} />,

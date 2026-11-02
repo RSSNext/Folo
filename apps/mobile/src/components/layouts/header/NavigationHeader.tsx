@@ -38,6 +38,7 @@ import {
 } from "@/src/lib/navigation/hooks"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import { confirmLeaveWithUnsavedChanges } from "@/src/lib/navigation/unsaved-changes"
+import { useHeaderWindowControlsInsets } from "@/src/lib/window-controls"
 
 import { ThemedBlurView } from "../../common/ThemedBlurView"
 import { PlatformActivityIndicator } from "../../ui/loading/PlatformActivityIndicator"
@@ -182,6 +183,7 @@ export const InternalNavigationHeader = ({
 }: InternalNavigationHeaderProps) => {
   const insets = useSafeAreaInsets()
   const frame = useSafeAreaFrame()
+  const windowControlsInsets = useHeaderWindowControlsInsets()
 
   const sheetModal = useScreenIsInSheetModal()
   const { headerHeight: defaultHeight, headerTopInset } = useMemo(
@@ -305,8 +307,9 @@ export const InternalNavigationHeader = ({
       <View
         className="relative flex-row items-center"
         style={{
-          marginLeft: insets.left,
-          marginRight: insets.right,
+          // Also clear of the iPadOS window controls, which sit over the back button otherwise
+          marginLeft: insets.left + windowControlsInsets.left,
+          marginRight: insets.right + windowControlsInsets.right,
           height: defaultHeight - headerTopInset,
           paddingHorizontal: titlebarPaddingHorizontal,
         }}

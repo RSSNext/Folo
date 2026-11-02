@@ -222,7 +222,12 @@ const ListInnerForm = ({
   }, [form, subscription])
 
   const followMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema> & { TOTPCode?: string }) => {
+    // Whether the form edits the subscription is decided when it is sent: a follow stores the
+    // subscription before the request settles, so by then the form reads as followed
+    mutationFn: async ({
+      isEdit,
+      ...values
+    }: z.infer<typeof formSchema> & { TOTPCode?: string; isEdit: boolean }) => {
       const userId = whoami()?.id || ""
       const body = {
         listId: list.id,
@@ -238,14 +243,14 @@ const ListInnerForm = ({
         feedId: undefined,
       } as const
 
-      if (isSubscribed) {
+      if (isEdit) {
         return subscriptionSyncService.edit(body)
       } else {
         return subscriptionSyncService.subscribe(body)
       }
     },
-    onSuccess: () => {
-      toast(isSubscribed ? t("feed_form.updated") : t("feed_form.followed"), {
+    onSuccess: (_data, { isEdit }) => {
+      toast(isEdit ? t("feed_form.updated") : t("feed_form.followed"), {
         duration: 1000,
       })
 
@@ -256,12 +261,18 @@ const ListInnerForm = ({
     },
   })
 
+  // A form sent to follow keeps saying so until it closes
+  const isEditing =
+    (followMutation.isPending || followMutation.isSuccess) && followMutation.variables
+      ? followMutation.variables.isEdit
+      : isSubscribed
+
   const preset = useTOTPModalWrapper(followMutation.mutateAsync)
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (isSubscribed) {
-      followMutation.mutate(values)
+      followMutation.mutate({ ...values, isEdit: true })
     } else {
-      preset(values)
+      preset({ ...values, isEdit: false })
     }
   }
 
@@ -367,7 +378,7 @@ const ListInnerForm = ({
             )}
           />
           <div className="flex flex-1 items-center justify-end gap-4">
-            {isSubscribed && (
+            {isEditing && (
               <Button
                 type="button"
                 ref={buttonRef}
@@ -380,7 +391,7 @@ const ListInnerForm = ({
               </Button>
             )}
             <Button ref={buttonRef} type="submit" isLoading={followMutation.isPending}>
-              {isSubscribed ? t("feed_form.update") : t("feed_form.follow")}
+              {isEditing ? t("feed_form.update") : t("feed_form.follow")}
             </Button>
           </div>
         </form>

@@ -105,6 +105,7 @@ For `ota`, derive the runtime from the store binaries users have installed, not 
 2. Cross-check `apps/mobile/app.config.base.ts`: the runtime defaults to the binary's package version unless `OTA_RUNTIME_VERSION` is set during an OTA export.
 3. Use the current App Store and Google Play binary version as `runtimeVersion`. If the stores show `0.5.0`, an OTA for `0.5.4` uses `"runtimeVersion": "0.5.0"`.
 4. If iOS and Android differ, or the installed runtime is unclear, stop and ask. The plan supports one runtime; never guess or silently pick the newest.
+5. Android binaries up to and including 0.6.0 embed the runtime `0.0.0-dev` and never take an OTA. While Google Play still serves one of them, an OTA reaches iOS only; say so in the plan.
 
 Never choose the previous OTA release version just because it is the latest working manifest; a runtime mismatch publishes assets only newer binaries can see and leaves store users stuck.
 

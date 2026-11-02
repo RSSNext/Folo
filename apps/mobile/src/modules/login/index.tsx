@@ -11,6 +11,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { useIsTabletLayout, useReadableContainerStyle, useScaleHeight } from "@/src/lib/responsive"
 
 import { EmailLogin, EmailSignUp } from "./email"
+import { hasSignedInBefore } from "./returning-user"
 import { SocialLogin } from "./social"
 
 export function Login() {
@@ -23,7 +24,8 @@ export function Login() {
   const fontSize = scaledHeight(28)
   const lineHeight = scaledHeight(32)
   const { t } = useTranslation()
-  const [isRegister, setIsRegister] = useState(true)
+  // Whoever signed in on this device before, as before an expired session, comes back to sign in
+  const [isRegister, setIsRegister] = useState(() => !hasSignedInBefore())
   const [isEmail, setIsEmail] = useState(false)
   return (
     <View

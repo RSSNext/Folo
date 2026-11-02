@@ -10,6 +10,7 @@ import { View } from "react-native"
 
 import { useActionLanguage, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { useBottomTabBarHeight } from "@/src/components/layouts/tabbar/hooks"
+import { Skeleton, SkeletonPulse } from "@/src/components/ui/skeleton/Skeleton"
 import { useReadableContainerStyle } from "@/src/lib/responsive"
 import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 
@@ -17,9 +18,15 @@ import { useEntries } from "../screen/atoms"
 import { TimelineSelectorList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { EntryListFooter } from "./EntryListFooter"
+import { EntryListNextPageError } from "./EntryListNextPageError"
 import { useOnViewableItemsChanged } from "./hooks"
+import {
+  shouldAnimateLoadingPlaceholder,
+  shouldAnimateNextPagePlaceholder,
+} from "./placeholder-animation"
 import { EntryNormalItem } from "./templates/EntryNormalItem"
 import type { EntryExtraData } from "./types"
+import { useNextPage } from "./use-next-page"
 
 const ARTICLE_SKELETON_KEYS = [
   "article-skeleton-1",
@@ -53,6 +60,7 @@ export const EntryListContentArticle = ({
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
+    isFetchNextPageError,
     refetch,
     isRefetching,
     hasNextPage,
@@ -79,18 +87,46 @@ export const EntryListContentArticle = ({
     entryCount: entryIds?.length ?? 0,
     hasNextPage,
   })
-  const ListFooterComponent = useMemo(
-    () =>
-      hasNextPage ? (
-        <EntryItemSkeleton />
-      ) : (
-        <View>
-          <EntryListFooter fetchedTime={fetchedTime} />
-          {hasEndSpacer && <EntryListEndScrollSpacer />}
-        </View>
-      ),
-    [hasEndSpacer, hasNextPage, fetchedTime],
-  )
+  const animateNextPagePlaceholder = shouldAnimateNextPagePlaceholder({
+    active,
+    isFetchingNextPage,
+  })
+  const {
+    footerState: nextPageFooterState,
+    retry: retryNextPage,
+    loadMore: handleEndReached,
+  } = useNextPage({
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  })
+  const ListFooterComponent = useMemo(() => {
+    switch (nextPageFooterState) {
+      case "error": {
+        return <EntryListNextPageError error={entriesError} onRetry={retryNextPage} />
+      }
+      case "loading":
+      case "idle": {
+        return <EntryItemSkeleton animated={animateNextPagePlaceholder} />
+      }
+      case "end": {
+        return (
+          <View>
+            <EntryListFooter fetchedTime={fetchedTime} />
+            {hasEndSpacer && <EntryListEndScrollSpacer />}
+          </View>
+        )
+      }
+    }
+  }, [
+    animateNextPagePlaceholder,
+    entriesError,
+    fetchedTime,
+    hasEndSpacer,
+    nextPageFooterState,
+    retryNextPage,
+  ])
 
   const ref = useRef<FlashListRef<any>>(null)
 
@@ -98,6 +134,8 @@ export const EntryListContentArticle = ({
     // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
     disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
+    entryCount: entryIds?.length ?? 0,
+    onReachEnd: active === false ? undefined : handleEndReached,
   })
 
   useImperativeHandle(forwardRef, () => ref.current!)
@@ -125,7 +163,7 @@ export const EntryListContentArticle = ({
       <View className="flex-1" style={{ paddingTop: headerHeight, paddingBottom: tabBarHeight }}>
         {ARTICLE_SKELETON_KEYS.map((key) => (
           <View key={key} style={readableItemStyle}>
-            <EntryItemSkeleton />
+            <EntryItemSkeleton animated={shouldAnimateLoadingPlaceholder({ active })} />
           </View>
         ))}
       </View>
@@ -144,7 +182,7 @@ export const EntryListContentArticle = ({
       extraData={extraData}
       keyExtractor={defaultKeyExtractor}
       renderItem={renderItem}
-      onEndReached={fetchNextPage}
+      onEndReached={handleEndReached}
       onScroll={onScroll}
       onViewableItemsChanged={onViewableItemsChanged}
       ListFooterComponent={ListFooterComponent}
@@ -154,24 +192,27 @@ export const EntryListContentArticle = ({
 
 const defaultKeyExtractor = (id: string) => id
 
-export function EntryItemSkeleton() {
+export function EntryItemSkeleton({ animated }: { animated?: boolean }) {
   return (
-    <View className="flex flex-row items-center bg-system-background p-4">
+    <SkeletonPulse
+      animated={animated}
+      className="flex flex-row items-center bg-system-background p-4"
+    >
       <View className="flex flex-1 flex-col gap-2">
         <View className="flex flex-row gap-2">
           {/* Icon skeleton */}
-          <View className="size-4 animate-pulse rounded-full bg-system-fill" />
-          <View className="h-4 w-1/4 animate-pulse rounded-md bg-system-fill" />
+          <Skeleton className="size-4 rounded-full" />
+          <Skeleton className="h-4 w-1/4 rounded-md" />
         </View>
 
         {/* Title skeleton */}
-        <View className="h-4 w-3/4 animate-pulse rounded-md bg-system-fill" />
+        <Skeleton className="h-4 w-3/4 rounded-md" />
         {/* Description skeleton */}
-        <View className="w-full flex-1 animate-pulse rounded-md bg-system-fill" />
+        <Skeleton className="w-full flex-1 rounded-md" />
       </View>
 
       {/* Image skeleton */}
-      <View className="ml-2 size-20 animate-pulse rounded-md bg-system-fill" />
-    </View>
+      <Skeleton className="ml-2 size-20 rounded-md" />
+    </SkeletonPulse>
   )
 }

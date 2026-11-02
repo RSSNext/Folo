@@ -24,6 +24,7 @@ import { Text } from "@/src/components/ui/typography/Text"
 import { getDbPath } from "@/src/database"
 import { cookieKey, getCookie, sessionTokenKey, signOut } from "@/src/lib/auth"
 import { loading } from "@/src/lib/loading"
+import { scheduleLocalDataReset } from "@/src/lib/local-data-reset"
 import { DebugButtonGroup } from "@/src/lib/navigation/debug/DebugButtonGroup"
 import { useNavigation } from "@/src/lib/navigation/hooks"
 import { NavigationSitemapRegistry } from "@/src/lib/navigation/sitemap/registry"
@@ -107,8 +108,7 @@ export const DebugScreen: NavigationControllerView = () => {
                 text: "Clear",
                 style: "destructive",
                 async onPress() {
-                  const dbPath = getDbPath()
-                  await FileSystem.deleteAsync(dbPath)
+                  scheduleLocalDataReset()
                   await reloadApp("Clear Sqlite Data")
                 },
               },

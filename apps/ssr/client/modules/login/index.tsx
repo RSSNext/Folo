@@ -27,6 +27,13 @@ import { Input } from "@follow/components/ui/input/index.js"
 import { LoadingCircle } from "@follow/components/ui/loading/index.jsx"
 import { useIsDark } from "@follow/hooks"
 import { DEEPLINK_SCHEME } from "@follow/shared/constants"
+import {
+  AUTH_SIGN_IN_FAILED_MESSAGE_KEY,
+  describeAuthError,
+  getAuthErrorMessageKey,
+  readAuthRedirectError,
+  withoutAuthRedirectError,
+} from "@follow/utils/auth-error"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -91,6 +98,7 @@ export function Login() {
         void signIn.social({
           provider: providerName as "google" | "github" | "apple",
           callbackURL: window.location.href,
+          errorCallbackURL: window.location.href,
         })
         return
       }
@@ -99,6 +107,23 @@ export function Login() {
     },
     [cliCallbackUrl],
   )
+
+  // A sign-in that left this page, such as a provider's consent page, comes back with
+  // `?error=<code>` when the server refused it
+  const navigate = useNavigate()
+  const redirectError = readAuthRedirectError(location.search)
+  useEffect(() => {
+    if (!redirectError) return
+    navigate(
+      { pathname: location.pathname, search: withoutAuthRedirectError(location.search) },
+      { replace: true },
+    )
+    const messageKey = getAuthErrorMessageKey(redirectError)
+    toast.error(
+      t(messageKey ?? AUTH_SIGN_IN_FAILED_MESSAGE_KEY, { ns: "common" }),
+      messageKey ? undefined : { description: redirectError },
+    )
+  }, [location.pathname, location.search, navigate, redirectError, t])
 
   useEffect(() => {
     if (provider && !isCredentialProvider && status === "unauthenticated") {
@@ -176,8 +201,6 @@ export function Login() {
 
     void handleOpenApp()
   }, [cliCallbackUrl, handleCliCallback, handleOpenApp, isAuthenticated])
-
-  const navigate = useNavigate()
 
   const [isEmail, setIsEmail] = useState(false)
   const isDark = useIsDark()
@@ -370,7 +393,7 @@ function LoginWithPassword() {
       if (needTwoFactor && values.code) {
         const res = await twoFactor.verifyTotp({ code: values.code })
         if (res?.error) {
-          toast.error(res.error.message)
+          toast.error(describeAuthError(res.error, (key) => t(key, { ns: "common" })))
           setIsButtonLoading(false)
         } else {
           queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
@@ -389,7 +412,7 @@ function LoginWithPassword() {
       })
 
       if (res?.error) {
-        toast.error(res.error.message)
+        toast.error(describeAuthError(res.error, (key) => t(key, { ns: "common" })))
         setIsButtonLoading(false)
         return
       }

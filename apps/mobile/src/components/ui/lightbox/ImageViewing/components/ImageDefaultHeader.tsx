@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { CloseCuteReIcon } from "@/src/icons/close_cute_re"
 import { Download2CuteReIcon } from "@/src/icons/download_2_cute_re"
 import { ShareForwardCuteReIcon } from "@/src/icons/share_forward_cute_re"
+import { useWindowControlsInsets } from "@/src/lib/window-controls"
 
 type Props = {
   onRequestClose: () => void
@@ -29,12 +30,18 @@ const ImageDefaultHeader = ({
 }: Props) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
+  // The viewer covers the window, whose controls sit over the close button otherwise
+  const windowControlsInsets = useWindowControlsInsets()
 
   return (
     <View
       style={[
         styles.root,
-        { marginTop: insets.top, marginLeft: insets.left, marginRight: insets.right },
+        {
+          marginTop: insets.top,
+          marginLeft: insets.left + windowControlsInsets.left,
+          marginRight: insets.right + windowControlsInsets.right,
+        },
       ]}
     >
       {/* Left side - Close button */}

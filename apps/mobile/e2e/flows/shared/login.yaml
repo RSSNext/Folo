@@ -4,8 +4,13 @@ appId: is.follow
     visible:
       id: login-provider-credential
     timeout: 60000
-- tapOn:
-    id: auth-toggle-mode
+# A device someone signed in on before opens the screen on signing in already
+- runFlow:
+    when:
+      visible: Already have an account? Sign in
+    commands:
+      - tapOn:
+          id: auth-toggle-mode
 - extendedWaitUntil:
     visible: Don't have an account? Sign up
     timeout: 10000

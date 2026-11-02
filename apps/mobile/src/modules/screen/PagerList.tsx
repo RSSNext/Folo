@@ -2,7 +2,7 @@ import type { FeedViewType } from "@follow/constants"
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { EventBus } from "@follow/utils/event-bus"
 import * as Haptics from "expo-haptics"
-import { useCallback, useEffect, useId, useMemo, useRef } from "react"
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { StyleSheet, View } from "react-native"
 import type {
@@ -58,6 +58,16 @@ export function PagerList({
     [rid],
   )
 
+  // Android mounts a new pager with Home on every tab switch, which can open on another page
+  // than `initialPage` and report only that selection: start the selector, which outlives the
+  // pager, from the page it should open on, and send the pager there
+  const [initialPage] = useState(activeViewIndex)
+  useEffect(() => {
+    if (initialPage < 0) return
+    dragProgress.set(initialPage)
+    pagerRef.current?.setPageWithoutAnimation(initialPage)
+  }, [dragProgress, initialPage])
+
   const handlePageScroll = usePagerHandlers(
     {
       onPageScroll(e: PagerViewOnPageScrollEventData) {
@@ -67,10 +77,15 @@ export function PagerList({
       },
       onPageSelected(e: PagerViewOnPageSelectedEventData) {
         "worklet"
-        runOnJS(onPageSelectedJS)(activeViews[e.position]!)
+        // A selection can come without scroll events, and the selector only reads the progress
+        dragProgress.set(e.position)
+        const view = activeViews[e.position]
+        if (view !== undefined) {
+          runOnJS(onPageSelectedJS)(view)
+        }
       },
     },
-    [],
+    [activeViews, dragProgress, onPageSelectedJS],
   )
 
   return (

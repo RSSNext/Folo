@@ -120,6 +120,7 @@ export const fallbackReturn: UseEntriesReturn = {
   isFetching: false,
   isRefetching: false,
   isFetchingNextPage: false,
+  isFetchNextPageError: false,
   hasNextPage: false,
   error: null,
 }

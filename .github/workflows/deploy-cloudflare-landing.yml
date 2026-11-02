@@ -19,6 +19,8 @@ jobs:
   deploy:
     name: Build & Deploy Landing Worker
     runs-on: ubuntu-latest
+    env:
+      CF_SEND_TELEMETRY: "false"
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -67,23 +69,22 @@ jobs:
 
           echo "environment=prod" >> "$GITHUB_OUTPUT"
 
+      # vinext build runs the Vite build that writes cf Build Output. A dev build records the dev mode.
       - name: Build Landing Worker
-        run: pnpm exec turbo run @follow/landing#cf:build
+        run: pnpm exec turbo run @follow/landing#cf:build ${{ steps.target.outputs.environment == 'dev' && '-- --mode dev' || '' }}
 
       - name: Deploy Landing to Cloudflare (dev)
         if: steps.target.outputs.environment == 'dev'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/landing
-          command: deploy --env dev --name landing-next-dev --routes landing.dev.folo.is/*
+        working-directory: apps/landing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec cf deploy --prebuilt --mode dev
 
       - name: Deploy Landing to Cloudflare (prod)
         if: steps.target.outputs.environment == 'prod'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/landing
-          command: deploy
+        working-directory: apps/landing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec cf deploy --prebuilt --mode production

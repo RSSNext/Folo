@@ -1,5 +1,4 @@
 import { callWindowExpose } from "@follow/shared/bridge"
-import { extractElectronWindowOptions } from "@follow/shared/electron"
 import type { BrowserWindow } from "electron/main"
 
 import { openDeepLink } from "~/lib/deep-link"
@@ -7,8 +6,6 @@ import { logger } from "~/logger"
 import { WindowManager } from "~/manager/window"
 
 export const handleUrlRouting = (url: string) => {
-  const options = extractElectronWindowOptions(url)
-
   // For example, the url is "follow://add?id=123&type=list&url=https://example.com"
   const doubleSlash = url.indexOf("://")
   if (doubleSlash === -1) {
@@ -91,15 +88,10 @@ export const handleUrlRouting = (url: string) => {
       }
 
       default: {
-        const { height, resizable = true, width } = options || {}
-        WindowManager.createWindow({
-          extraPath: `#${uri}`,
-          width: width ?? 800,
-          height: height ?? 700,
-          minWidth: 600,
-          minHeight: 600,
-          resizable,
-        })
+        // A link of a newer client, or a made-up one. It only brings the app to the front: a
+        // window of its own would load the whole app at a route it doesn't have.
+        logger.warn("Ignored a deep link with an unknown path", { pathname: pathnameTrimmed })
+        callMainWindow(url, () => {})
         return
       }
     }

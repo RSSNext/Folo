@@ -1,6 +1,8 @@
 import type { ExecFileException } from "node:child_process"
 import { execFile } from "node:child_process"
 import { mkdtempSync } from "node:fs"
+import { createServer } from "node:http"
+import type { AddressInfo } from "node:net"
 import { tmpdir } from "node:os"
 import { promisify } from "node:util"
 
@@ -48,7 +50,30 @@ const runCLI = async (args: string[]): Promise<CLIExecution> => {
   }
 }
 
+/** A local port nothing listens on, so connecting to it is refused */
+const getClosedPort = async () => {
+  const server = createServer()
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve))
+  const { port } = server.address() as AddressInfo
+  await new Promise((resolve) => server.close(resolve))
+  return port
+}
+
 describe("cli e2e", () => {
+  it("exits right after reporting an API it cannot reach", async () => {
+    const apiUrl = `http://127.0.0.1:${await getClosedPort()}`
+    const startedAt = Date.now()
+    const result = await runCLI(["--api-url", apiUrl, "--token", "token", "timeline"])
+
+    // The SDK's request timeout used to keep the process alive for 30 s
+    expect(Date.now() - startedAt).toBeLessThan(10_000)
+    expect(result.code).toBe(1)
+    expect(JSON.parse(result.stderr)).toMatchObject({
+      ok: false,
+      error: { code: "NETWORK_ERROR", message: expect.stringContaining(apiUrl) },
+    })
+  }, 40_000)
+
   it("returns structured unauthorized error without token", async () => {
     const result = await runCLI(["timeline", "--limit", "1"])
     expect(result.code).not.toBe(0)

@@ -59,4 +59,45 @@ describe("withInactivityTimeout", () => {
     await vi.advanceTimersByTimeAsync(TIMEOUT * 2)
     expect(vi.getTimerCount()).toBe(0)
   })
+
+  it("waits as long as the chunk that just arrived calls for", async () => {
+    let source!: ReadableStreamDefaultController<string>
+    const seen: (string | undefined)[] = []
+    const stream = withInactivityTimeout(
+      new ReadableStream<string>({
+        start(controller) {
+          source = controller
+        },
+      }),
+      (lastChunk) => {
+        seen.push(lastChunk)
+        return lastChunk === "slow" ? TIMEOUT * 10 : TIMEOUT
+      },
+      () => new Error("stalled"),
+    )
+    const reader = stream.getReader()
+
+    source.enqueue("slow")
+    await expect(reader.read()).resolves.toEqual({ done: false, value: "slow" })
+    await vi.advanceTimersByTimeAsync(TIMEOUT * 10 - 1)
+
+    source.enqueue("fast")
+    await expect(reader.read()).resolves.toEqual({ done: false, value: "fast" })
+    expect(seen).toEqual([undefined, "slow", "fast"])
+
+    const next = expect(reader.read()).rejects.toThrow("stalled")
+    await vi.advanceTimersByTimeAsync(TIMEOUT)
+    await next
+  })
+
+  it("clears the timer when the reader cancels the stream", async () => {
+    const stream = withInactivityTimeout(new ReadableStream<string>(), TIMEOUT, () => {
+      throw new Error("the timer should not fire")
+    })
+    const reader = stream.getReader()
+
+    await reader.cancel()
+    expect(vi.getTimerCount()).toBe(0)
+    await vi.advanceTimersByTimeAsync(TIMEOUT * 2)
+  })
 })

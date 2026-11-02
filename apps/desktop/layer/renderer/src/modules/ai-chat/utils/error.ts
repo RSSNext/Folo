@@ -71,6 +71,18 @@ export function isRateLimitError(error: Error | string | undefined): boolean {
   return parseAIError(error).isRateLimitError
 }
 
+// The server ends a stalled reply with an error chunk carrying one of these English messages.
+const SERVER_STREAM_TIMEOUT_MESSAGE_KEYS = {
+  "The AI model stopped responding, so the reply was ended. Please try again.":
+    "chat.error.model_stopped_responding",
+  "The reply took too long, so it was ended. Please try again.": "chat.error.reply_took_too_long",
+} as const
+
+const getServerStreamTimeoutKey = (message: string) =>
+  Object.hasOwn(SERVER_STREAM_TIMEOUT_MESSAGE_KEYS, message)
+    ? SERVER_STREAM_TIMEOUT_MESSAGE_KEYS[message as keyof typeof SERVER_STREAM_TIMEOUT_MESSAGE_KEYS]
+    : undefined
+
 /**
  * Get translated error message with fallback
  * @param error - Parsed error information
@@ -78,7 +90,8 @@ export function isRateLimitError(error: Error | string | undefined): boolean {
  */
 export function getErrorMessage(error: ParsedError): string {
   if (!error.isBusinessError || !error.errorCode) {
-    return error.rawMessage
+    const timeoutKey = getServerStreamTimeoutKey(error.rawMessage.trim())
+    return timeoutKey ? getI18n().t(timeoutKey, { ns: "ai" }) : error.rawMessage
   }
 
   const errorKey = `errors:${error.errorCode}` as any

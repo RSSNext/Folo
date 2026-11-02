@@ -15,6 +15,7 @@ import {
 import { Input } from "@follow/components/ui/input/index.js"
 import { useIsDark } from "@follow/hooks"
 import { tracker } from "@follow/tracker"
+import { describeAuthError } from "@follow/utils/auth-error"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
@@ -84,7 +85,7 @@ function RegisterForm() {
             navigate("/login")
           },
           onError(context) {
-            toast.error(context.error.message)
+            toast.error(describeAuthError(context.error, (key) => t(key, { ns: "common" })))
           },
           headers: recaptchaToken
             ? {

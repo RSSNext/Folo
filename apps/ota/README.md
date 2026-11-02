@@ -6,7 +6,8 @@ This runbook covers release rollout verification and rollback for the `apps/ota`
 
 - GitHub Releases is the publishing source of truth.
 - Cloudflare Worker, KV, and R2 are the delivery layer.
-- Run Wrangler commands from `apps/ota`.
+- Run `cf` commands from `apps/ota`. `cloudflare.config.ts` configures the Worker, and `--mode dev` selects the dev Worker (`pnpm run dev`, `pnpm run deploy:dev`, `pnpm run deploy:prod`).
+- `cf` cannot stream live logs or set a single secret yet. Use `wrangler tail folo-ota` and `wrangler secret put <NAME> --name folo-ota` for those.
 - The verified v1 routes are:
   - `GET /manifest`
   - `GET /assets/*`

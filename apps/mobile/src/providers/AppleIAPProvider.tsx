@@ -28,7 +28,7 @@ const logStoreKitE2E = (event: string) => {
 }
 
 type BillingSubscriptionResponse = {
-  source: "stripe" | "apple" | null
+  source: "stripe" | "apple" | "google" | null
   plan: string | null
   status: string | null
   productId: string | null
@@ -424,10 +424,5 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
   return <AppleIAPContext value={contextValue}>{children}</AppleIAPContext>
 }
 
-export const useAppleIAP = () => {
-  const context = use(AppleIAPContext)
-  if (!context) {
-    throw new Error("useAppleIAP must be used within AppleIAPProvider")
-  }
-  return context
-}
+// Null outside App Store builds, which do not mount the provider
+export const useAppleIAP = () => use(AppleIAPContext)

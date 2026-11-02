@@ -8,6 +8,7 @@ import { apiMorph } from "../../morph/api"
 import { storeDbMorph } from "../../morph/store-db"
 import { feedActions } from "../feed/store"
 import { subscriptionActions, subscriptionSyncService } from "../subscription/store"
+import { unreadSyncService } from "../unread/store"
 import type { CreateListModel, ListModel } from "./types"
 
 type ListId = string
@@ -221,6 +222,11 @@ class ListSyncServices {
 
     const feedIds = list.feedIds.filter((id) => id !== params.feedId)
     await listActions.upsertMany([{ ...list, feedIds }])
+    // The server took the entries only this list brought out of the timeline, which changes
+    // the unread counts of the feed for whoever follows the list, the owner included
+    void unreadSyncService.refresh().catch((error) => {
+      console.error("[list] failed to refresh unread counts", error)
+    })
   }
 }
 

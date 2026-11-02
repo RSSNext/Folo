@@ -22,6 +22,7 @@ jobs:
     env:
       VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
       VITE_FIREBASE_CONFIG: ${{ vars.VITE_FIREBASE_CONFIG }}
+      CF_SEND_TELEMETRY: "false"
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -90,20 +91,22 @@ jobs:
       - name: Copy WASM file
         run: cp apps/ssr/node_modules/@resvg/resvg-wasm/index_bg.wasm apps/ssr/dist/worker/resvg.wasm
 
+      - name: Bundle SSR Worker for Cloudflare
+        working-directory: apps/ssr
+        run: pnpm exec cf build ${{ steps.target.outputs.environment == 'dev' && '--mode dev' || '' }}
+
       - name: Deploy SSR Worker to Cloudflare (dev)
         if: steps.target.outputs.environment == 'dev'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/ssr
-          command: deploy --env dev
+        working-directory: apps/ssr
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec cf deploy --prebuilt --mode dev
 
       - name: Deploy SSR Worker to Cloudflare (prod)
         if: steps.target.outputs.environment == 'prod'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/ssr
-          command: 'deploy --env=""'
+        working-directory: apps/ssr
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec cf deploy --prebuilt

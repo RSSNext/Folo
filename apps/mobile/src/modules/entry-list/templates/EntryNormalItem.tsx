@@ -9,7 +9,7 @@ import { cn, formatEstimatedMins, formatTimeToSeconds } from "@follow/utils"
 import { useRecyclingState } from "@shopify/flash-list"
 import { useEvent } from "expo"
 import { useVideoPlayer, VideoView } from "expo-video"
-import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { memo, use, useCallback, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { ImageErrorEventData } from "react-native"
 import { View } from "react-native"
@@ -24,13 +24,15 @@ import { ItemPressableStyle } from "@/src/components/ui/pressable/enum"
 import { ItemPressable } from "@/src/components/ui/pressable/ItemPressable"
 import { Text } from "@/src/components/ui/typography/Text"
 import { PlayerAction } from "@/src/components/ui/video/PlayerAction"
-import { useNavigation } from "@/src/lib/navigation/hooks"
 import { isIOS } from "@/src/lib/platform"
 import { player, useAudioPlayState } from "@/src/lib/player"
 import { toast } from "@/src/lib/toast"
+import { EntryListSourceContext } from "@/src/modules/entry-content/entry-navigation/entry-list-source"
+import { useIsReadingEntry } from "@/src/modules/entry-split/context"
+import { EntrySelectedBackground } from "@/src/modules/entry-split/EntrySelectedBackground"
+import { useOpenEntry } from "@/src/modules/entry-split/use-open-entry"
 import { usePreferredFeedTitle } from "@/src/modules/feed/feed-title"
 import { getEntryArtwork } from "@/src/modules/player/artwork"
-import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
 import { EntryItemContextMenu } from "../../context-menu/entry"
 import { EntryItemSkeleton } from "../EntryListContentArticle"
@@ -76,7 +78,9 @@ export const EntryNormalItem = memo(
     const from = getInboxFrom(entry)
     const feed = useFeedById(entry?.feedId as string)
     const feedTitle = usePreferredFeedTitle(entry?.feedId)
-    const navigation = useNavigation()
+    const openEntry = useOpenEntry()
+    const isReading = useIsReadingEntry(entryId)
+    const entryListSource = use(EntryListSourceContext)
     const handlePress = useCallback(() => {
       if (entry) {
         const fullEntry = getEntry(entryId)
@@ -85,13 +89,14 @@ export const EntryNormalItem = memo(
           feedId: entry.feedId!,
           entryId: entry.id,
         })
-        navigation.pushControllerView(EntryDetailScreen, {
+        openEntry({
           entryId,
           entryIds: extraData.entryIds ?? [],
+          entryListSource,
           view,
         })
       }
-    }, [entry, navigation, entryId, extraData.entryIds, view])
+    }, [entry, openEntry, entryId, extraData.entryIds, entryListSource, view])
     const audioOrVideo = entry?.attachments?.find(
       (attachment) =>
         attachment.mime_type?.startsWith("audio/") || attachment.mime_type?.startsWith("video/"),
@@ -100,7 +105,8 @@ export const EntryNormalItem = memo(
       const durationInSeconds = formatTimeToSeconds(audioOrVideo?.duration_in_seconds)
       return durationInSeconds && Math.floor(durationInSeconds / 60)
     }, [audioOrVideo?.duration_in_seconds])
-    if (!entry) return <EntryItemSkeleton />
+    // Nothing loads an entry missing from the store, so its placeholder holds still
+    if (!entry) return <EntryItemSkeleton animated={false} />
     return (
       <EntryItemContextMenu id={entryId} view={view} isTimelineSource={isTimelineSource}>
         <ItemPressable
@@ -111,7 +117,9 @@ export const EntryNormalItem = memo(
             "flex flex-row items-center pl-6",
           )}
           onPress={handlePress}
+          accessibilityState={isReading ? { selected: true } : undefined}
         >
+          {isReading && <EntrySelectedBackground />}
           {hasTopSeparator && (
             <View
               className="absolute left-4 right-0 top-0 h-px bg-opaque-separator/70"
@@ -226,9 +234,9 @@ const ThumbnailImage = ({ entryId }: { entryId: string }) => {
   if (!image && !audio && !video) return null
   const isSquare = thumbnailRatio === "square"
   return (
-    <View
-      className={cn("relative ml-4 flex h-full w-24 justify-center overflow-hidden rounded-lg")}
-    >
+    // Stretched rather than 100% tall: in the long-press preview of a feed the percentage
+    // resolved against the preview, which spaced the entries far apart
+    <View className="relative ml-4 flex w-24 justify-center self-stretch overflow-hidden rounded-lg">
       {image &&
         !imageError &&
         (isSquare ? (

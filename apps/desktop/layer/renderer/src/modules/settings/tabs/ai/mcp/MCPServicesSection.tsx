@@ -3,6 +3,7 @@ import { Label } from "@follow/components/ui/label/index.jsx"
 import { Switch } from "@follow/components/ui/switch/index.jsx"
 import type { WithOptimistic } from "@follow/hooks"
 import { createOptimisticConfig, useOptimisticMutation } from "@follow/hooks"
+import { IN_ELECTRON } from "@follow/shared/constants"
 import type { MCPService } from "@follow/shared/settings/interface"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import * as React from "react"
@@ -54,11 +55,12 @@ export const MCPServicesSection = () => {
         "width=600,height=700,scrollbars=yes,resizable=yes,popup=yes",
       )
 
-      if (!popup) {
+      // The desktop app hands web pages to the system browser, so it never returns a window
+      if (!popup && !IN_ELECTRON) {
         toast.error(t("integration.mcp.service.popup_blocked"))
-      } else {
-        shouldWindowFocusRefetchRef.current = true
+        return
       }
+      shouldWindowFocusRefetchRef.current = true
     }
   }
 

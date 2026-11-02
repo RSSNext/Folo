@@ -32,6 +32,8 @@
   "dialog.yes": "Yes",
   "download.failed": "Download failed",
   "download.success": "Download complete",
+  "findBar.next": "Next Match",
+  "findBar.previous": "Previous Match",
   "menu.about": "About {{name}}",
   "menu.alwaysOnTop": "Always on top",
   "menu.checkForUpdates": "Check for Updates",

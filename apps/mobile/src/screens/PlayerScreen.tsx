@@ -26,8 +26,10 @@ import { PlayerArtwork } from "../modules/player/PlayerArtwork"
 import { usePrefetchImageColors } from "../store/image/hooks"
 
 function CoverArt({ playable }: { playable: ActivePlayable }) {
-  // The cover is 87% of the screen wide
-  const coverSize = Math.round(useWindowDimensions().width * 0.87)
+  // The cover is 87% of the window wide, unless the controls below would not fit then, as in
+  // landscape on iPad: its slot is the only part of the screen that shrinks, and the cover with it
+  const maxCoverSize = Math.round(useWindowDimensions().width * 0.87)
+  const slotStyle = useMemo(() => ({ height: maxCoverSize }), [maxCoverSize])
   const scale = useSharedValue(1)
   const ttsStream = useTtsStreamPlayback()
   const playing = useIsPlaying()
@@ -46,9 +48,11 @@ function CoverArt({ playable }: { playable: ActivePlayable }) {
     }
   })
   return (
-    <Reanimated.View className="mx-auto my-12 aspect-square w-[87%] shadow" style={[animatedStyle]}>
-      <PlayerArtwork playable={playable} size={coverSize} className="size-full rounded-lg" />
-    </Reanimated.View>
+    <View className="my-12 shrink items-center" style={slotStyle}>
+      <Reanimated.View className="aspect-square h-full shadow" style={animatedStyle}>
+        <PlayerArtwork playable={playable} size={maxCoverSize} className="size-full rounded-lg" />
+      </Reanimated.View>
+    </View>
   )
 }
 export const PlayerScreen: NavigationControllerView = () => {
@@ -98,7 +102,8 @@ export const PlayerScreen: NavigationControllerView = () => {
           <View className="flex-1">
             <DismissIndicator />
             <CoverArt playable={activePlayable} />
-            <View className="mx-10 flex-1">
+            {/* Takes the room the cover leaves, but never less than the controls need */}
+            <View className="mx-10 shrink-0 grow">
               <Text
                 className={cn(
                   "text-xl font-bold opacity-90",
@@ -119,7 +124,8 @@ export const PlayerScreen: NavigationControllerView = () => {
               </Text>
               <ProgressBar />
               <ControlGroup />
-              <View className="flex-1" />
+              {/* Keeps the volume slider clear of the buttons when the cover leaves no room to spare */}
+              <View className="min-h-6 flex-1" />
               <VolumeBar />
             </View>
           </View>
