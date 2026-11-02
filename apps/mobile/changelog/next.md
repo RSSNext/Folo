@@ -2,10 +2,13 @@
 
 ## Shiny new things
 
+- On iPad, entries open next to the list in full-screen windows: the timeline stays on the left and the reader on the right, and the inner display of iPhone Duo uses the same layout
+- Previous and next buttons at the bottom of the reader step through the entries of the list without going back to it
+
 ## Improvements
+
+- RSSHub routes that need a paid plan, such as X (Twitter), show an upgrade button in the follow form instead of a fetch error
 
 ## No longer broken
 
-## Thanks
-
-Special thanks to volunteer contributors @ for their valuable contributions
+- Fixed the timeline stopping without a word when loading more entries failed; it now says so and offers a retry
