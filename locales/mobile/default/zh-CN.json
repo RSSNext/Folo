@@ -22,6 +22,7 @@
   "entry_content.no_video_url": "未找到视频链接",
   "entry_content.unavailable": "无法加载这篇文章的内容。",
   "entry_list.empty": "暂无条目",
+  "entry_list.load_more_failed": "无法加载更多条目。",
   "entry_list.unknown_feed": "未知订阅源",
   "entry_list.zero_unread": "全部已读",
   "feed.fetch_failed": "加载订阅源时出现问题，请稍后重试。",

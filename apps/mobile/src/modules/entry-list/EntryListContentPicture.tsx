@@ -20,6 +20,7 @@ import { useHeaderHeight } from "@/src/modules/screen/hooks/useHeaderHeight"
 import { TimelineSelectorMasonryList } from "../screen/TimelineSelectorList"
 import { EntryListEndScrollSpacer } from "./EntryListEndScrollSpacer"
 import { GridEntryListFooter } from "./EntryListFooter"
+import { EntryListNextPageError } from "./EntryListNextPageError"
 import { useOnViewableItemsChanged } from "./hooks"
 import {
   shouldAnimateLoadingPlaceholder,
@@ -27,6 +28,7 @@ import {
 } from "./placeholder-animation"
 // import type { MasonryItem } from "./templates/EntryGridItem"
 import { EntryPictureItem } from "./templates/EntryPictureItem"
+import { useNextPage } from "./use-next-page"
 
 const PICTURE_SKELETON_COLUMN_KEYS = [
   "picture-skeleton-1",
@@ -65,16 +67,29 @@ export const EntryListContentPicture = ({
     hasNextPage,
     isFetching,
     isFetchingNextPage,
+    isFetchNextPageError,
     isReady,
     fetchedTime,
   } = useEntries({
     viewId: view,
     active,
   })
+  const {
+    footerState: nextPageFooterState,
+    retry: retryNextPage,
+    loadMore: handleEndReached,
+  } = useNextPage({
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  })
   const { onViewableItemsChanged, onScroll, viewableItems } = useOnViewableItemsChanged({
     // Loading the next page only appends entries, so the ones scrolled past meanwhile still count
     disabled: active === false || (isFetching && !isFetchingNextPage) || suspendMarkRead,
     refreshing: isFetching && !isFetchingNextPage,
+    entryCount: entryIds?.length ?? 0,
+    onReachEnd: active === false ? undefined : handleEndReached,
   })
   const translation = useGeneralSettingKey("translation")
   const translationMode = useGeneralSettingKey("translationMode")
@@ -144,21 +159,23 @@ export const EntryListContentPicture = ({
       keyExtractor={defaultKeyExtractor}
       onViewableItemsChanged={onViewableItemsChanged}
       onScroll={onScroll}
-      onEndReached={fetchNextPage}
+      onEndReached={handleEndReached}
       numColumns={isTablet ? 3 : 2}
       contentContainerStyle={isTablet ? styles.tabletContentContainer : styles.contentContainer}
       ListFooterComponent={
-        hasNextPage ? (
+        nextPageFooterState === "error" ? (
+          <EntryListNextPageError error={entriesError} onRetry={retryNextPage} />
+        ) : nextPageFooterState === "end" ? (
+          <View>
+            <GridEntryListFooter fetchedTime={fetchedTime} />
+            {hasEndSpacer && <EntryListEndScrollSpacer />}
+          </View>
+        ) : (
           <View className="h-20 items-center justify-center">
             {/* The list keeps the footer far below the screen, so it spins only while loading */}
             {shouldAnimateNextPagePlaceholder({ active, isFetchingNextPage }) && (
               <PlatformActivityIndicator />
             )}
-          </View>
-        ) : (
-          <View>
-            <GridEntryListFooter fetchedTime={fetchedTime} />
-            {hasEndSpacer && <EntryListEndScrollSpacer />}
           </View>
         )
       }

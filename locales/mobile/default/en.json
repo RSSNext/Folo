@@ -22,6 +22,7 @@
   "entry_content.no_video_url": "No video URL found",
   "entry_content.unavailable": "Couldn't load the content of this entry.",
   "entry_list.empty": "No entries yet",
+  "entry_list.load_more_failed": "Couldn't load more entries.",
   "entry_list.unknown_feed": "Unknown feed",
   "entry_list.zero_unread": "Zero Unread",
   "feed.fetch_failed": "There was a problem loading the feed. Please try again later.",

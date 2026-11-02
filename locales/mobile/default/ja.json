@@ -22,6 +22,7 @@
   "entry_content.no_video_url": "動画 URL が見つかりません",
   "entry_content.unavailable": "このエントリーの本文を読み込めませんでした。",
   "entry_list.empty": "エントリーはまだありません",
+  "entry_list.load_more_failed": "これ以上エントリーを読み込めませんでした。",
   "entry_list.unknown_feed": "不明なフィード",
   "entry_list.zero_unread": "未読ゼロ",
   "feed.fetch_failed": "フィードの読み込み中に問題が発生しました。しばらくしてから再試行してください。",

@@ -324,7 +324,7 @@ export const useEntriesQuery = (
   )
 
   const entriesIds = useMemo(() => {
-    if (!query.data || query.isLoading || query.isError) {
+    if (!query.data || query.isLoading) {
       return []
     }
     return (
@@ -332,7 +332,7 @@ export const useEntriesQuery = (
         ?.flatMap((page) => page.data?.map((entry) => entry.entries.id))
         .filter((id) => typeof id === "string") || []
     )
-  }, [query.data, query.isLoading, query.isError])
+  }, [query.data, query.isLoading])
 
   const unreadScope = useMemo<UnreadListScope>(
     () => ({

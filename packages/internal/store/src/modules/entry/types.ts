@@ -39,6 +39,8 @@ export type UseEntriesReturn = {
   isReady: boolean
   isFetching: boolean
   isFetchingNextPage: boolean
+  /** The last next-page request failed, so the list can offer a retry instead of loading forever */
+  isFetchNextPageError: boolean
   hasNextPage: boolean
   error: Error | null
   fetchedTime?: number
