@@ -1,6 +1,6 @@
 ---
 name: mobile-release
-description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, submits the iOS build for App Store review and the Android build for Google Play review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the mobile app.
+description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, submits the iOS build for App Store review and the Android build for Google Play review, and announces the release on X with a promo video. Use when the user asks to release, ship or publish the mobile app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. 'ota' or 'minor bump']"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 
 The release flow shared by every agent. Claude Code reaches it through `.claude/skills/mobile-release/SKILL.md`, which maps these steps onto Claude's tools. Change the flow here, not in the adapter.
 
-Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges, carries the release through every store and drafts its announcement. The run ends only when every item in **Definition of done** for the chosen mode is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
+Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges, carries the release through every store and announces it. The run ends only when every item in **Definition of done** for the chosen mode is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
 
 ## Standing authorization
 
@@ -21,6 +21,7 @@ Invoking this skill is the user's approval, for this release, to:
 - publish the GitHub release
 - sign in to App Store Connect and Google Play Console with the user's 1Password logins through the password manager's browser autofill, without asking in chat
 - fill What's New and release notes, submit the iOS version for App Review, and send the Google Play production release for review
+- post the announcement on X from @folo_is and quote-post it from @rss3_ (`.agents/skills/release-promo`)
 
 Still ask first: code changes that fix something found during verification; accepting agreements, terms or policy declarations in any console; changing listings (beyond What's New and release notes), screenshots, pricing, availability, content rating or Data safety; deleting builds, releases, tracks or tags; force pushes; anything outside this release.
 
@@ -38,7 +39,7 @@ Store mode (`mode: store`):
 - [ ] Android: Google Play production release with the new app bundle and release notes, sent for review
 - [ ] `chore(sync): merge mobile-main into dev` merged, or its blocker reported
 - [ ] Verification report and final summary delivered; temporary devices, downloads and browser tabs cleaned up
-- [ ] Announcement kit delivered: X post, reply with the release links, quote line and promo video (C9)
+- [ ] Announcement on X: the post with the promo video and the reply with the release links from @folo_is, the quote-post from @rss3_ (C9)
 
 OTA mode (`mode: ota`):
 
@@ -47,7 +48,7 @@ OTA mode (`mode: ota`):
 - [ ] A device running the store binary for that runtime picks up the update (Settings → About shows `OTA <new version>`)
 - [ ] GitHub release `Mobile v<version>` with `ota-release.json`, `dist.tar.zst` and `build.apk`: not a draft, not a prerelease, not latest
 - [ ] Sync PR merged or reported; report delivered; cleanup done
-- [ ] Announcement kit delivered (C9)
+- [ ] Announcement on X (C9)
 
 ## How to work
 
@@ -311,7 +312,7 @@ Clean up: delete temporary simulators and emulators, shut down QA devices you bo
 
 ### C9. Announcement kit
 
-Follow `.agents/skills/release-promo/SKILL.md`: pick the highlights, draft the X post, its reply with the release links and a one-sentence quote line for the second account, and render the promo video from the store captures. If a desktop release runs in the same session, make one kit for both after the later release's report. These are drafts; the user posts them.
+Follow `.agents/skills/release-promo/SKILL.md`: pick the highlights, write the X post, its reply with the release links and a one-sentence quote line, render the promo video from the store captures, then post the kit from @folo_is and quote-post it from @rss3_. If a desktop release runs in the same session, make and post one kit for both after the later release's report.
 
 ## Failure handling
 

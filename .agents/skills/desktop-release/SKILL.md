@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, submits the Mac App Store and Microsoft Store builds for review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the desktop app.
+description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, submits the Mac App Store and Microsoft Store builds for review, and announces the release on X with a promo video. Use when the user asks to release, ship or publish the desktop app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. a preferred mode or the OTA runtime]"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 
 The release flow shared by every agent. Claude Code reaches it through `.claude/skills/desktop-release/SKILL.md`, which maps these steps onto Claude's tools. Change the flow here, not in the adapter.
 
-Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges, carries the release through every store and drafts its announcement. The run ends only when every item in **Definition of done** is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
+Phase A prepares the release, Phase B verifies the packages GitHub Actions builds for the PR, and Phase C merges, carries the release through every store and announces it. The run ends only when every item in **Definition of done** is checked, or when the only open items are blocked on the user and you have told them exactly what is left.
 
 ## Standing authorization
 
@@ -22,6 +22,7 @@ Invoking this skill is the user's approval, for this release, to:
 - publish the GitHub release and mark it latest
 - sign in to App Store Connect, Microsoft Partner Center and SignPath with the user's 1Password logins through the password manager's browser autofill, without asking in chat
 - fill What's New, submit the Mac App Store version for review and the Microsoft Store submission for certification
+- post the announcement on X from @folo_is and quote-post it from @rss3_ (`.agents/skills/release-promo`)
 
 Still ask first: code changes that fix something found during verification; accepting agreements or terms in any console; changing listings (beyond What's New), screenshots, pricing, availability or age ratings; deleting builds, releases, submissions or tags; force pushes; anything outside this release.
 
@@ -37,7 +38,7 @@ Still ask first: code changes that fix something found during verification; acce
 - [ ] Microsoft Store: new submission with `Folo.appx` `<version>.0` and What's New, submitted for certification
 - [ ] `chore(sync): merge main into dev` merged, or its blocker reported
 - [ ] Verification report and final summary delivered; temporary apps, profiles, mounts and browser tabs cleaned up
-- [ ] Announcement kit delivered: X post, reply with the release links, quote line and promo video (C10)
+- [ ] Announcement on X: the post with the promo video and the reply with the release links from @folo_is, the quote-post from @rss3_ (C10)
 
 ## How to work
 
@@ -303,7 +304,7 @@ Clean up: quit the test app, restore `~/.folo/config.json` if it changed, unregi
 
 ### C10. Announcement kit
 
-Follow `.agents/skills/release-promo/SKILL.md`: pick the highlights, draft the X post, its reply with the release links and a one-sentence quote line for the second account, and render the promo video from the store captures. If a mobile release runs in the same session, make one kit for both after the later release's report. These are drafts; the user posts them.
+Follow `.agents/skills/release-promo/SKILL.md`: pick the highlights, write the X post, its reply with the release links and a one-sentence quote line, render the promo video from the store captures, then post the kit from @folo_is and quote-post it from @rss3_. If a mobile release runs in the same session, make and post one kit for both after the later release's report.
 
 ## Failure handling
 
