@@ -9,8 +9,7 @@ const MAX_LIST_WIDTH = 420
 
 /**
  * Whether a window this wide reads entries next to the list instead of pushing them over it. It
- * is the tablet layout: every full-screen iPad window in either orientation, but not Split View,
- * Slide Over or a window resized as narrow as a phone.
+ * is the tablet layout, which iPhone Duo's inner display gets as well as iPad.
  */
 export const isEntrySplitLayoutWidth = (windowWidth: number) => isTabletLayoutWidth(windowWidth)
 

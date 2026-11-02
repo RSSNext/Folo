@@ -8,7 +8,9 @@ import { isIOS } from "./platform"
 const baseWidth = 375
 const baseHeight = 812
 const maxResponsiveHeight = 932
-const tabletMinLength = 744
+// iPhone Duo's inner display is 669 pt wide in portrait; its 466 pt outer display stays on the
+// phone layout.
+const tabletMinLength = 669
 
 // Both read the window on every call. Keeping the window object Dimensions hands out and refreshing
 // it in place broke useWindowDimensions, which compares each change against that same object:
@@ -53,8 +55,8 @@ export const useScaleHeight = () => {
 }
 
 /**
- * Whether a window this wide gets the tablet layout. It goes by the window, not the device: an iPad
- * window as narrow as a phone, in Split View, Slide Over or a resized window, gets the phone layout.
+ * Whether a window this wide gets the tablet layout. It goes by the window, not the device, so the
+ * iPhone Duo inner display gets it too. Narrower iPad windows still get the phone layout.
  */
 export const isTabletLayoutWidth = (windowWidth: number) => isIOS && windowWidth >= tabletMinLength
 

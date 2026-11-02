@@ -7,7 +7,7 @@ import { useSwitchTab } from "@/src/lib/navigation/bottom-tab/hooks"
 import { Navigation } from "@/src/lib/navigation/Navigation"
 import { ScreenItemContext } from "@/src/lib/navigation/ScreenItemContext"
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
-import { useIsiPad } from "@/src/lib/platform"
+import { useIsTabletLayout } from "@/src/lib/responsive"
 import { Login } from "@/src/modules/login"
 
 export const LoginScreen: NavigationControllerView = () => {
@@ -31,10 +31,10 @@ export const LoginScreen: NavigationControllerView = () => {
       clearTimeout(timer)
     }
   }, [screenId, switchTab, whoami?.id])
-  const isiPad = useIsiPad()
+  const isTablet = useIsTabletLayout()
   return (
     <>
-      {isiPad ? (
+      {isTablet ? (
         <ScrollView
           contentContainerStyle={tabletScrollViewContentStyle}
           keyboardShouldPersistTaps="handled"

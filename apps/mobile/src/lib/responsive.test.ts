@@ -83,13 +83,14 @@ describe("responsive", () => {
   it("lays a window out as a tablet by its width, not by the device", async () => {
     const { isTabletLayoutWidth } = await import("./responsive")
 
-    // iPad mini in portrait, then a 13-inch iPad in portrait and in landscape
+    // iPhone Duo's inner display, half of a 13-inch iPad in landscape, then iPad mini in portrait
+    expect(isTabletLayoutWidth(669)).toBe(true)
+    expect(isTabletLayoutWidth(678)).toBe(true)
     expect(isTabletLayoutWidth(744)).toBe(true)
-    expect(isTabletLayoutWidth(1032)).toBe(true)
     expect(isTabletLayoutWidth(1376)).toBe(true)
-    // An iPad window resized to a phone's width, or half of a 13-inch iPad in landscape
+    // iPhone Duo's outer display, an iPhone, and a narrow iPad window
+    expect(isTabletLayoutWidth(466)).toBe(false)
     expect(isTabletLayoutWidth(375)).toBe(false)
-    expect(isTabletLayoutWidth(678)).toBe(false)
   })
 
   it("keeps the gutters of a readable column in a window narrower than it", async () => {
@@ -100,6 +101,7 @@ describe("responsive", () => {
       maxWidth: 760,
       alignSelf: "center",
     })
+    expect(getReadableContainerStyle(669, 760, 24)).toMatchObject({ maxWidth: 621 })
     // 760 and two 24 pt margins need 808 pt, more than iPad mini in portrait has
     expect(getReadableContainerStyle(744, 760, 24)).toMatchObject({ maxWidth: 696 })
     // The phone layout fills the width
