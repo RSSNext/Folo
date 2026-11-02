@@ -1,6 +1,6 @@
 {
-  "version": "0.6.1",
-  "mode": "store",
-  "runtimeVersion": null,
-  "channel": null
+  "version": "0.6.2",
+  "mode": "ota",
+  "runtimeVersion": "0.6.1",
+  "channel": "production"
 }
