@@ -79,7 +79,7 @@ export const isGoogleSiteUrl = defineLinkParser({
 
 export const isTelegramUrl = defineLinkParser({
   name: "telegram",
-  validator: (url) => url.hostname.includes("t.me"),
+  validator: (url) => url.hostname === "t.me" || url.hostname.endsWith(".t.me"),
   icon: "i-logos-telegram",
 })
 
