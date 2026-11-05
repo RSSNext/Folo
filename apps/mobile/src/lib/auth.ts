@@ -28,7 +28,7 @@ import { getEnvProfile, proxyEnv } from "./proxy-env"
 import { unregisterPushToken } from "./push-token"
 import { queryClient } from "./query-client"
 import { reloadApp } from "./reload-app"
-import { safeSecureStore } from "./secure-store"
+import { safeSecureStore, SecureStoreLockedError } from "./secure-store"
 import type { SocialSignInResult } from "./social-auth"
 import { buildAuthorizationProxyURL, parseSocialAuthCallbackURL } from "./social-auth"
 
@@ -101,6 +101,11 @@ const secureAuthCookieStorage = {
     try {
       return safeSecureStore.getItem(key)
     } catch (e) {
+      // A locked device hides the session, it does not end it: fail the read, so requests fail
+      // too instead of going out without the session and signing the user out
+      if (e instanceof SecureStoreLockedError) {
+        throw e
+      }
       console.warn("SecureStore.getItem failed:", e)
       return null
     }

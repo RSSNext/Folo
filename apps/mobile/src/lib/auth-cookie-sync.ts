@@ -187,6 +187,8 @@ const createCookieStorage = (storage: AuthCookieStorage) => ({
   },
 })
 
+const unknownCookie = Symbol("unknown cookie")
+
 export const createSessionAwareAuthCookieStorage = ({
   cookieKey,
   storage,
@@ -198,7 +200,15 @@ export const createSessionAwareAuthCookieStorage = ({
 }): AsyncAuthCookieStorage => {
   const normalizedCookieKey = normalizeCookieName(cookieKey)
   const cookieStorage = createCookieStorage(storage)
-  let lastObservedCookie = cookieStorage.getItem(cookieKey)
+  // The storage can refuse reads for a while (a locked device): the cookie is then unknown
+  const readCookie = () => {
+    try {
+      return cookieStorage.getItem(cookieKey)
+    } catch {
+      return unknownCookie
+    }
+  }
+  let lastObservedCookie = readCookie()
 
   const sessionStorage: AsyncAuthCookieStorage = {
     getItem(key) {
@@ -216,19 +226,27 @@ export const createSessionAwareAuthCookieStorage = ({
         return
       }
 
+      if (lastObservedCookie === unknownCookie) {
+        // Still the cookie before this write
+        lastObservedCookie = readCookie()
+      }
       await storage.setItem(key, value)
       if (value === "") {
         return
       }
 
-      const nextCookie = cookieStorage.getItem(cookieKey)
-      if (nextCookie === null || parseStoredCookieSafely(nextCookie) === null) {
+      const nextCookie = readCookie()
+      if (
+        nextCookie === unknownCookie ||
+        nextCookie === null ||
+        parseStoredCookieSafely(nextCookie) === null
+      ) {
         return
       }
 
       const previousCookie = lastObservedCookie
       lastObservedCookie = nextCookie
-      if (hasAuthSessionChanged(previousCookie, nextCookie)) {
+      if (previousCookie === unknownCookie || hasAuthSessionChanged(previousCookie, nextCookie)) {
         onSessionChange()
       }
     },
@@ -238,7 +256,7 @@ export const createSessionAwareAuthCookieStorage = ({
       if (key === normalizedCookieKey) {
         const previousCookie = lastObservedCookie
         lastObservedCookie = null
-        if (hasAuthSessionChanged(previousCookie, null)) {
+        if (previousCookie === unknownCookie || hasAuthSessionChanged(previousCookie, null)) {
           onSessionChange()
         }
       }
@@ -379,7 +397,14 @@ export const createMobileAuthCookieSyncPlugin = ({
       return
     }
 
-    const previousCookie = cookieStorage.getItem(cookieKey)
+    let previousCookie: string | null
+    try {
+      previousCookie = cookieStorage.getItem(cookieKey)
+    } catch (error) {
+      // Merged into nothing, the cookies would replace the stored session
+      console.warn("[auth-cookie-sync] stored cookie unreadable, response cookies dropped", error)
+      return
+    }
     const nextCookie = mergeStoredAuthCookies(setCookieHeaders, previousCookie)
     if (nextCookie !== (previousCookie || "{}")) {
       await cookieStorage.setItem(cookieKey, nextCookie)

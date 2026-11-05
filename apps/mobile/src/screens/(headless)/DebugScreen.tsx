@@ -4,7 +4,6 @@ import { sleep } from "@follow/utils"
 import { requireNativeModule } from "expo"
 import * as Clipboard from "expo-clipboard"
 import * as FileSystem from "expo-file-system/legacy"
-import * as SecureStore from "expo-secure-store"
 import type { FC } from "react"
 import * as React from "react"
 import { useRef, useState } from "react"
@@ -31,6 +30,7 @@ import { NavigationSitemapRegistry } from "@/src/lib/navigation/sitemap/registry
 import type { NavigationControllerView } from "@/src/lib/navigation/types"
 import { setEnvProfile, useEnvProfile } from "@/src/lib/proxy-env"
 import { reloadApp } from "@/src/lib/reload-app"
+import { safeSecureStore } from "@/src/lib/secure-store"
 import { toast } from "@/src/lib/toast"
 import { showUpgradeRequiredDialog } from "@/src/modules/dialogs/UpgradeRequiredDialog"
 import {
@@ -321,7 +321,7 @@ const UserSessionSetting = () => {
       <Pressable
         className="ml-2"
         onPress={() => {
-          SecureStore.setItem(
+          safeSecureStore.setItem(
             cookieKey,
             JSON.stringify({
               [sessionTokenKey]: {

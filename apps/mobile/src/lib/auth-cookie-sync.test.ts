@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
 import {
+  createMobileAuthCookieSyncPlugin,
   createSessionAwareAuthCookieStorage,
   extractSetCookieHeaderValues,
   hasAuthSessionChanged,
@@ -324,5 +325,62 @@ describe("mobile auth cookie sync", () => {
     }
     await storage.setItem(key, marker)
     expect(onSessionChange).toHaveBeenCalledTimes(1)
+  })
+
+  it("starts while the stored cookie can't be read and compares with it once it can", async () => {
+    const key = "follow_auth_cookie"
+    const values = new Map<string, string>([[key, createStoredCookie({ token: "session" })]])
+    let locked = true
+    const onSessionChange = vi.fn()
+    const storage = createSessionAwareAuthCookieStorage({
+      cookieKey: key,
+      storage: {
+        getItem: (name) => {
+          if (locked) throw new Error("locked")
+          return values.get(name) ?? null
+        },
+        // Like the app's keychain storage, which logs a failed write and goes on
+        setItem: (name, value) => {
+          if (!locked) values.set(name, value)
+        },
+        removeItem: (name) => values.delete(name),
+      },
+      onSessionChange,
+    })
+
+    // Still locked: the write is lost and nothing is reported
+    await storage.setItem(key, createStoredCookie({ token: "another-session" }))
+    expect(onSessionChange).not.toHaveBeenCalled()
+
+    locked = false
+    await storage.setItem(key, createStoredCookie({ token: "session", tokenExpires: null }))
+    expect(onSessionChange).not.toHaveBeenCalled()
+    await storage.setItem(key, createStoredCookie({ token: "another-session" }))
+    expect(onSessionChange).toHaveBeenCalledTimes(1)
+  })
+
+  it("keeps the stored session when it can't be read to merge response cookies into", async () => {
+    const setItem = vi.fn()
+    const plugin = createMobileAuthCookieSyncPlugin({
+      cookieKey: "follow_auth_cookie",
+      storage: { getItem: () => null, setItem },
+      cookieStorage: {
+        getItem: () => {
+          throw new Error("locked")
+        },
+        setItem,
+      },
+    })
+    const onResponse = plugin.fetchPlugins?.[0]?.hooks?.onResponse as (context: {
+      response: Response
+    }) => Promise<void>
+
+    await onResponse({
+      response: new Response(null, {
+        headers: { "set-cookie": "better-auth.session_data=next; Path=/; HttpOnly" },
+      }),
+    })
+
+    expect(setItem).not.toHaveBeenCalled()
   })
 })
