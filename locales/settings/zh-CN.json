@@ -614,7 +614,7 @@
   "lists.feeds.add.error": "添加订阅源到列表时失败",
   "lists.feeds.add.label": "添加",
   "lists.feeds.add.success": "订阅源已添加到列表",
-  "lists.feeds.delete.error": "添加订阅源到列表时失败",
+  "lists.feeds.delete.error": "从列表中移除订阅源失败",
   "lists.feeds.delete.success": "订阅源已从列表删除",
   "lists.feeds.manage": "管理订阅源",
   "lists.feeds.owner": "所有者",
