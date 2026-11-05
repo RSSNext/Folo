@@ -42,6 +42,8 @@ export const wallet = {
 export const useWallet = (options?: { enabled?: boolean }) =>
   useAuthQuery(wallet.get(), {
     refetchOnMount: true,
+    // The profile menu reads it to decide whether to list the wallet entry before it is fetched
+    meta: { persist: true },
     // `useAuthQuery` lets an explicit `enabled` replace its own login check, so only the
     // "off" case is passed on.
     ...(options?.enabled === false && { enabled: false }),
