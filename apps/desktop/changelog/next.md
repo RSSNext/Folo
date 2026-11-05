@@ -4,6 +4,8 @@
 
 ## Improvements
 
+- Removed plural variants the Japanese and Chinese translations never use
+
 ## No longer broken
 
 ## Thanks
