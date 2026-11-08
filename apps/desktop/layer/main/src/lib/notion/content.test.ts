@@ -87,3 +87,56 @@ it("preserves HTML line breaks inside paragraphs and inline formatting", () => {
     "First\nSecond\nThird",
   )
 })
+
+it.each([
+  {
+    name: "ordered list items with paragraph wrappers",
+    content: "<ol><li><p>Step one</p></li><li><div><p>Step two</p></div></li></ol>",
+    expected: [
+      ["numbered_list_item", "Step one"],
+      ["numbered_list_item", "Step two"],
+    ],
+  },
+  {
+    name: "quote paragraphs inside neutral wrappers",
+    content:
+      "<blockquote><div><p>Quoted text</p><p>More quoted text</p></div></blockquote><p>Outside</p>",
+    expected: [
+      ["quote", "Quoted text"],
+      ["quote", "More quoted text"],
+      ["paragraph", "Outside"],
+    ],
+  },
+  {
+    name: "nested mixed lists without duplicated parent text",
+    content:
+      "<ol><li>Outer<ul><li><p>Inner bullet</p><ol><li><p>Inner number</p></li></ol></li></ul>After nested list</li><li><p>Next outer</p></li></ol>",
+    expected: [
+      ["numbered_list_item", "Outer"],
+      ["bulleted_list_item", "Inner bullet"],
+      ["numbered_list_item", "Inner number"],
+      ["numbered_list_item", "After nested list"],
+      ["numbered_list_item", "Next outer"],
+    ],
+  },
+  {
+    name: "explicit nested block types overriding the enclosing quote",
+    content:
+      "<blockquote><p>Quote</p><ul><li><p>Bullet</p></li></ul><h2>Heading</h2><p>Quote again</p></blockquote>",
+    expected: [
+      ["quote", "Quote"],
+      ["bulleted_list_item", "Bullet"],
+      ["heading_2", "Heading"],
+      ["quote", "Quote again"],
+    ],
+  },
+] as const)("preserves $name", ({ content, expected }) => {
+  const blocks = articleBlocks({ title: "Article", url: "https://example.com/story", content })
+  expect(blocks.slice(1)).toEqual(
+    expected.map(([type, text]: readonly [string, string]) => ({
+      object: "block",
+      type,
+      [type]: { rich_text: [{ type: "text", text: { content: text } }] },
+    })),
+  )
+})

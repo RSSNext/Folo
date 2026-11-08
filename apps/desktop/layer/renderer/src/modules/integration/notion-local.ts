@@ -14,7 +14,6 @@ type Service = Pick<
   | "selectSource"
   | "getMapping"
   | "setMapping"
-  | "finalizeLocalConnection"
   | "disconnect"
   | "cancelSelection"
   | "saveArticle"
@@ -79,8 +78,6 @@ export function createNotionLocalClient(getService: () => Service, getStorage: (
       await service.hydrateLocalConnection(previous)
       throw new Error("NOTION_LOCAL_STORAGE_UNAVAILABLE")
     }
-    // Legacy ciphertext is removed only after local persistence succeeds.
-    await service.finalizeLocalConnection()
   }
   return {
     getStatus: () => run((service) => service.getStatus()),
@@ -96,7 +93,7 @@ export function createNotionLocalClient(getService: () => Service, getStorage: (
     setMapping: (mapping: Parameters<Service["setMapping"]>[0]) =>
       run(async (service, previous, version) => {
         const next = await service.setMapping(mapping)
-        if (next) await persist(service, previous, next, version)
+        await persist(service, previous, next, version)
       }),
     saveArticle: (article: Parameters<Service["saveArticle"]>[0]) =>
       run((service) => service.saveArticle(article)),

@@ -109,9 +109,9 @@ export function articleBlocks(article: NotionArticle): NotionBlock[] {
     }
   }
   addText([article.feedTitle, article.url].filter(Boolean).join("\n"))
-  const walk = (node: Node) => {
+  const walk = (node: Node, enclosingType: TextBlockType = "paragraph") => {
     if (node.nodeType === 3) {
-      addText(node.textContent || "")
+      addText(node.textContent || "", enclosingType)
       return
     }
     if (node.nodeType !== 1) return
@@ -136,10 +136,11 @@ export function articleBlocks(article: NotionArticle): NotionBlock[] {
       BLOCKQUOTE: "quote",
       LI: element.parentElement?.tagName === "OL" ? "numbered_list_item" : "bulleted_list_item",
     }
+    const type = types[element.tagName] || enclosingType
     if (!element.querySelector("p,div,h1,h2,h3,h4,li,blockquote,img,table,pre")) {
-      addText(element.textContent || "", types[element.tagName] || "paragraph")
+      addText(element.textContent || "", type)
     } else {
-      for (const child of element.childNodes) walk(child)
+      for (const child of element.childNodes) walk(child, type)
     }
   }
   for (const node of document.body.childNodes) walk(node)

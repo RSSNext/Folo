@@ -19,7 +19,7 @@ const state = vi.hoisted(() => ({
       { id: "c", name: "Created time", type: "created_time" },
       { id: "e", name: "Last edited time", type: "last_edited_time" },
     ],
-    mapping: { url: "u" },
+    mapping: { url: "u" } as Partial<Record<"url" | "author" | "publishedAt", string>>,
   })),
   setMapping: vi.fn(async () => {}),
   disconnect: vi.fn<() => Promise<void>>(),
@@ -89,6 +89,12 @@ describe("NotionSettings", () => {
     })
   })
 
+  it("uses the shared accessible selector for database selection", async () => {
+    await fill("synthetic-token", "")
+    await submit()
+    expect(host.querySelector('[role="combobox"]')?.tagName).toBe("BUTTON")
+  })
+
   it("loads compatible mappings and saves them", async () => {
     await fill("secret", "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
     await submit()
@@ -104,7 +110,9 @@ describe("NotionSettings", () => {
       button().click()
     })
     expect(state.getMapping).toHaveBeenCalled()
-    expect(host.querySelector("select")?.value).toBe("u")
+    expect(
+      host.querySelector('[aria-label="integration.notion.mapping_url"]')?.textContent,
+    ).toContain("Link")
     await act(async () => {
       ;[...host.querySelectorAll("button")]
         .find((b) => b.textContent === "integration.notion.mapping_save")!
@@ -126,15 +134,55 @@ describe("NotionSettings", () => {
     expect(
       [...host.querySelectorAll("option")].some((o) => o.value === "c" || o.value === "e"),
     ).toBe(false)
-    await act(async () => {
-      const select = host.querySelector("select")!
-      select.value = ""
-      select.dispatchEvent(new Event("change", { bubbles: true }))
-    })
+    await selectOption("integration.notion.mapping_url", "integration.notion.mapping_none")
     await click("integration.notion.mapping_refresh")
-    expect(host.querySelector("select")?.value).toBe("")
+    expect(
+      host.querySelector('[aria-label="integration.notion.mapping_url"]')?.textContent,
+    ).toContain("integration.notion.mapping_none")
     expect(state.getMapping).toHaveBeenCalledTimes(2)
     expect(state.setMapping).not.toHaveBeenCalled()
+  })
+
+  it("filters shared mapping selectors and disables properties already assigned elsewhere", async () => {
+    state.getMapping.mockResolvedValueOnce({
+      properties: [
+        { id: "u", name: "Link", type: "url" },
+        { id: "d", name: "Published", type: "date" },
+        { id: "r", name: "Notes", type: "rich_text" },
+        { id: "c", name: "Created time", type: "created_time" },
+      ],
+      mapping: { url: "missing", author: "r" },
+    })
+    await fill("synthetic", "")
+    await submit()
+    await choose()
+    await act(async () => {
+      ;[...host.querySelectorAll("button")]
+        .find((button) => button.textContent === "integration.notion.mapping")!
+        .click()
+    })
+    expect(
+      host.querySelector('[aria-label="integration.notion.mapping_url"]')?.textContent,
+    ).toContain("integration.notion.mapping_invalid")
+    await openSelect("integration.notion.mapping_source")
+    const options = [...document.querySelectorAll<HTMLElement>('[role="option"]')]
+    expect(options.some((option) => option.textContent === "Published")).toBe(false)
+    expect(options.some((option) => option.textContent === "Created time")).toBe(false)
+    expect(
+      options.find((option) => option.textContent === "Notes")?.getAttribute("aria-disabled"),
+    ).toBe("true")
+    await act(async () => {
+      document
+        .querySelector('[role="listbox"]')!
+        .dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }))
+    })
+    await selectOption("integration.notion.mapping_publishedAt", "Published")
+    await act(async () => {
+      ;[...host.querySelectorAll("button")]
+        .find((button) => button.textContent === "integration.notion.mapping_save")!
+        .click()
+    })
+    expect(state.setMapping).toHaveBeenCalledWith({ url: "missing", author: "r", publishedAt: "d" })
   })
 
   it("offers explicit disconnect recovery when local credential status fails", async () => {
@@ -184,12 +232,28 @@ describe("NotionSettings", () => {
     })
   }
 
-  const choose = async () => {
+  const openSelect = async (label: string) => {
     await act(async () => {
-      const select = host.querySelector("select")!
-      select.value = "synthetic-source"
-      select.dispatchEvent(new Event("change", { bubbles: true }))
+      const trigger = host.querySelector<HTMLButtonElement>(
+        `[role="combobox"][aria-label="${label}"]`,
+      )!
+      trigger.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }))
     })
+  }
+
+  const selectOption = async (label: string, text: string) => {
+    await openSelect(label)
+    await act(async () => {
+      const option = [...document.querySelectorAll<HTMLElement>('[role="option"]')].find(
+        (element) => element.textContent?.includes(text),
+      )!
+      expect(option).toBeDefined()
+      option.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }))
+    })
+  }
+
+  const choose = async () => {
+    await selectOption("integration.notion.select_database", "Notes")
     await act(async () => {
       ;[...host.querySelectorAll("button")]
         .find((b) => b.textContent === "integration.notion.use_database")!

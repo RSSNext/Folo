@@ -1,5 +1,12 @@
 import { Button } from "@follow/components/ui/button/index.js"
 import { InputV2 } from "@follow/components/ui/input/index.js"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@follow/components/ui/select/index.js"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -7,6 +14,20 @@ import { toast } from "sonner"
 
 import { notionLocalClient } from "~/modules/integration/notion-local"
 import { notionStatusQueryKey, useNotionStatus } from "~/modules/integration/notion-status"
+
+const propertyTypes = {
+  url: "url",
+  feedTitle: "rich_text",
+  author: "rich_text",
+  publishedAt: "date",
+  description: "rich_text",
+  aiSummary: "rich_text",
+  categories: "rich_text",
+} as const
+
+type MappingField = keyof typeof propertyTypes
+const mappingFields = Object.keys(propertyTypes) as MappingField[]
+const unmappedValue = "__notion_unmapped__"
 
 export const NotionSettings = () => {
   const { t } = useTranslation("settings")
@@ -75,14 +96,7 @@ export const NotionSettings = () => {
     name: string
     type: string
   }> | null>(null)
-  const [mapping, setMapping] = useState<
-    Partial<
-      Record<
-        "url" | "feedTitle" | "author" | "publishedAt" | "description" | "aiSummary" | "categories",
-        string
-      >
-    >
-  >({})
+  const [mapping, setMapping] = useState<Partial<Record<MappingField, string>>>({})
   const mappingAction = async (save: boolean, refresh = false) => {
     if (pendingRef.current) return
     pendingRef.current = true
@@ -151,11 +165,6 @@ export const NotionSettings = () => {
   return (
     <div className="space-y-4 py-4">
       <p className="text-sm text-text-secondary">{t("integration.notion.description")}</p>
-      {status.data?.legacy && (
-        <p role="status" className="text-sm text-text-secondary">
-          {t("integration.notion.legacy_connection")}
-        </p>
-      )}
       <a
         href="https://www.notion.so/profile/integrations"
         target="_blank"
@@ -208,20 +217,18 @@ export const NotionSettings = () => {
                 <Button type="button" disabled={busy} onClick={() => void picker("search")}>
                   {t("integration.notion.search")}
                 </Button>
-                <select
-                  aria-label={t("integration.notion.select_database")}
-                  className="w-full rounded-md border border-fill bg-material-thick p-2 text-text"
-                  value={dataSourceId}
-                  disabled={busy}
-                  onChange={(e) => setDataSourceId(e.target.value)}
-                >
-                  <option value="">{t("integration.notion.select_database")}</option>
-                  {sources.map((source) => (
-                    <option key={source.id} value={source.id}>
-                      {source.title} · {source.id.slice(0, 8)} ({source.databaseId.slice(0, 8)})
-                    </option>
-                  ))}
-                </select>
+                <Select value={dataSourceId} disabled={busy} onValueChange={setDataSourceId}>
+                  <SelectTrigger aria-label={t("integration.notion.select_database")}>
+                    <SelectValue placeholder={t("integration.notion.select_database")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sources.map((source) => (
+                      <SelectItem key={source.id} value={source.id}>
+                        {source.title} · {source.id.slice(0, 8)} ({source.databaseId.slice(0, 8)})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {!sources.length && <p>{t("integration.notion.empty")}</p>}
                 {cursor && (
                   <Button type="button" disabled={busy} onClick={() => void picker("more")}>
@@ -272,92 +279,61 @@ export const NotionSettings = () => {
                 {t("integration.notion.mapping_title")}:{" "}
                 {properties.find((p) => p.type === "title")?.name}
               </p>
-              {(
-                [
-                  "url",
-                  "feedTitle",
-                  "author",
-                  "publishedAt",
-                  "description",
-                  "aiSummary",
-                  "categories",
-                ] as const
-              ).map((field) => (
-                <label key={field} className="flex flex-col gap-2 text-sm">
-                  {t(
-                    field === "url"
-                      ? "integration.notion.mapping_url"
-                      : field === "feedTitle"
-                        ? "integration.notion.mapping_source"
-                        : `integration.notion.mapping_${field}`,
-                  )}
-                  <select
-                    className="rounded-md border border-fill bg-material-thick p-2 text-text"
-                    disabled={busy}
-                    value={mapping[field] || ""}
-                    onChange={(event) =>
-                      setMapping((current) => {
-                        const next = { ...current }
-                        if (event.target.value) next[field] = event.target.value
-                        else delete next[field]
-                        return next
-                      })
-                    }
-                  >
-                    <option value="">
-                      {t(
-                        properties.some(
-                          (p) =>
-                            p.type ===
-                            (field === "url"
-                              ? "url"
-                              : field === "publishedAt"
-                                ? "date"
-                                : "rich_text"),
-                        )
-                          ? "integration.notion.mapping_none"
-                          : "integration.notion.mapping_no_fields",
-                      )}
-                    </option>
-                    {mapping[field] &&
-                      !properties.some(
-                        (p) =>
-                          p.id === mapping[field] &&
-                          p.type ===
-                            (field === "url"
-                              ? "url"
-                              : field === "publishedAt"
-                                ? "date"
-                                : "rich_text"),
-                      ) && (
-                        <option value={mapping[field]}>
-                          {t("integration.notion.mapping_invalid")}
-                        </option>
-                      )}
-                    {properties
-                      .filter(
-                        (p) =>
-                          p.type ===
-                          (field === "url"
-                            ? "url"
-                            : field === "publishedAt"
-                              ? "date"
-                              : "rich_text"),
-                      )
-                      .map((p) => (
-                        <option
-                          key={p.id}
-                          value={p.id}
-                          disabled={Object.entries(mapping).some(
-                            ([key, value]) => key !== field && value === p.id,
+              {mappingFields.map((field) => {
+                const compatible = properties.filter((p) => p.type === propertyTypes[field])
+                const label = t(
+                  field === "feedTitle"
+                    ? "integration.notion.mapping_source"
+                    : `integration.notion.mapping_${field}`,
+                )
+                const invalid = mapping[field] && !compatible.some((p) => p.id === mapping[field])
+                return (
+                  <div key={field} className="flex flex-col gap-2 text-sm">
+                    <span>{label}</span>
+                    <Select
+                      disabled={busy}
+                      value={mapping[field] || unmappedValue}
+                      onValueChange={(value) =>
+                        setMapping((current) => {
+                          const next = { ...current }
+                          if (value === unmappedValue) delete next[field]
+                          else next[field] = value
+                          return next
+                        })
+                      }
+                    >
+                      <SelectTrigger aria-label={label}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={unmappedValue}>
+                          {t(
+                            compatible.length
+                              ? "integration.notion.mapping_none"
+                              : "integration.notion.mapping_no_fields",
                           )}
-                        >
-                          {p.name}
-                        </option>
-                      ))}
-                  </select>
-                </label>
-              ))}
+                        </SelectItem>
+                        {invalid && (
+                          <SelectItem value={mapping[field]!}>
+                            {t("integration.notion.mapping_invalid")}
+                          </SelectItem>
+                        )}
+                        {compatible.map((p) => (
+                          <SelectItem
+                            key={p.id}
+                            value={p.id}
+                            disabled={Object.entries(mapping).some(
+                              ([key, value]) => key !== field && value === p.id,
+                            )}
+                          >
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )
+              })}
               {!properties.some((p) => p.type === "date") && (
                 <p className="text-xs text-text-secondary">
                   {t("integration.notion.mapping_no_date")}

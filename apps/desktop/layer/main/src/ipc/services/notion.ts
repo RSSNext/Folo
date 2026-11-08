@@ -1,11 +1,10 @@
-import { net, safeStorage } from "electron"
+import { net } from "electron"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 
 import { NotionClient } from "~/lib/notion/client"
 import type { NotionArticle } from "~/lib/notion/content"
 import type { NotionMapping } from "~/lib/notion/mapping"
 import { mappingTypes, validateMapping } from "~/lib/notion/mapping"
-import { store } from "~/lib/store"
 
 export interface LocalNotionConnection {
   token: string
@@ -47,21 +46,6 @@ export class NotionService extends IpcService {
   private generation = 0
   private readonly pending = new Set<string>()
 
-  private connection(): LocalNotionConnection | undefined {
-    if (this.local) return this.local
-    const legacy = store.get("notionConnection")
-    if (!legacy) return undefined
-    try {
-      return {
-        token: safeStorage.decryptString(Buffer.from(legacy.encryptedToken, "base64")),
-        dataSourceId: legacy.dataSourceId,
-        mapping: legacy.mapping,
-      }
-    } catch {
-      throw new Error("NOTION_LEGACY_RECONNECT")
-    }
-  }
-
   @IpcMethod()
   async hydrateLocalConnection(connection: LocalNotionConnection | null) {
     if (connection !== null) validateLocalConnection(connection)
@@ -70,20 +54,12 @@ export class NotionService extends IpcService {
     await this.cancelSelection()
   }
 
-  // Only called after the renderer has durably saved the local connection.
-  @IpcMethod()
-  async finalizeLocalConnection() {
-    if (!this.local) throw new Error("Connect Notion first")
-    store.delete("notionConnection")
-  }
-
   @IpcMethod()
   async getStatus() {
-    const connection = this.local || store.get("notionConnection")
+    const connection = this.local
     return {
       configured: Boolean(connection),
       dataSourceId: connection?.dataSourceId || "",
-      legacy: !this.local && !!connection,
     }
   }
 
@@ -91,11 +67,11 @@ export class NotionService extends IpcService {
   async beginSelection(token?: string) {
     if (token !== undefined && (typeof token !== "string" || !token.trim() || token.length > 1000))
       throw new Error("Invalid integration token")
-    if (!token && !this.connection()) throw new Error("Connect Notion first")
+    if (!token && !this.local) throw new Error("Connect Notion first")
     const generation = ++this.generation
     this.selection = undefined
     if (this.expiryTimer) clearTimeout(this.expiryTimer)
-    const value = token?.trim() || this.connection()!.token
+    const value = token?.trim() || this.local!.token
     const result = await new NotionClient(value, net.fetch).searchSources()
     if (generation !== this.generation) throw new Error("Selection cancelled")
     this.selection = {
@@ -147,7 +123,7 @@ export class NotionService extends IpcService {
     const token = selection.token
     await new NotionClient(token, net.fetch).titleProperty(id)
     if (this.requireSelection() !== selection) throw new Error("Selection changed")
-    const previous = this.local || store.get("notionConnection")
+    const previous = this.local
     this.local = {
       token: selection.token,
       dataSourceId: id,
@@ -168,7 +144,7 @@ export class NotionService extends IpcService {
 
   @IpcMethod()
   async getMapping() {
-    const connection = this.connection()
+    const connection = this.local
     if (!connection) throw new Error("Connect Notion first")
     const generation = this.generation
     const token = connection.token
@@ -182,13 +158,8 @@ export class NotionService extends IpcService {
     const generation = this.generation
     const { properties } = await this.getMapping()
     validateMapping(properties, mapping)
-    const connection = this.connection()
+    const connection = this.local
     if (!connection || generation !== this.generation) throw new Error("Connection changed")
-    if (!this.local) {
-      const legacy = store.get("notionConnection")!
-      store.set("notionConnection", { ...legacy, mapping })
-      return null
-    }
     this.local = { ...connection, mapping }
     return structuredClone(this.local)
   }
@@ -199,7 +170,6 @@ export class NotionService extends IpcService {
     this.generation++
     this.selection = undefined
     this.local = undefined
-    store.delete("notionConnection")
   }
 
   @IpcMethod()
@@ -231,21 +201,13 @@ export class NotionService extends IpcService {
     }
     if (!["http:", "https:"].includes(url.protocol) || url.username || url.password)
       throw new Error("The article has no valid URL.")
-    const connection = this.connection()
+    const connection = this.local
     if (!connection) throw new Error("Connect Notion in Settings → Integrations first.")
     if (this.pending.has(article.url))
       throw new Error("This article is already being saved to Notion.")
     this.pending.add(article.url)
     try {
-      let token: string
-      try {
-        token = connection.token
-      } catch {
-        throw new Error(
-          "Notion credentials could not be unlocked. Reconnect Notion in Settings → Integrations.",
-        )
-      }
-      return await new NotionClient(token, net.fetch).save(
+      return await new NotionClient(connection.token, net.fetch).save(
         connection.dataSourceId,
         article,
         connection.mapping,

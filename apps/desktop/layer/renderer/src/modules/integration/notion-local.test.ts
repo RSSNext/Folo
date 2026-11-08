@@ -9,14 +9,12 @@ const makeService = () => ({
   getStatus: vi.fn(async () => ({
     configured: true,
     dataSourceId: "synthetic-source",
-    legacy: false,
   })),
   beginSelection: vi.fn(async () => ({ items: [], nextCursor: null })),
   searchSources: vi.fn(async () => ({ items: [], nextCursor: null })),
   selectSource: vi.fn(async () => connection),
   getMapping: vi.fn(async () => ({ properties: [], mapping: {} })),
-  setMapping: vi.fn<() => Promise<typeof connection | null>>(async () => connection),
-  finalizeLocalConnection: vi.fn(async () => {}),
+  setMapping: vi.fn<() => Promise<typeof connection>>(async () => connection),
   disconnect: vi.fn(async () => {}),
   cancelSelection: vi.fn(async () => {}),
   saveArticle: vi.fn(async () => ({ url: "https://notion.so/page", warnings: [] })),
@@ -41,7 +39,6 @@ describe("device-local Notion credentials", () => {
     ).getStatus()
     expect(reloaded.hydrateLocalConnection).toHaveBeenCalledWith(connection)
     expect(JSON.stringify(status)).not.toContain("synthetic-secret")
-    expect(service.finalizeLocalConnection).toHaveBeenCalledOnce()
   })
   it("does not persist drafts or cancelled selections", async () => {
     const service = makeService()
@@ -52,7 +49,6 @@ describe("device-local Notion credentials", () => {
     await client.beginSelection("synthetic-secret")
     await client.cancelSelection()
     expect(localStorage.getItem(notionLocalStorageKey)).toBeNull()
-    expect(service.finalizeLocalConnection).not.toHaveBeenCalled()
   })
   it("clears only Notion credentials on disconnect", async () => {
     localStorage.setItem(notionLocalStorageKey, JSON.stringify(connection))
@@ -66,7 +62,7 @@ describe("device-local Notion credentials", () => {
     expect(localStorage.getItem("follow:integration")).toBe("untouched")
     expect(service.disconnect).toHaveBeenCalledOnce()
   })
-  it("rolls back runtime and retains legacy credentials when local persistence fails", async () => {
+  it("rolls back runtime when local persistence fails", async () => {
     const service = makeService()
     const storage = {
       getItem: () => null,
@@ -82,7 +78,6 @@ describe("device-local Notion credentials", () => {
       ).selectSource("synthetic-source"),
     ).rejects.toThrow("NOTION_LOCAL_STORAGE_UNAVAILABLE")
     expect(service.hydrateLocalConnection).toHaveBeenLastCalledWith(null)
-    expect(service.finalizeLocalConnection).not.toHaveBeenCalled()
   })
   it("does not discard malformed local storage or expose its contents", async () => {
     localStorage.setItem(notionLocalStorageKey, "invalid synthetic-secret")
@@ -158,16 +153,6 @@ describe("device-local Notion credentials", () => {
     await cancelled
     expect(localStorage.getItem(notionLocalStorageKey)).toBeNull()
     expect(service.beginSelection).not.toHaveBeenCalled()
-  })
-  it("does not migrate legacy credentials while saving only a mapping", async () => {
-    const service = makeService()
-    service.setMapping.mockResolvedValue(null)
-    await createNotionLocalClient(
-      () => service,
-      () => localStorage,
-    ).setMapping({})
-    expect(localStorage.getItem(notionLocalStorageKey)).toBeNull()
-    expect(service.finalizeLocalConnection).not.toHaveBeenCalled()
   })
   it("includes the dedicated key in official clear-all namespace cleanup", () => {
     localStorage.setItem(notionLocalStorageKey, JSON.stringify(connection))

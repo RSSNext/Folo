@@ -1,8 +1,6 @@
 import type { Credentials } from "@eneris/push-receiver/dist/types"
 import Store from "electron-store"
 
-import type { NotionMapping } from "./notion/mapping"
-
 // @keep-sorted
 type StoreData = {
   "notifications-credentials"?: Credentials | null
@@ -14,11 +12,6 @@ type StoreData = {
   cliSyncEnabled?: boolean | null
   eagleContextMenuEnabled?: boolean | null
   minimizeToTray?: boolean | null
-  notionConnection?: {
-    encryptedToken: string
-    dataSourceId: string
-    mapping?: NotionMapping
-  }
   proxy?: string | null
   qbittorrentSID?: string | null
   user?: string | null
