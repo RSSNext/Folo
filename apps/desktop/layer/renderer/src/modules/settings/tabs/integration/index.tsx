@@ -27,6 +27,7 @@ import { ipcServices } from "~/lib/client"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { getFetchAdapter } from "~/modules/integration/fetch-adapter"
 import { useNotionStatus } from "~/modules/integration/notion-status"
+import { NotionIcon } from "~/modules/integration/NotionIcon"
 
 import { createSetting } from "../../helper/builder"
 import { useSetSettingCanSync } from "../../modal/hooks"
@@ -121,7 +122,7 @@ export const SettingIntegration = () => {
         {
           key: "notion",
           title: "Notion",
-          icon: <i className="i-mgc-document-cute-re" />,
+          icon: <NotionIcon />,
           enabled: !!notionStatus.data?.configured,
           configured: !!notionStatus.data?.configured,
           settings: [],

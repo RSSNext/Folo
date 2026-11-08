@@ -1,59 +1,63 @@
-# Notion desktop preview: verification notes
+# Notion integration verification
 
-These checks use synthetic content and synthetic, non-secret token strings.
-They do not connect to a real Notion workspace.
+Automated tests use synthetic articles and tokens, mocked OS storage, and mocked
+or loopback HTTP transports. They do not write to a real Notion workspace.
 
-## Automated checks
+## Automated coverage
 
-- All 21 monorepo typecheck tasks passed with `pnpm exec turbo typecheck --concurrency=1`.
-- The initial full lint command exceeded the container's memory. Its constituent
-  TSSlint projects and ESLint directory partitions passed sequentially with
-  `NODE_OPTIONS=--max-old-space-size=2800`: zero errors, existing warnings remain.
-- Main-process and renderer unit suites pass independently. The monorepo test
-  command's embedded renderer typechecker was killed under parallel memory
-  pressure; separate renderer typecheck and runtime test runs passed.
-- `client.integration.test.ts` runs a real loopback HTTP server and real `fetch`,
-  routed through the client's injected transport. It checks API version/auth
-  headers, data source lookup, async image import, page properties, 100-block
-  batching, source/link preservation and permission denial without writes.
-- Renderer component tests cover configuration, disconnection, transient token
-  clearing, duplicate actions, safe errors, save payloads and partial-save links.
+- Search filtering, pagination, explicit data-source selection, cancellation and
+  expiry; an existing connection remains intact until replacement succeeds.
+- OS-encrypted credential persistence, refusal of unavailable/insecure storage,
+  transient renderer inputs, and sanitized errors.
+- Stable property-ID mapping, compatible types, duplicate-target rejection,
+  schema refresh that preserves unsaved choices, and existing mapping compatibility.
+- Publication timestamps retain the same instant when normalized to UTC;
+  missing dates are omitted and read-only timestamp properties are rejected.
+- Existing AI summaries are read from the current language and exported body
+  variant's cache. Missing summaries are not generated or substituted.
+- Article conversion, image import/fallback, request limits, partial exports,
+  duplicate in-flight actions, and safe saved-page links.
+- Settings connection/collapse/edit flows and the shared Notion SVG icon.
 
-## Actual Electron storage boundary
+Run the repository's required typecheck, format, lint and test gates. Focused
+commands for this feature are:
 
-Electron 44.4.3 was launched on Linux with a fresh temporary profile using
-`--headless --ozone-platform=headless`. The real Electron runtime reported
-`isEncryptionAvailable() === false` and `getSelectedStorageBackend() === "basic_text"`.
-The bundled production `NotionService.configure` rejected a synthetic credential
-with the secure-storage error; `getStatus()` remained unconfigured. This proves
-refusal of insecure storage in this environment, **not** successful encryption
-with macOS Keychain or a working Linux secret service.
+```sh
+pnpm --filter @follow/electron-main exec vitest run src/lib/notion src/ipc/services/notion.test.ts
+pnpm --filter @follow/web exec vitest run src/modules/settings/tabs/integration/NotionSettings.test.tsx src/modules/integration/notion-article.test.ts src/modules/command/commands/notion.test.tsx
+```
 
-## Before using a real workspace
+The loopback client integration tests use real `fetch` with an injected local
+transport, not a real Notion service. Component tests use happy-dom; they are not
+full Electron UI tests. Passing these tests does not prove OS key-store access
+or successful credential persistence in a packaged application.
 
-A live Notion/desktop smoke test remains required. Use a dedicated empty test
-page/database and a Notion internal integration restricted to that database.
-Grant read/insert content capabilities, connect it to the test database, and enter
-the token locally in Folo's integration settings. Do not paste the token into an
-issue, PR, log or chat. The present preview accepts a data source ID, not a database
-URL. See Notion's database/data source documentation for obtaining that ID.
+## Manual release checklist
 
-Saving a synthetic article will create a page in that selected test database and
-may upload its public image to Notion. Verify title/source/body/image persistence,
-relaunch Folo to verify the locally encrypted credential can be unlocked, then
-disconnect. Disconnect removes Folo's stored credential but does not revoke the
-Notion integration or delete saved pages. Revoke the test integration in Notion
-and remove the synthetic test page when no longer needed.
+Use a dedicated empty database and an internal integration restricted to that
+database, with read/insert capabilities. Enter credentials only in Folo. Never
+put them in a PR, issue, screenshot, recording, log, or chat.
 
-No real workspace write, OAuth/database-picker flow, full-app screenshot or
-successful macOS Keychain test is implied by the automated tests above.
+- [ ] In a normal packaged desktop build with working secure storage, connect,
+      search and choose the test data source; confirm no credentials are shown
+      again after successful connection.
+- [ ] Map title, URL, source, author, publication date, description, existing AI
+      summary and category text to compatible properties. Verify an empty
+      optional value does not invent data.
+- [ ] Add a writable Date property in Notion, refresh fields, and verify the
+      existing unsaved mappings remain selected.
+- [ ] Explicitly save one synthetic article and verify properties, body and
+      images. A missing cached AI summary should warn without generating one.
+- [ ] Verify the date displays the correct instant in the workspace timezone.
+- [ ] Relaunch and confirm the encrypted credential can be unlocked; verify
+      disconnect removes the local connection, not remote pages.
+- [ ] Test a revoked integration, inaccessible data source, renamed/removed
+      property, image import failure and interrupted export. If a page was
+      partly saved or the response was lost, inspect Notion before retrying.
+- [ ] Capture screenshots and a short demo using synthetic data only. Exclude
+      tokens, private feeds, personal workspace names and account details.
 
-## GUI execution limit in this cloud workspace
-
-A real `NotionSettings` component fixture was bundled for Electron. BrowserWindow
-renderer startup failed with exit 139 and Chromium's `could not fork: process_type
-renderer`/`Broken pipe` errors, including a retry with hardware acceleration off
-and a temporary XDG/profile directory. No sandbox, context isolation or web
-security protections were disabled. System Chromium also failed its singleton
-socket startup. Consequently the interactive React tests use the repository's
-happy-dom environment; these are **not** full Electron UI tests or screenshots.
+Do not disable OS protections or introduce plaintext/session credential fallback
+to satisfy this checklist. Failure to access a secure key store is an explicit
+unsupported environment, not a successful persistence test. Web/mobile support,
+OAuth, and a server-side export service are outside this implementation.

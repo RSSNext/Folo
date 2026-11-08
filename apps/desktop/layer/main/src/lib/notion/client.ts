@@ -1,10 +1,12 @@
 import { setTimeout } from "node:timers/promises"
 
 import type { NotionArticle } from "./content"
-import { articleBlocks, richText } from "./content"
+import { articleBlocks } from "./content"
+import type { NotionMapping, NotionProperty } from "./mapping"
+import { mappedProperties } from "./mapping"
 
 interface DataSource {
-  properties: Record<string, { type: string }>
+  properties: Record<string, { type: string; id?: string }>
 }
 interface FileUpload {
   id: string
@@ -48,6 +50,46 @@ export class NotionClient {
     }
   }
 
+  async searchSources(query = "", cursor?: string) {
+    const result = await this.request<{
+      results: Array<{
+        object: string
+        id: string
+        title?: Array<{ plain_text?: string; text?: { content: string } }>
+        parent?: { database_id?: string }
+      }>
+      has_more: boolean
+      next_cursor: string | null
+    }>("search", "POST", {
+      filter: { property: "object", value: "data_source" },
+      page_size: 50,
+      ...(query ? { query } : {}),
+      ...(cursor ? { start_cursor: cursor } : {}),
+    })
+    return {
+      items: result.results
+        .filter((item) => item.object === "data_source")
+        .map((item) => ({
+          id: item.id,
+          title:
+            item.title?.map((t) => t.plain_text || t.text?.content || "").join("") || "Untitled",
+          databaseId: item.parent?.database_id || "",
+        })),
+      nextCursor: result.has_more ? result.next_cursor : null,
+    }
+  }
+
+  async properties(dataSourceId: string): Promise<NotionProperty[]> {
+    const source = await this.request<DataSource>(
+      `data_sources/${encodeURIComponent(dataSourceId)}`,
+    )
+    return Object.entries(source.properties || {}).map(([name, p]) => ({
+      id: p.id || name,
+      name,
+      type: p.type,
+    }))
+  }
+
   async titleProperty(dataSourceId: string): Promise<string> {
     const source = await this.request<DataSource>(
       `data_sources/${encodeURIComponent(dataSourceId)}`,
@@ -62,17 +104,27 @@ export class NotionClient {
   async save(
     dataSourceId: string,
     article: NotionArticle,
+    mapping: NotionMapping = {},
   ): Promise<{ url: string; warnings: string[] }> {
     if (!article.content.trim()) throw new Error("No article content is available to save.")
     if (article.content.length > 1_000_000)
       throw new Error("This article is too large to save to Notion.")
-    const title = await this.titleProperty(dataSourceId)
+    const properties = mappedProperties(await this.properties(dataSourceId), mapping, article)
     const blocks = articleBlocks(article)
     if (blocks.length > 2000)
       throw new Error("This article contains too many blocks to save to Notion.")
-    if (Buffer.byteLength(JSON.stringify(blocks)) > 450_000)
+    if (
+      Buffer.byteLength(
+        JSON.stringify({
+          parent: { type: "data_source_id", data_source_id: dataSourceId },
+          properties,
+          children: blocks,
+        }),
+      ) > 450_000
+    )
       throw new Error("This article exceeds Notion’s request size limit.")
     const warnings: string[] = []
+    if (mapping.aiSummary && !article.aiSummary?.trim()) warnings.push("NOTION_AI_SUMMARY_MISSING")
     const imageDeadline = Date.now() + 5 * 60_000
     const uploads = new Map<string, string>()
     for (const block of blocks) {
@@ -116,7 +168,7 @@ export class NotionClient {
     }
     const page = await this.request<{ id: string; url: string }>("pages", "POST", {
       parent: { type: "data_source_id", data_source_id: dataSourceId },
-      properties: { [title]: { title: richText(article.title || article.url).slice(0, 100) } },
+      properties,
       children: blocks.slice(0, 100),
     })
     if (!page.id || !page.url)

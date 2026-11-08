@@ -6,6 +6,11 @@ export interface NotionArticle {
   title: string
   url: string
   content: string
+  author?: string
+  publishedAt?: string
+  description?: string
+  aiSummary?: string
+  categories?: string[]
   feedTitle?: string
 }
 

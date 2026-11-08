@@ -9,13 +9,23 @@ Notion OAuth or the AI MCP connection.
 
 1. Create a Notion internal integration with read and insert content capabilities.
 2. Share the target database with that integration in Notion.
-3. Enter the integration token and target **data source ID** in Folo's Notion
-   integration settings. A database URL/ID is not a data source ID; obtain it from
-   Notion's database/data source information. For API context, see
-   <https://developers.notion.com/docs/upgrade-guide-2025-09-03>.
-4. Connect. Folo validates access and discovers the existing title property. It
-   does not create or modify database properties.
-5. Customize the article toolbar to add **Save to Notion**, then save an article.
+3. Enter the integration token in Folo's Notion integration settings and connect.
+4. Search the databases/data sources accessible to the integration and select a
+   target explicitly. Results are paginated; multiple sources are not selected
+   automatically. Empty results can mean the database has not been shared or
+   Notion's search index has not updated yet. A failed or cancelled selection
+   leaves the existing saved connection intact. Selection drafts expire after
+   ten minutes. API version: `2025-09-03`.
+5. Optionally open field mapping. Title is automatic; map URL to a URL property,
+   publication time to a writable Date property, and source, author, original
+   description, existing AI summary and categories to rich-text properties.
+   Created time and Last edited time are read-only and cannot be mapped.
+6. Customize the article toolbar to add **Save to Notion**, then save an article.
+
+Connected settings collapse credential controls; use **Edit connection** to change
+connections. **Refresh fields** reloads schema without losing unsaved mappings.
+Mappings use stable property IDs and validate type compatibility before writes.
+The integration never creates or modifies the remote database schema.
 
 The token is encrypted with Electron `safeStorage` in the desktop main process.
 It is never returned through IPC, included in exported integration settings, or
@@ -26,6 +36,13 @@ local encrypted credential; revoke the integration in Notion to revoke access.
 ## Saved content
 
 - Page title uses the data source's existing title property.
+- Optional mapped metadata skips absent values. Dates preserve the original instant
+  while serializing to UTC ISO 8601. Original descriptions become plain text;
+  categories are comma-separated text, not new select options.
+- AI summary is read only from the existing completed cache for the current
+  language and the actual exported body version. Missing cache produces a warning
+  and skips the field. Saving never generates a summary or invokes a paid AI API.
+- Oversized mapped content is rejected rather than silently truncated.
 - Original URL and feed/source name are retained at the top of the page body.
 - Text, headings, lists, quotes and images are converted to native Notion blocks.
   Inline styling and complex table/code formatting are flattened to text. Link
@@ -54,5 +71,5 @@ connection permissions, image imports, UI screenshots and interrupted workflows.
 
 Before upstream acceptance, maintainers should decide whether this desktop-only
 internal-integration approach fits Folo, or whether OAuth and a server-side
-export service are preferred. Database selection UI, custom field mappings,
-rich inline formatting and cross-platform support are not implemented here.
+export service are preferred. Rich inline formatting and web/mobile support remain outside this preview.
+Development login bridges and session-only credential fallbacks are not included.

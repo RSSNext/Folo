@@ -103,3 +103,113 @@ describe("partial exports", () => {
     expect(pageBody).toContain('"external":{"url":"https://example.com/image.jpg"}')
   })
 })
+
+it("writes selected property IDs and refuses stale mappings before any write", async () => {
+  const bodies: unknown[] = []
+  const client = new NotionClient("synthetic", async (_url, init) => {
+    if (init?.method === "POST") {
+      bodies.push(JSON.parse(String(init.body)))
+      return Response.json({ id: "page", url: "https://notion.so/page" })
+    }
+    return Response.json({
+      properties: {
+        RenamedTitle: { id: "t", type: "title" },
+        RenamedURL: { id: "u", type: "url" },
+      },
+    })
+  })
+  await client.save("source", article, { url: "u" })
+  expect(bodies[0]).toMatchObject({
+    properties: { u: { url: article.url }, t: { title: [{ text: { content: article.title } }] } },
+  })
+  await expect(client.save("source", article, { url: "missing" })).rejects.toThrow()
+  expect(bodies).toHaveLength(1)
+})
+
+it("searches data sources with pagination and preserves their parent database", async () => {
+  const client = new NotionClient("synthetic", async (_url, init) => {
+    expect(JSON.parse(String(init?.body))).toMatchObject({
+      filter: { property: "object", value: "data_source" },
+      query: "Notes",
+      start_cursor: "next",
+    })
+    return Response.json({
+      results: [
+        {
+          object: "data_source",
+          id: "source",
+          title: [{ plain_text: "Notes" }],
+          parent: { database_id: "db" },
+        },
+      ],
+      has_more: true,
+      next_cursor: "more",
+    })
+  })
+  expect(await client.searchSources("Notes", "next")).toEqual({
+    items: [{ id: "source", title: "Notes", databaseId: "db" }],
+    nextCursor: "more",
+  })
+})
+
+it("warns when mapped AI summary is absent without requesting generation", async () => {
+  const requests: string[] = []
+  const client = new NotionClient("synthetic", async (url, init) => {
+    requests.push(url)
+    return Response.json(
+      init?.method === "POST"
+        ? { id: "page", url: "https://notion.so/page" }
+        : { properties: { Title: { id: "t", type: "title" }, AI: { id: "a", type: "rich_text" } } },
+    )
+  })
+  const result = await client.save("source", article, { aiSummary: "a" })
+  expect(result.warnings).toContain("NOTION_AI_SUMMARY_MISSING")
+  expect(requests).toEqual([
+    "https://api.notion.com/v1/data_sources/source",
+    "https://api.notion.com/v1/pages",
+  ])
+})
+
+it("rejects combined UTF8 property payload before any remote writes", async () => {
+  let writes = 0
+  const client = new NotionClient("synthetic", async (_url, init) => {
+    if (init?.method === "POST") writes++
+    return Response.json({
+      properties: { Title: { id: "t", type: "title" }, AI: { id: "a", type: "rich_text" } },
+    })
+  })
+  await expect(
+    client.save("source", { ...article, aiSummary: "中".repeat(160000) }, { aiSummary: "a" }),
+  ).rejects.toThrow("request size")
+  expect(writes).toBe(0)
+})
+
+it("writes publication offsets as the same instant and omits absent dates", async () => {
+  const bodies: Array<{ properties: Record<string, unknown> }> = []
+  const client = new NotionClient("synthetic", async (_url, init) => {
+    if (init?.method === "POST") {
+      bodies.push(JSON.parse(String(init.body)))
+      return Response.json({ id: "page", url: "https://notion.so/page" })
+    }
+    return Response.json({
+      properties: {
+        Name: { id: "title", type: "title" },
+        Published: { id: "published", type: "date" },
+        Created: { id: "created", type: "created_time" },
+      },
+    })
+  })
+  await client.save(
+    "source",
+    { ...article, publishedAt: "2026-11-08T08:30:00+08:00" },
+    { publishedAt: "published" },
+  )
+  expect(bodies[0]?.properties.published).toEqual({ date: { start: "2026-11-08T00:30:00.000Z" } })
+  await client.save("source", article, { publishedAt: "published" })
+  expect(bodies[1]?.properties).not.toHaveProperty("published")
+  await expect(client.save("source", article, { publishedAt: "created" })).rejects.toThrow()
+  await expect(
+    client.save("source", { ...article, publishedAt: "invalid" }, { publishedAt: "published" }),
+  ).rejects.toThrow()
+  expect(bodies).toHaveLength(2)
+})

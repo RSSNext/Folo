@@ -7,7 +7,11 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 
 import { useRegisterIntegrationCommands } from "./integration"
 
-type RegisteredCommand = { id: string; run: (input: { entryId: string }) => Promise<void> }
+type RegisteredCommand = {
+  icon?: React.ReactNode
+  id: string
+  run: (input: { entryId: string }) => Promise<void>
+}
 const state = vi.hoisted(() => ({
   command: undefined as RegisteredCommand | undefined,
   configured: true,
@@ -114,6 +118,18 @@ describe("Notion save command", () => {
       )
     })
   })
+  it("renders a visible vector icon for the Notion menu command", async () => {
+    await act(async () => {
+      root.render(<span>{state.command?.icon}</span>)
+    })
+    const svg = host.querySelector("svg")!
+    expect(svg.getAttribute("width")).toBe("1em")
+    expect(svg.getAttribute("height")).toBe("1em")
+    expect(svg.getAttribute("viewBox")).toBe("0 0 24 24")
+    expect(svg.querySelector("path")?.getAttribute("d")?.length).toBeGreaterThan(100)
+    expect(svg.querySelector("path")?.getAttribute("fill")).toBe("currentColor")
+  })
+
   afterEach(async () => {
     await act(async () => {
       root.unmount()

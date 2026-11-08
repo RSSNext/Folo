@@ -18,3 +18,13 @@ export const getNotionPageUrl = (value: string): string | null => {
     return null
   }
 }
+
+/** Read only completed cached summaries for the exact exported body variant. */
+export const getNotionCachedSummary = (
+  entry: { readabilityContent?: string | null },
+  readabilityReady: boolean,
+  cached?: { summary: string; readabilitySummary: string | null },
+) =>
+  readabilityReady && !!entry.readabilityContent
+    ? cached?.readabilitySummary || undefined
+    : cached?.summary || undefined

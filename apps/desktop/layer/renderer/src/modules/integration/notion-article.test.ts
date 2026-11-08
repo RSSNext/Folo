@@ -46,3 +46,17 @@ describe("getNotionPageUrl", () => {
     }
   })
 })
+
+it("selects cached summary for the actual exported content fallback", async () => {
+  const { getNotionCachedSummary } = await import("./notion-article")
+  const cached = { summary: "Original", readabilitySummary: "Full" }
+  expect(getNotionCachedSummary({}, true, cached)).toBe("Original")
+  expect(getNotionCachedSummary({ readabilityContent: "Full body" }, true, cached)).toBe("Full")
+  expect(
+    getNotionCachedSummary({ readabilityContent: "Full body" }, true, {
+      summary: "Original",
+      readabilitySummary: null,
+    }),
+  ).toBeUndefined()
+  expect(getNotionCachedSummary({}, false, undefined)).toBeUndefined()
+})

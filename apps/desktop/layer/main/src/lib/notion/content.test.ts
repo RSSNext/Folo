@@ -73,3 +73,17 @@ describe("article source fidelity", () => {
     expect(JSON.stringify(blocks)).toContain("C | D")
   })
 })
+
+it("preserves HTML line breaks inside paragraphs and inline formatting", () => {
+  const blocks = articleBlocks({
+    title: "A",
+    url: "https://example.com/article",
+    content: "<p>First<br>Second<br/><strong>Third</strong></p>",
+  })
+  const paragraph = blocks[1]
+  expect(paragraph?.type).toBe("paragraph")
+  if (paragraph?.type !== "paragraph") throw new Error("Expected paragraph")
+  expect(paragraph.paragraph.rich_text.map((part) => part.text.content).join("")).toBe(
+    "First\nSecond\nThird",
+  )
+})
