@@ -12,6 +12,7 @@ type StoreData = {
   cliSyncEnabled?: boolean | null
   eagleContextMenuEnabled?: boolean | null
   minimizeToTray?: boolean | null
+  notionConnection?: { encryptedToken: string; dataSourceId: string }
   proxy?: string | null
   qbittorrentSID?: string | null
   user?: string | null
