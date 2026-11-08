@@ -34,6 +34,7 @@ import {
   getNotionCachedSummary,
   getNotionPageUrl,
 } from "~/modules/integration/notion-article"
+import { notionLocalClient } from "~/modules/integration/notion-local"
 import { useNotionStatus } from "~/modules/integration/notion-status"
 import { NotionIcon } from "~/modules/integration/NotionIcon"
 
@@ -94,7 +95,7 @@ const useRegisterNotionCommands = () => {
                 getReadabilityStatus()[entry.id] === ReadabilityStatus.SUCCESS,
                 cachedSummary,
               )
-              const result = await services.notion.saveArticle({
+              const result = await notionLocalClient.saveArticle({
                 title: entry.title || entry.url,
                 url: entry.url,
                 content,

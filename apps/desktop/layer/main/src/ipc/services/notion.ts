@@ -4,38 +4,41 @@ import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import { NotionClient } from "~/lib/notion/client"
 import type { NotionArticle } from "~/lib/notion/content"
 import type { NotionMapping } from "~/lib/notion/mapping"
-import { validateMapping } from "~/lib/notion/mapping"
+import { mappingTypes, validateMapping } from "~/lib/notion/mapping"
 import { store } from "~/lib/store"
 
-function encryptToken(token: string) {
-  try {
-    return safeStorage.encryptString(token).toString("base64")
-  } catch {
-    throw new Error("NOTION_STORAGE_UNAVAILABLE")
-  }
+export interface LocalNotionConnection {
+  token: string
+  dataSourceId: string
+  mapping?: NotionMapping
 }
-function decryptToken(encrypted: string) {
-  try {
-    return safeStorage.decryptString(Buffer.from(encrypted, "base64"))
-  } catch {
-    throw new Error("NOTION_STORAGE_UNAVAILABLE")
-  }
-}
-function requireSecureStorage() {
+
+function validateLocalConnection(value: LocalNotionConnection) {
   if (
-    !safeStorage.isEncryptionAvailable() ||
-    (process.platform === "linux" && safeStorage.getSelectedStorageBackend() === "basic_text")
-  ) {
-    throw new Error(
-      "NOTION_STORAGE_UNAVAILABLE: OS secure storage is unavailable. Unlock your system key store before connecting Notion.",
-    )
-  }
+    !value ||
+    typeof value !== "object" ||
+    typeof value.token !== "string" ||
+    !value.token.trim() ||
+    value.token.length > 1000 ||
+    typeof value.dataSourceId !== "string" ||
+    !value.dataSourceId ||
+    value.dataSourceId.length > 1000 ||
+    (value.mapping !== undefined &&
+      (!value.mapping ||
+        typeof value.mapping !== "object" ||
+        Object.entries(value.mapping).some(
+          ([key, id]) =>
+            !Object.hasOwn(mappingTypes, key) || typeof id !== "string" || !id || id.length > 1000,
+        )))
+  )
+    throw new Error("Invalid local connection")
 }
 
 export class NotionService extends IpcService {
   static override readonly groupName = "notion"
+  private local?: LocalNotionConnection
   private selection?: {
-    encryptedToken: string
+    token: string
     expires: number
     ids: Set<string>
     generation: number
@@ -44,31 +47,59 @@ export class NotionService extends IpcService {
   private generation = 0
   private readonly pending = new Set<string>()
 
+  private connection(): LocalNotionConnection | undefined {
+    if (this.local) return this.local
+    const legacy = store.get("notionConnection")
+    if (!legacy) return undefined
+    try {
+      return {
+        token: safeStorage.decryptString(Buffer.from(legacy.encryptedToken, "base64")),
+        dataSourceId: legacy.dataSourceId,
+        mapping: legacy.mapping,
+      }
+    } catch {
+      throw new Error("NOTION_LEGACY_RECONNECT")
+    }
+  }
+
+  @IpcMethod()
+  async hydrateLocalConnection(connection: LocalNotionConnection | null) {
+    if (connection !== null) validateLocalConnection(connection)
+    if (JSON.stringify(this.local || null) === JSON.stringify(connection)) return
+    this.local = connection ? structuredClone(connection) : undefined
+    await this.cancelSelection()
+  }
+
+  // Only called after the renderer has durably saved the local connection.
+  @IpcMethod()
+  async finalizeLocalConnection() {
+    if (!this.local) throw new Error("Connect Notion first")
+    store.delete("notionConnection")
+  }
+
   @IpcMethod()
   async getStatus() {
-    const connection = store.get("notionConnection")
+    const connection = this.local || store.get("notionConnection")
     return {
       configured: Boolean(connection),
       dataSourceId: connection?.dataSourceId || "",
+      legacy: !this.local && !!connection,
     }
   }
 
   @IpcMethod()
   async beginSelection(token?: string) {
-    requireSecureStorage()
-    const previous = store.get("notionConnection")
     if (token !== undefined && (typeof token !== "string" || !token.trim() || token.length > 1000))
       throw new Error("Invalid integration token")
-    if (!token && !previous) throw new Error("Connect Notion first")
+    if (!token && !this.connection()) throw new Error("Connect Notion first")
     const generation = ++this.generation
     this.selection = undefined
     if (this.expiryTimer) clearTimeout(this.expiryTimer)
-    const encryptedToken = token ? encryptToken(token.trim()) : previous!.encryptedToken
-    const value = decryptToken(encryptedToken)
+    const value = token?.trim() || this.connection()!.token
     const result = await new NotionClient(value, net.fetch).searchSources()
     if (generation !== this.generation) throw new Error("Selection cancelled")
     this.selection = {
-      encryptedToken,
+      token: value,
       expires: Date.now() + 600_000,
       ids: new Set(result.items.map((item) => item.id)),
       generation,
@@ -82,7 +113,6 @@ export class NotionService extends IpcService {
   }
 
   private requireSelection() {
-    requireSecureStorage()
     if (
       !this.selection ||
       this.selection.expires < Date.now() ||
@@ -103,7 +133,7 @@ export class NotionService extends IpcService {
     )
       throw new Error("Invalid search")
     const selection = this.requireSelection()
-    const token = decryptToken(selection.encryptedToken)
+    const token = selection.token
     const result = await new NotionClient(token, net.fetch).searchSources(query, cursor)
     if (this.requireSelection() !== selection) throw new Error("Selection changed")
     for (const item of result.items) selection.ids.add(item.id)
@@ -114,18 +144,19 @@ export class NotionService extends IpcService {
   async selectSource(id: string) {
     const selection = this.requireSelection()
     if (!selection.ids.has(id)) throw new Error("Select a listed data source")
-    const token = decryptToken(selection.encryptedToken)
+    const token = selection.token
     await new NotionClient(token, net.fetch).titleProperty(id)
     if (this.requireSelection() !== selection) throw new Error("Selection changed")
-    const previous = store.get("notionConnection")
-    store.set("notionConnection", {
-      encryptedToken: selection.encryptedToken,
+    const previous = this.local || store.get("notionConnection")
+    this.local = {
+      token: selection.token,
       dataSourceId: id,
       ...(previous?.dataSourceId === id ? { mapping: previous.mapping } : {}),
-    })
+    }
     this.selection = undefined
     if (this.expiryTimer) clearTimeout(this.expiryTimer)
     this.generation++
+    return structuredClone(this.local)
   }
 
   @IpcMethod()
@@ -136,41 +167,11 @@ export class NotionService extends IpcService {
   }
 
   @IpcMethod()
-  async configure(input: { token: string; dataSourceId: string }): Promise<void> {
-    requireSecureStorage()
-    if (
-      typeof input?.token !== "string" ||
-      !input.token.trim() ||
-      input.token.length > 1000 ||
-      typeof input?.dataSourceId !== "string" ||
-      !/^[\da-f]{8}-?[\da-f]{4}-?[\da-f]{4}-?[\da-f]{4}-?[\da-f]{12}$/i.test(
-        input.dataSourceId.trim(),
-      )
-    ) {
-      throw new Error("Enter a Notion internal integration token and a valid data source ID.")
-    }
-    const generation = ++this.generation
-    const token = input.token.trim()
-    const dataSourceId = input.dataSourceId.trim()
-    await new NotionClient(token, net.fetch).titleProperty(dataSourceId)
-    if (generation !== this.generation) throw new Error("Notion connection was cancelled.")
-    const previous = store.get("notionConnection")
-    store.set("notionConnection", {
-      ...(previous?.dataSourceId === dataSourceId ? { mapping: previous.mapping } : {}),
-      encryptedToken: encryptToken(token),
-      dataSourceId,
-    })
-    this.selection = undefined
-    if (this.expiryTimer) clearTimeout(this.expiryTimer)
-  }
-
-  @IpcMethod()
   async getMapping() {
-    requireSecureStorage()
-    const connection = store.get("notionConnection")
+    const connection = this.connection()
     if (!connection) throw new Error("Connect Notion first")
     const generation = this.generation
-    const token = decryptToken(connection.encryptedToken)
+    const token = connection.token
     const properties = await new NotionClient(token, net.fetch).properties(connection.dataSourceId)
     if (generation !== this.generation) throw new Error("Connection changed")
     return { properties, mapping: connection.mapping || {} }
@@ -181,9 +182,15 @@ export class NotionService extends IpcService {
     const generation = this.generation
     const { properties } = await this.getMapping()
     validateMapping(properties, mapping)
-    const connection = store.get("notionConnection")
+    const connection = this.connection()
     if (!connection || generation !== this.generation) throw new Error("Connection changed")
-    store.set("notionConnection", { ...connection, mapping })
+    if (!this.local) {
+      const legacy = store.get("notionConnection")!
+      store.set("notionConnection", { ...legacy, mapping })
+      return null
+    }
+    this.local = { ...connection, mapping }
+    return structuredClone(this.local)
   }
 
   @IpcMethod()
@@ -191,12 +198,12 @@ export class NotionService extends IpcService {
     if (this.expiryTimer) clearTimeout(this.expiryTimer)
     this.generation++
     this.selection = undefined
+    this.local = undefined
     store.delete("notionConnection")
   }
 
   @IpcMethod()
   async saveArticle(article: NotionArticle): Promise<{ url: string; warnings: string[] }> {
-    requireSecureStorage()
     if (
       typeof article?.title !== "string" ||
       typeof article?.url !== "string" ||
@@ -224,7 +231,7 @@ export class NotionService extends IpcService {
     }
     if (!["http:", "https:"].includes(url.protocol) || url.username || url.password)
       throw new Error("The article has no valid URL.")
-    const connection = store.get("notionConnection")
+    const connection = this.connection()
     if (!connection) throw new Error("Connect Notion in Settings → Integrations first.")
     if (this.pending.has(article.url))
       throw new Error("This article is already being saved to Notion.")
@@ -232,7 +239,7 @@ export class NotionService extends IpcService {
     try {
       let token: string
       try {
-        token = decryptToken(connection.encryptedToken)
+        token = connection.token
       } catch {
         throw new Error(
           "Notion credentials could not be unlocked. Reconnect Notion in Settings → Integrations.",

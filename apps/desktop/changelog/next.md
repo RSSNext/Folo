@@ -2,7 +2,7 @@
 
 ## Shiny new things
 
-- Add a desktop-only Save to Notion preview with locally encrypted credentials, article export and image import.
+- Add a desktop-only Save to Notion preview with device-local unencrypted credentials (not account-synced), article export and image import.
 
 ## Improvements
 
@@ -17,6 +17,6 @@ Special thanks to volunteer contributors @ for their valuable contributions
 - Desktop Notion integration: search accessible databases/data sources, select a
   target, and map article metadata including publication dates and existing cached
   AI summaries. Connected settings collapse credential inputs and support safe
-  field refresh. Credentials require OS secure storage; no plaintext or
-  development session fallback is included. Production key-store compatibility
-  remains subject to platform smoke testing.
+  field refresh. Credentials persist unencrypted on this device only, outside account sync and
+  settings exports. Existing encrypted connections remain compatible until
+  explicitly replaced. Production persistence/migration still needs smoke testing.

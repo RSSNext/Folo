@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { ipcServices } from "~/lib/client"
+import { notionLocalClient } from "~/modules/integration/notion-local"
 import { notionStatusQueryKey, useNotionStatus } from "~/modules/integration/notion-status"
 
 export const NotionSettings = () => {
@@ -14,7 +14,7 @@ export const NotionSettings = () => {
   const status = useNotionStatus()
   useEffect(
     () => () => {
-      void ipcServices?.notion.cancelSelection().catch(() => {})
+      void notionLocalClient.cancelSelection().catch(() => {})
     },
     [],
   )
@@ -31,21 +31,21 @@ export const NotionSettings = () => {
   const [appliedQuery, setAppliedQuery] = useState("")
   const [cursor, setCursor] = useState<string | null>(null)
   const picker = async (action: "search" | "more" | "select" | "cancel") => {
-    if (pendingRef.current || !ipcServices) return
+    if (pendingRef.current) return
     pendingRef.current = true
     setBusy(true)
     try {
       if (action === "select") {
-        await ipcServices.notion.selectSource(dataSourceId)
+        await notionLocalClient.selectSource(dataSourceId)
         setEditing(false)
         setSources(null)
         setProperties(null)
         await queryClient.invalidateQueries({ queryKey: notionStatusQueryKey })
       } else if (action === "cancel") {
-        await ipcServices.notion.cancelSelection()
+        await notionLocalClient.cancelSelection()
         setSources(null)
       } else {
-        const result = await ipcServices.notion.searchSources(
+        const result = await notionLocalClient.searchSources(
           action === "more" ? appliedQuery : query,
           action === "more" ? cursor || undefined : undefined,
         )
@@ -84,15 +84,15 @@ export const NotionSettings = () => {
     >
   >({})
   const mappingAction = async (save: boolean, refresh = false) => {
-    if (pendingRef.current || !ipcServices) return
+    if (pendingRef.current) return
     pendingRef.current = true
     setBusy(true)
     try {
       if (save) {
-        await ipcServices.notion.setMapping(mapping)
+        await notionLocalClient.setMapping(mapping)
         toast.success(t("integration.notion.mapping_saved"))
       } else {
-        const result = await ipcServices.notion.getMapping()
+        const result = await notionLocalClient.getMapping()
         setProperties(result.properties)
         if (!refresh) setMapping(result.mapping)
       }
@@ -111,15 +111,13 @@ export const NotionSettings = () => {
     pendingRef.current = true
     setBusy(true)
     try {
-      const services = ipcServices
-      if (!services) throw new Error("Desktop integration unavailable")
       if (disconnect) {
-        await services.notion.disconnect()
+        await notionLocalClient.disconnect()
       } else {
         setSources(null)
         setCursor(null)
         setDataSourceId("")
-        const result = await services.notion.beginSelection(token.trim() || undefined)
+        const result = await notionLocalClient.beginSelection(token.trim() || undefined)
         setSources(result.items)
         setCursor(result.nextCursor)
         setQuery("")
@@ -138,7 +136,7 @@ export const NotionSettings = () => {
       const message = error instanceof Error ? error.message : ""
       toast.error(
         t(
-          message.includes("NOTION_STORAGE_UNAVAILABLE")
+          message.includes("NOTION_LOCAL_STORAGE")
             ? "integration.notion.storage_unavailable"
             : "integration.notion.search_failed",
         ),
@@ -153,6 +151,11 @@ export const NotionSettings = () => {
   return (
     <div className="space-y-4 py-4">
       <p className="text-sm text-text-secondary">{t("integration.notion.description")}</p>
+      {status.data?.legacy && (
+        <p role="status" className="text-sm text-text-secondary">
+          {t("integration.notion.legacy_connection")}
+        </p>
+      )}
       <a
         href="https://www.notion.so/profile/integrations"
         target="_blank"
@@ -375,7 +378,7 @@ export const NotionSettings = () => {
               {t("integration.notion.connect")}
             </Button>
           )}
-          {status.data?.configured && (
+          {(status.data?.configured || status.isError) && (
             <Button
               type="button"
               variant="outline"

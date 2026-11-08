@@ -1,63 +1,54 @@
-# Notion integration verification
+# Notion desktop preview: verification notes
 
-Automated tests use synthetic articles and tokens, mocked OS storage, and mocked
-or loopback HTTP transports. They do not write to a real Notion workspace.
+Tests use synthetic content and token strings, not a real Notion workspace.
 
-## Automated coverage
+## Current local credential design
 
-- Search filtering, pagination, explicit data-source selection, cancellation and
-  expiry; an existing connection remains intact until replacement succeeds.
-- OS-encrypted credential persistence, refusal of unavailable/insecure storage,
-  transient renderer inputs, and sanitized errors.
-- Stable property-ID mapping, compatible types, duplicate-target rejection,
-  schema refresh that preserves unsaved choices, and existing mapping compatibility.
-- Publication timestamps retain the same instant when normalized to UTC;
-  missing dates are omitted and read-only timestamp properties are rejected.
-- Existing AI summaries are read from the current language and exported body
-  variant's cache. Missing summaries are not generated or substituted.
-- Article conversion, image import/fallback, request limits, partial exports,
-  duplicate in-flight actions, and safe saved-page links.
-- Settings connection/collapse/edit flows and the shared Notion SVG icon.
+New connections persist unencrypted in device-local `localStorage` at
+`follow:integration:notion`. The key is separate from account-synced settings and
+exports. API requests remain in the main process. Automated tests cover successful
+selection persistence and restart hydration, draft cancellation, query status
+without secrets, local-write failure rollback, disconnect, and namespace cleanup.
+Main-process tests cover legacy encrypted compatibility, explicit migration,
+credential validation, schema mapping, dates, limits, and missing AI summaries.
 
-Run the repository's required typecheck, format, lint and test gates. Focused
-commands for this feature are:
+The old encrypted configuration remains intact until replacement local storage
+succeeds. Legacy mappings can be edited without exporting the legacy token.
+New connections do not require an OS key store; this is an explicit unencrypted
+storage choice, not a secure-store fallback. Software or people with profile
+access can read it. No token belongs in PR logs or screenshots.
+
+## Verification boundaries
+
+Legacy encrypted connections still depend on OS secure storage. Mock tests do
+not validate actual Keychain behavior. Local development testing reported by the
+user is not production-packaged validation. Automated tests do not establish
+successful real workspace writes or full Electron UI behavior.
+
+Focused commands (from the repository root):
 
 ```sh
-pnpm --filter @follow/electron-main exec vitest run src/lib/notion src/ipc/services/notion.test.ts
-pnpm --filter @follow/web exec vitest run src/modules/settings/tabs/integration/NotionSettings.test.tsx src/modules/integration/notion-article.test.ts src/modules/command/commands/notion.test.tsx
+pnpm --dir apps/desktop/layer/main exec tsc
+pnpm --dir apps/desktop/layer/renderer exec tsc --noEmit
+pnpm --dir apps/desktop/layer/main exec vitest run
+pnpm --dir apps/desktop/layer/renderer exec vitest run src/modules/integration/notion-local.test.ts src/modules/settings/tabs/integration/NotionSettings.test.tsx src/modules/command/commands/notion.test.tsx src/modules/integration/notion-article.test.ts
 ```
 
-The loopback client integration tests use real `fetch` with an injected local
-transport, not a real Notion service. Component tests use happy-dom; they are not
-full Electron UI tests. Passing these tests does not prove OS key-store access
-or successful credential persistence in a packaged application.
+Local persistence tests recreate the client against the same synthetic storage;
+they are not an actual Electron restart test.
 
-## Manual release checklist
+Before release, use a dedicated empty database and restricted test integration.
+Enter the token locally, select the target, save synthetic content, relaunch and
+verify persistence. Check disconnect and sign-out remove the connection; verify
+another account never inherits the prior connection. Test legacy migration with
+both available and unavailable secure storage without logging credentials.
 
-Use a dedicated empty database and an internal integration restricted to that
-database, with read/insert capabilities. Enter credentials only in Folo. Never
-put them in a PR, issue, screenshot, recording, log, or chat.
+For mappings, include a writable Date property and confirm offset-bearing times
+preserve their instant. Creation/edit timestamps are read-only. Refresh schema
+must preserve unsaved selections. Test existing AI-cache summaries and missing
+language/body versions without invoking generation. Check public image imports,
+partial-write warnings and duplicate-page risk after uncertain network failures.
 
-- [ ] In a normal packaged desktop build with working secure storage, connect,
-      search and choose the test data source; confirm no credentials are shown
-      again after successful connection.
-- [ ] Map title, URL, source, author, publication date, description, existing AI
-      summary and category text to compatible properties. Verify an empty
-      optional value does not invent data.
-- [ ] Add a writable Date property in Notion, refresh fields, and verify the
-      existing unsaved mappings remain selected.
-- [ ] Explicitly save one synthetic article and verify properties, body and
-      images. A missing cached AI summary should warn without generating one.
-- [ ] Verify the date displays the correct instant in the workspace timezone.
-- [ ] Relaunch and confirm the encrypted credential can be unlocked; verify
-      disconnect removes the local connection, not remote pages.
-- [ ] Test a revoked integration, inaccessible data source, renamed/removed
-      property, image import failure and interrupted export. If a page was
-      partly saved or the response was lost, inspect Notion before retrying.
-- [ ] Capture screenshots and a short demo using synthetic data only. Exclude
-      tokens, private feeds, personal workspace names and account details.
-
-Do not disable OS protections or introduce plaintext/session credential fallback
-to satisfy this checklist. Failure to access a secure key store is an explicit
-unsupported environment, not a successful persistence test. Web/mobile support,
-OAuth, and a server-side export service are outside this implementation.
+Run repository typecheck, lint, format and focused main/renderer suites before
+submission. Record actual results for the exact candidate commit separately;
+this document does not claim all release checks or real-account tests passed.

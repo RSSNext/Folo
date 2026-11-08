@@ -37,6 +37,9 @@ vi.mock("~/lib/client", () => ({
     integration: { setEagleContextMenuEnabled: async () => {} },
   },
 }))
+vi.mock("~/modules/integration/notion-local", () => ({
+  notionLocalClient: { saveArticle: state.save },
+}))
 vi.mock("~/modules/integration/notion-status", () => ({
   useNotionStatus: () => ({ data: { configured: state.configured } }),
 }))

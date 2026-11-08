@@ -27,11 +27,25 @@ connections. **Refresh fields** reloads schema without losing unsaved mappings.
 Mappings use stable property IDs and validate type compatibility before writes.
 The integration never creates or modifies the remote database schema.
 
-The token is encrypted with Electron `safeStorage` in the desktop main process.
-It is never returned through IPC, included in exported integration settings, or
-stored in browser localStorage. If secure OS storage is unavailable (including
-Linux's `basic_text` fallback), connection is refused. Disconnect removes the
-local encrypted credential; revoke the integration in Notion to revoke access.
+The token and target/mapping are saved **unencrypted** in this device's
+`localStorage`, under the dedicated `follow:integration:notion` key. They are not
+part of the integration settings atom, account synchronization, or settings
+exports. Notion API requests still run in the Electron main process. Status and
+query caches do not contain the token. This is local persistence, not a password
+vault: anyone or software able to access the application profile can read the
+credential. Restrict the Notion integration to the minimum necessary databases.
+
+Only a completed target selection is persisted; cancelling selection leaves the
+old connection untouched. Disconnect, sign-out and account-data reset remove the
+local credential and clear the main-process copy. Disconnect does not revoke the
+Notion integration or delete saved pages; revoke access in Notion when needed.
+
+Existing encrypted credentials remain compatible and are not silently discarded
+or exported. They continue to require the previous OS secure storage. Explicit
+reconnection migrates to local storage; the legacy ciphertext is removed only
+after the replacement is successfully stored. If the old OS key store cannot be
+unlocked, enter the integration token locally to reconnect. Never put tokens in
+issues, logs, screenshots, or chat.
 
 ## Saved content
 
@@ -66,7 +80,7 @@ check Notion before retrying to avoid duplicate pages.
 Unit tests use synthetic content and mocked network/OS storage. No personal
 Notion workspace, token, or live page is needed. Run the Electron main tests and
 renderer tests, typecheck, lint and format checks using the repository guidance.
-A real desktop/Notion smoke test is still required for OS key-store behavior,
+A real desktop/Notion smoke test is still required for local persistence and legacy migration,
 connection permissions, image imports, UI screenshots and interrupted workflows.
 
 Before upstream acceptance, maintainers should decide whether this desktop-only

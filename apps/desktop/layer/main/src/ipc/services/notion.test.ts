@@ -1,15 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, expect, it, vi } from "vitest"
 
 import { NotionService } from "./notion"
-
 const mocks = vi.hoisted(() => ({
   values: new Map<string, unknown>(),
-  encrypt: vi.fn(() => Buffer.from("encrypted")),
-  available: vi.fn(() => true),
-  backend: vi.fn(() => "keychain"),
+  decrypt: vi.fn(() => "legacy-secret"),
   properties: vi.fn(async () => [
     { id: "t", name: "Name", type: "title" },
-    { id: "u", name: "Link", type: "url" },
+    { id: "u", name: "URL", type: "url" },
   ]),
   search: vi.fn(async () => ({
     items: [{ id: "source", title: "Notes", databaseId: "db" }],
@@ -18,12 +15,7 @@ const mocks = vi.hoisted(() => ({
   title: vi.fn(async () => "Name"),
 }))
 vi.mock("electron", () => ({
-  safeStorage: {
-    isEncryptionAvailable: mocks.available,
-    getSelectedStorageBackend: mocks.backend,
-    encryptString: mocks.encrypt,
-    decryptString: () => "secret",
-  },
+  safeStorage: { decryptString: mocks.decrypt },
   net: { fetch: vi.fn() },
 }))
 vi.mock("electron-ipc-decorator", () => ({ IpcService: class {}, IpcMethod: () => () => {} }))
@@ -41,100 +33,114 @@ vi.mock("~/lib/notion/client", () => ({
     properties = mocks.properties
   },
 }))
-
-describe("NotionService credentials", () => {
-  beforeEach(() => {
-    mocks.values.clear()
-    vi.clearAllMocks()
-    mocks.available.mockReturnValue(true)
-    mocks.backend.mockReturnValue("keychain")
-  })
-  it("stores encrypted credentials only after validating the data source", async () => {
-    const service = new NotionService()
-    await service.configure({
-      token: "secret",
-      dataSourceId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-    })
-    expect(mocks.title).toHaveBeenCalled()
-    expect(mocks.encrypt).toHaveBeenCalledWith("secret")
-    expect(JSON.stringify([...mocks.values.values()])).not.toContain("secret")
-    expect(await service.getStatus()).toMatchObject({
-      configured: true,
-      dataSourceId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-    })
-    await service.disconnect()
-    expect(await service.getStatus()).toMatchObject({ configured: false, dataSourceId: "" })
-  })
-  it("refuses plaintext fallback when the OS key store is unavailable", async () => {
-    mocks.available.mockReturnValue(false)
-    await expect(
-      new NotionService().configure({
-        token: "secret",
-        dataSourceId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-      }),
-    ).rejects.toThrow("secure storage")
-    expect(mocks.values.size).toBe(0)
-  })
-})
-
-it("does not restore a connection after disconnect during validation", async () => {
-  mocks.available.mockReturnValue(true)
+beforeEach(() => {
   mocks.values.clear()
-  let resolve: (value: string) => void = () => {}
-  mocks.title.mockImplementationOnce(
-    () =>
-      new Promise<string>((done) => {
-        resolve = done
-      }),
-  )
+  vi.clearAllMocks()
+  mocks.decrypt.mockReturnValue("legacy-secret")
+})
+const local = { token: "synthetic", dataSourceId: "source", mapping: { url: "u" } }
+it("hydrates only memory without secure storage and keeps status free of credentials", async () => {
   const service = new NotionService()
-  const configuring = service.configure({
-    token: "secret",
-    dataSourceId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  await service.hydrateLocalConnection(local)
+  expect(await service.getStatus()).toEqual({
+    configured: true,
+    dataSourceId: "source",
+    legacy: false,
   })
+  expect(mocks.values.size).toBe(0)
+  expect(mocks.decrypt).not.toHaveBeenCalled()
+  expect((await service.getMapping()).mapping).toEqual(local.mapping)
   await service.disconnect()
-  resolve("Name")
-  await expect(configuring).rejects.toThrow("cancelled")
   expect((await service.getStatus()).configured).toBe(false)
 })
-
-it("stores validated mappings without returning credentials and clears on disconnect", async () => {
+it("keeps old encrypted configuration until explicit local persistence acknowledgement", async () => {
+  const saved = { encryptedToken: "cipher", dataSourceId: "old" }
+  mocks.values.set("notionConnection", saved)
   const service = new NotionService()
-  await service.configure({ token: "secret", dataSourceId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee" })
-  await service.setMapping({ url: "u" })
-  expect(await service.getMapping()).toMatchObject({ mapping: { url: "u" } })
-  expect(JSON.stringify(await service.getMapping())).not.toContain("secret")
-  await expect(service.setMapping({ url: "t" })).rejects.toThrow()
-  await service.disconnect()
-  await expect(service.getMapping()).rejects.toThrow()
-})
-
-it("refuses picker use when secure storage is unavailable", async () => {
-  mocks.values.clear()
-  mocks.available.mockReturnValue(false)
-  const calls = mocks.search.mock.calls.length
-  await expect(new NotionService().beginSelection("synthetic")).rejects.toThrow(
-    "NOTION_STORAGE_UNAVAILABLE",
-  )
-  expect(mocks.search.mock.calls.length).toBe(calls)
+  expect((await service.getStatus()).legacy).toBe(true)
+  expect(mocks.decrypt).not.toHaveBeenCalled()
+  await service.beginSelection("synthetic")
+  const selected = await service.selectSource("source")
+  expect(selected).toEqual({ token: "synthetic", dataSourceId: "source" })
+  expect(mocks.values.get("notionConnection")).toEqual(saved)
+  await service.finalizeLocalConnection()
   expect(mocks.values.size).toBe(0)
-  mocks.available.mockReturnValue(true)
 })
-it("expires a draft without overwriting the saved connection", async () => {
+it("does not discard an unavailable legacy credential", async () => {
+  const saved = { encryptedToken: "cipher", dataSourceId: "old" }
+  mocks.values.set("notionConnection", saved)
+  mocks.decrypt.mockImplementationOnce(() => {
+    throw new Error("secret")
+  })
+  const service = new NotionService()
+  await expect(service.getMapping()).rejects.toThrow("NOTION_LEGACY_RECONNECT")
+  expect(mocks.values.get("notionConnection")).toEqual(saved)
+})
+it("preserves a selection across identical hydration and validates mappings", async () => {
+  const service = new NotionService()
+  await service.hydrateLocalConnection(local)
+  await service.beginSelection()
+  await service.hydrateLocalConnection({ ...local })
+  await service.selectSource("source")
+  expect(await service.setMapping({ url: "u" })).toEqual(local)
+  await expect(service.setMapping({ url: "t" })).rejects.toThrow()
+  expect(mocks.values.size).toBe(0)
+})
+it("rejects malformed local connection input without logging its content", async () => {
+  const service = new NotionService()
+  await expect(service.hydrateLocalConnection({ ...local, token: "" })).rejects.toThrow(
+    "Invalid local connection",
+  )
+  await expect(
+    service.hydrateLocalConnection({ ...local, mapping: { url: 3 } as never }),
+  ).rejects.toThrow("Invalid local connection")
+})
+it("expires and cancels drafts without overwriting previous storage", async () => {
   vi.useFakeTimers()
   try {
     const service = new NotionService()
     await service.beginSelection("synthetic")
     await vi.advanceTimersByTimeAsync(600001)
     await expect(service.selectSource("source")).rejects.toThrow()
+    await service.beginSelection("synthetic")
+    await service.cancelSelection()
+    await expect(service.selectSource("source")).rejects.toThrow()
+    expect(mocks.values.size).toBe(0)
   } finally {
     vi.useRealTimers()
   }
 })
+it("rejects invalid metadata at the IPC boundary", async () => {
+  const service = new NotionService()
+  const base = { title: "A", url: "https://example.com", content: "body" }
+  await expect(service.saveArticle({ ...base, publishedAt: "invalid" })).rejects.toThrow(
+    "Invalid article",
+  )
+  await expect(service.saveArticle({ ...base, aiSummary: "x".repeat(200001) })).rejects.toThrow(
+    "Invalid article",
+  )
+})
 
+it("clears hydrated runtime and legacy credentials on account disconnect", async () => {
+  mocks.values.set("notionConnection", { encryptedToken: "cipher", dataSourceId: "old" })
+  const service = new NotionService()
+  await service.hydrateLocalConnection(local)
+  await service.disconnect()
+  await service.hydrateLocalConnection(null)
+  expect(await service.getStatus()).toEqual({ configured: false, dataSourceId: "", legacy: false })
+  await expect(service.getMapping()).rejects.toThrow("Connect Notion first")
+})
+it("keeps legacy mapping changes encrypted until explicit reconnection", async () => {
+  const saved = { encryptedToken: "cipher", dataSourceId: "old" }
+  mocks.values.set("notionConnection", saved)
+  const service = new NotionService()
+  expect(await service.setMapping({ url: "u" })).toBeNull()
+  expect(mocks.values.get("notionConnection")).toEqual({ ...saved, mapping: { url: "u" } })
+  expect((await service.getStatus()).legacy).toBe(true)
+})
 it("does not revive a cancelled pending selection", async () => {
   let finish!: (value: {
-    items: Array<{ id: string; title: string; databaseId: string }>
+    items: { id: string; title: string; databaseId: string }[]
     nextCursor: null
   }) => void
   mocks.search.mockImplementationOnce(
@@ -145,44 +151,8 @@ it("does not revive a cancelled pending selection", async () => {
   )
   const service = new NotionService()
   const pending = service.beginSelection("synthetic")
-  await service.cancelSelection()
+  await service.disconnect()
   finish({ items: [], nextCursor: null })
   await expect(pending).rejects.toThrow("cancelled")
-  await expect(service.selectSource("source")).rejects.toThrow()
-})
-
-it("rejects invalid new metadata at the IPC boundary", async () => {
-  mocks.available.mockReturnValue(true)
-  const service = new NotionService()
-  const base = { title: "A", url: "https://example.com", content: "body" }
-  await expect(service.saveArticle({ ...base, publishedAt: "invalid" })).rejects.toThrow(
-    "Invalid article",
-  )
-  await expect(service.saveArticle({ ...base, aiSummary: "a".repeat(200001) })).rejects.toThrow(
-    "Invalid article",
-  )
-  await expect(service.saveArticle({ ...base, categories: ["x".repeat(2001)] })).rejects.toThrow(
-    "Invalid article",
-  )
-})
-
-it("persists only validated encrypted picker credentials and preserves the old connection on cancel", async () => {
-  mocks.available.mockReturnValue(true)
-  const previous = { encryptedToken: "old-cipher", dataSourceId: "old" }
-  mocks.values.set("notionConnection", previous)
-  const service = new NotionService()
-  await service.beginSelection("synthetic-picker-token")
-  expect(mocks.values.get("notionConnection")).toEqual(previous)
-  await service.cancelSelection()
-  expect(mocks.values.get("notionConnection")).toEqual(previous)
-  await service.beginSelection("synthetic-picker-token")
-  await service.selectSource("source")
-  expect(mocks.values.get("notionConnection")).toEqual({
-    encryptedToken: Buffer.from("encrypted").toString("base64"),
-    dataSourceId: "source",
-  })
-  expect(JSON.stringify(await service.getStatus())).not.toContain("token")
-  expect(JSON.stringify([...mocks.values.values()])).not.toContain("synthetic-picker-token")
-  await service.disconnect()
-  expect(mocks.values.has("notionConnection")).toBe(false)
+  expect((await service.getStatus()).configured).toBe(false)
 })

@@ -9,6 +9,7 @@ import { NotionSettings } from "./NotionSettings"
 
 const state = vi.hoisted(() => ({
   configured: false,
+  statusError: false,
   dataSourceId: "",
   configure: vi.fn<(...args: unknown[]) => Promise<unknown>>(),
   getMapping: vi.fn(async () => ({
@@ -26,23 +27,21 @@ const state = vi.hoisted(() => ({
   error: vi.fn(),
 }))
 
-vi.mock("~/lib/client", () => ({
-  ipcServices: {
-    notion: {
-      getStatus: async () => ({
-        configured: state.configured,
-        dataSourceId: state.dataSourceId,
-      }),
-      beginSelection: state.configure,
-      cancelSelection: async () => {},
-      selectSource: async (id: string) => {
-        state.configured = true
-        state.dataSourceId = id
-      },
-      getMapping: state.getMapping,
-      setMapping: state.setMapping,
-      disconnect: state.disconnect,
+vi.mock("~/modules/integration/notion-local", () => ({
+  notionLocalClient: {
+    getStatus: async () => {
+      if (state.statusError) throw new Error("NOTION_LOCAL_STORAGE_INVALID")
+      return { configured: state.configured, dataSourceId: state.dataSourceId }
     },
+    beginSelection: state.configure,
+    cancelSelection: async () => {},
+    selectSource: async (id: string) => {
+      state.configured = true
+      state.dataSourceId = id
+    },
+    getMapping: state.getMapping,
+    setMapping: state.setMapping,
+    disconnect: state.disconnect,
   },
 }))
 vi.mock("@follow/shared/constants", async (importOriginal) => ({
@@ -67,6 +66,7 @@ describe("NotionSettings", () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     state.configured = false
+    state.statusError = false
     state.dataSourceId = ""
     state.configure.mockResolvedValue({
       items: [{ id: "synthetic-source", title: "Notes", databaseId: "db" }],
@@ -137,6 +137,23 @@ describe("NotionSettings", () => {
     expect(state.setMapping).not.toHaveBeenCalled()
   })
 
+  it("offers explicit disconnect recovery when local credential status fails", async () => {
+    state.statusError = true
+    await act(async () => {
+      await client.refetchQueries()
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    })
+    const button = [...host.querySelectorAll("button")].find(
+      (b) => b.textContent === "integration.notion.disconnect",
+    )
+    expect(button).toBeDefined()
+    state.statusError = false
+    await act(async () => {
+      button!.click()
+    })
+    expect(state.disconnect).toHaveBeenCalledOnce()
+  })
+
   afterEach(async () => {
     await act(async () => {
       root.unmount()
@@ -199,7 +216,7 @@ describe("NotionSettings", () => {
     expect(state.disconnect).not.toHaveBeenCalled()
   })
 
-  it("connects and disconnects without persisting the token in browser storage or query cache", async () => {
+  it("connects and disconnects without retaining credentials in form state or query cache", async () => {
     const beforeStorage = JSON.stringify(localStorage)
     await fill(" synthetic-token ", " synthetic-source ")
     await submit()
