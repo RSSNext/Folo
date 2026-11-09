@@ -1,4 +1,3 @@
-import { impactAsync, ImpactFeedbackStyle } from "expo-haptics"
 import { atom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import * as React from "react"
@@ -15,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { Text } from "@/src/components/ui/typography/Text"
+import { impactAsync, ImpactFeedbackStyle } from "@/src/lib/haptics"
 
 interface Action {
   label: string
