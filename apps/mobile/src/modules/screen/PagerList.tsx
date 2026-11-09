@@ -1,7 +1,6 @@
 import type { FeedViewType } from "@follow/constants"
 import { useViewWithSubscription } from "@follow/store/subscription/hooks"
 import { EventBus } from "@follow/utils/event-bus"
-import * as Haptics from "expo-haptics"
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 import { StyleSheet, View } from "react-native"
@@ -12,6 +11,8 @@ import type {
 } from "react-native-pager-view"
 import PagerView from "react-native-pager-view"
 import Animated, { runOnJS, useEvent, useHandler } from "react-native-reanimated"
+
+import * as Haptics from "@/src/lib/haptics"
 
 import { selectTimeline, useSelectedFeed, useTimelineSelectorDragProgress } from "./atoms"
 import { PagerListVisibleContext, PagerListWillVisibleContext } from "./PagerListContext"

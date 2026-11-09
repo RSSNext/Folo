@@ -1,7 +1,7 @@
 import { composeEventHandlers } from "@follow/utils"
-import { Vibration } from "react-native"
 import * as ZeegoContextMenu from "zeego/context-menu"
 
+import { vibrate } from "@/src/lib/haptics"
 import { isAndroid } from "@/src/lib/platform"
 
 export * as DropdownMenu from "zeego/dropdown-menu"
@@ -9,7 +9,7 @@ export * as DropdownMenu from "zeego/dropdown-menu"
 const handleContextMenuOpenWithVibration = (open: boolean) => {
   if (!isAndroid) return
   if (open) {
-    Vibration.vibrate(10)
+    vibrate(10)
   }
 }
 

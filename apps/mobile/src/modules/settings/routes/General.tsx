@@ -11,6 +11,7 @@ import {
   useGeneralPaidSettingLocked,
   useGeneralSettingKey,
 } from "@/src/atoms/settings/general"
+import { setUISetting, useUISettingKey } from "@/src/atoms/settings/ui"
 import {
   NavigationBlurEffectHeaderView,
   SafeNavigationScrollView,
@@ -187,6 +188,7 @@ export const GeneralScreen: NavigationControllerView = () => {
   const markAsReadWhenScrolling = useGeneralSettingKey("scrollMarkUnread")
   const markAsReadWhenInView = useGeneralSettingKey("renderMarkUnread")
   const openLinksInExternalApp = useGeneralSettingKey("openLinksInExternalApp")
+  const hapticFeedback = useUISettingKey("hapticFeedback")
 
   return (
     <SafeNavigationScrollView
@@ -367,6 +369,24 @@ export const GeneralScreen: NavigationControllerView = () => {
             value={openLinksInExternalApp}
             onValueChange={(value) => {
               setGeneralSetting("openLinksInExternalApp", value)
+            }}
+          />
+        </GroupedInsetListCell>
+      </GroupedInsetListCard>
+
+      {/* Interaction */}
+
+      <GroupedInsetListSectionHeader label={t("general.interaction")} />
+      <GroupedInsetListCard>
+        <GroupedInsetListCell
+          label={t("general.haptic_feedback.label")}
+          description={t("general.haptic_feedback.description")}
+        >
+          <Switch
+            size="sm"
+            value={hapticFeedback}
+            onValueChange={(value) => {
+              setUISetting("hapticFeedback", value)
             }}
           />
         </GroupedInsetListCell>

@@ -25,6 +25,10 @@ export interface UISettings extends BaseUISettings {
    * Slide the navigation header away while scrolling down in the reading view.
    */
   autoHideReaderHeader: boolean
+  /**
+   * Play haptics (vibration on Android) for actions such as switching views and pulling to refresh.
+   */
+  hapticFeedback: boolean
 }
 export const createDefaultSettings = (): UISettings => ({
   ...defaultUISettings,
@@ -37,6 +41,7 @@ export const createDefaultSettings = (): UISettings => ({
   mobileContentFontSize: 16,
   readerTextColor: "default",
   autoHideReaderHeader: false,
+  hapticFeedback: true,
 })
 
 export const {

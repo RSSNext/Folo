@@ -1,8 +1,9 @@
-import * as Haptics from "expo-haptics"
 import { useCallback, useRef, useState } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
 import { useSharedValue } from "react-native-reanimated"
 import type { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes"
+
+import * as Haptics from "@/src/lib/haptics"
 
 import { PullUpIndicatorIos } from "./PullUpIndicatorIos"
 import type { UsePullUpToNextProps, UsePullUpToNextReturn } from "./types"
