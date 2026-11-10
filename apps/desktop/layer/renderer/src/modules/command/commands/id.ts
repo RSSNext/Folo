@@ -17,6 +17,7 @@ export const COMMAND_ID = {
     share: "entry:share",
   },
   integration: {
+    saveToNotion: "integration:save-to-notion",
     saveToEagle: "integration:save-to-eagle",
     saveToReadwise: "integration:save-to-readwise",
     saveToInstapaper: "integration:save-to-instapaper",
