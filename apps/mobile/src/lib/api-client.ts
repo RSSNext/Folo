@@ -107,7 +107,13 @@ const checkSessionAfterUnauthorized = createUnauthorizedSessionCheck({
 followClient.addResponseInterceptor(async (ctx) => {
   const { options, response } = ctx
   if (response.status === 401) {
-    const currentCookie = await getCookie()
+    let currentCookie: string
+    try {
+      currentCookie = await getCookie()
+    } catch {
+      // The stored session can't be read right now (a locked device), so it isn't known to be gone
+      return ctx.response
+    }
     const requestCookie = getRequestCookie(options.headers)
     const requestAuthRevision = getRequestAuthRevision(options as Record<string, unknown>)
     const currentAuthRevision = getAuthStateRevision()

@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, submits the Mac App Store and Microsoft Store builds for review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the desktop app.
+description: Full Folo desktop release from dev to the stores. Drafts the changelog, picks the build or ota mode, bumps the version and opens the release PR, verifies the packages GitHub Actions builds for the PR and every change in the release, merges the PR, watches the tag and store builds, gets the Windows installer signed, publishes the GitHub release, submits the Mac App Store and Microsoft Store builds for review, and announces the release on X with a promo video. Use when the user asks to release, ship or publish the desktop app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. a preferred mode or the OTA runtime]"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep

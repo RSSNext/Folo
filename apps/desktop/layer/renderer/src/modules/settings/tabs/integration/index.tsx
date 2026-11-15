@@ -26,11 +26,14 @@ import {
 import { ipcServices } from "~/lib/client"
 import { downloadJsonFile, selectJsonFile } from "~/lib/export"
 import { getFetchAdapter } from "~/modules/integration/fetch-adapter"
+import { useNotionStatus } from "~/modules/integration/notion-status"
+import { NotionIcon } from "~/modules/integration/NotionIcon"
 
 import { createSetting } from "../../helper/builder"
 import { useSetSettingCanSync } from "../../modal/hooks"
 import { SettingItemGroup, SettingSectionTitle } from "../../section"
 import { CustomIntegrationSection } from "./CustomIntegrationSection"
+import { NotionSettings } from "./NotionSettings"
 
 const { defineSettingItem, SettingBuilder } = createSetting(
   "integration",
@@ -39,7 +42,7 @@ const { defineSettingItem, SettingBuilder } = createSetting(
 )
 // Their save actions are only registered in the desktop app (Obsidian and Eagle work with local
 // apps and files), so on the web they could be set up but never used
-const desktopOnlyIntegrations = new Set(["obsidian", "outline", "eagle"])
+const desktopOnlyIntegrations = new Set(["obsidian", "outline", "eagle", "notion"])
 
 const ObsidianVaultPathPicker: FC = () => {
   const vaultPath = useIntegrationSettingValue().obsidianVaultPath
@@ -101,6 +104,7 @@ export const SettingIntegration = () => {
   const setSync = useSetSettingCanSync()
   const [searchQuery, setSearchQuery] = useState("")
   const settings = useIntegrationSettingValue()
+  const notionStatus = useNotionStatus()
 
   useEffect(() => {
     setSync(false)
@@ -115,6 +119,14 @@ export const SettingIntegration = () => {
       title: t("integration.categories.knowledge_management"),
       icon: <i className="i-mingcute-document-line" />,
       integrations: [
+        {
+          key: "notion",
+          title: "Notion",
+          icon: <NotionIcon />,
+          enabled: !!notionStatus.data?.configured,
+          configured: !!notionStatus.data?.configured,
+          settings: [],
+        },
         {
           key: "cubox",
           title: t("integration.cubox.title"),
@@ -388,7 +400,7 @@ export const SettingIntegration = () => {
     }
 
     return [knowledgeManagement, readingServices, mediaTools, downloadTools]
-  }, [t, settings])
+  }, [t, settings, notionStatus.data?.configured])
 
   const filteredIntegrations = useMemo(() => {
     const allIntegrations = integrationCategories
@@ -516,7 +528,11 @@ export const SettingIntegration = () => {
                     contentClassName="px-4"
                   >
                     <div className="pb-4">
-                      <SettingBuilder settings={integration.settings} />
+                      {integration.key === "notion" ? (
+                        <NotionSettings />
+                      ) : (
+                        <SettingBuilder settings={integration.settings} />
+                      )}
                     </div>
                   </CollapseCss>
                 ))}

@@ -10,6 +10,7 @@ import {
 } from "@follow/components/ui/platform-icon/icons.js"
 import { IN_ELECTRON } from "@follow/shared/constants"
 import { getEntry } from "@follow/store/entry/getter"
+import { entrySyncServices } from "@follow/store/entry/store"
 import type { EntryModel } from "@follow/store/entry/types"
 import { getFeedById } from "@follow/store/feed/getter"
 import { getSummary } from "@follow/store/summary/getters"
@@ -17,16 +18,25 @@ import { tracker } from "@follow/tracker"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import type { FetchError } from "ofetch"
 import { ofetch } from "ofetch"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { getReadabilityStatus, ReadabilityStatus } from "~/atoms/readability"
 import { getActionLanguage } from "~/atoms/settings/general"
 import { getIntegrationSettings, useIntegrationSettingKey } from "~/atoms/settings/integration"
 import { useRouteParams } from "~/hooks/biz/useRouteParams"
 import { ipcServices } from "~/lib/client"
 import { CustomIntegrationManager } from "~/modules/integration/custom-integration-manager"
 import { getEntryContentAsMarkdown } from "~/modules/integration/entry-content-markdown"
+import {
+  getNotionArticleContent,
+  getNotionCachedSummary,
+  getNotionPageUrl,
+} from "~/modules/integration/notion-article"
+import { notionLocalClient } from "~/modules/integration/notion-local"
+import { useNotionStatus } from "~/modules/integration/notion-status"
+import { NotionIcon } from "~/modules/integration/NotionIcon"
 
 import { useRegisterCommandEffect } from "../hooks/use-register-command"
 import { defineFollowCommand } from "../registry/command"
@@ -34,6 +44,7 @@ import type { Command, CommandCategory, FollowCommandId } from "../types"
 import { COMMAND_ID } from "./id"
 
 export const useRegisterIntegrationCommands = () => {
+  useRegisterNotionCommands()
   useRegisterEagleCommands()
   useRegisterReadwiseCommands()
   useRegisterInstapaperCommands()
@@ -47,6 +58,90 @@ export const useRegisterIntegrationCommands = () => {
 }
 
 const category: CommandCategory = "category.integration"
+const useRegisterNotionCommands = () => {
+  const { t } = useTranslation()
+  const status = useNotionStatus()
+  const pendingRef = useRef(new Set<string>())
+
+  useRegisterCommandEffect(
+    !IN_ELECTRON || !status.data?.configured
+      ? []
+      : defineFollowCommand({
+          id: COMMAND_ID.integration.saveToNotion,
+          label: t("entry_actions.save_to_notion"),
+          icon: <NotionIcon />,
+          category,
+          run: async ({ entryId }) => {
+            if (pendingRef.current.has(entryId)) return
+            pendingRef.current.add(entryId)
+            const toastId = toast.loading(t("entry_actions.saving_to_notion"))
+            try {
+              const services = ipcServices
+              if (!services) throw new Error("Desktop integration unavailable")
+              let entry = getEntry(entryId)
+              if (!entry?.content) {
+                await entrySyncServices.fetchEntryDetail(entryId)
+                entry = getEntry(entryId)
+              }
+              if (!entry?.url) throw new Error("Entry unavailable")
+              const content = getNotionArticleContent(
+                entry,
+                getReadabilityStatus()[entry.id] === ReadabilityStatus.SUCCESS,
+              )
+              if (!content.trim()) throw new Error("Entry content unavailable")
+              const cachedSummary = getSummary(entry.id, getActionLanguage())
+              const aiSummary = getNotionCachedSummary(
+                entry,
+                getReadabilityStatus()[entry.id] === ReadabilityStatus.SUCCESS,
+                cachedSummary,
+              )
+              const result = await notionLocalClient.saveArticle({
+                title: entry.title || entry.url,
+                url: entry.url,
+                content,
+                feedTitle: getFeedById(entry.feedId)?.title || "",
+                author: entry.author || undefined,
+                publishedAt:
+                  entry.publishedAt && Number.isFinite(new Date(entry.publishedAt).getTime())
+                    ? new Date(entry.publishedAt).toISOString()
+                    : undefined,
+                description: entry.description || undefined,
+                aiSummary: aiSummary || undefined,
+                categories: entry.categories || undefined,
+              })
+              const pageUrl = getNotionPageUrl(result.url)
+              const options = {
+                id: toastId,
+                action: pageUrl
+                  ? {
+                      label: t("entry_actions.view_saved_item"),
+                      onClick: () => {
+                        void services.app.openExternal(pageUrl)
+                      },
+                    }
+                  : undefined,
+              }
+              if (result.warnings.length) {
+                toast.warning(t("entry_actions.saved_to_notion_with_warnings"), {
+                  ...options,
+                  ...(result.warnings.includes("NOTION_AI_SUMMARY_MISSING")
+                    ? { description: t("integration.notion.ai_existing_only", { ns: "settings" }) }
+                    : {}),
+                })
+              } else {
+                toast.success(t("entry_actions.saved_to_notion"), options)
+              }
+            } catch {
+              toast.error(t("entry_actions.failed_to_save_to_notion"), { id: toastId })
+            } finally {
+              pendingRef.current.delete(entryId)
+            }
+          },
+        }),
+    { deps: [status.data?.configured] },
+  )
+}
+
 const useRegisterEagleCommands = () => {
   const { t } = useTranslation()
   const { view } = useRouteParams()
@@ -879,6 +974,11 @@ const useRegisterCustomIntegrationVisualCommands = () => {
   })
 }
 
+export type SaveToNotionCommand = Command<{
+  id: typeof COMMAND_ID.integration.saveToNotion
+  fn: (payload: { entryId: string }) => void
+}>
+
 export type SaveToEagleCommand = Command<{
   id: typeof COMMAND_ID.integration.saveToEagle
   fn: (payload: { entryId: string }) => void
@@ -930,6 +1030,7 @@ export type CustomIntegrationCommand = Command<{
 }>
 
 export type IntegrationCommand =
+  | SaveToNotionCommand
   | SaveToEagleCommand
   | SaveToReadwiseCommand
   | SaveToInstapaperCommand

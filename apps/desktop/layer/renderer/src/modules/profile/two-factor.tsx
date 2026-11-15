@@ -216,7 +216,7 @@ export function PasswordForm({
   )
 }
 
-export const TwoFactorForm = () => {
+export const TwoFactorForm = ({ onEnabled }: { onEnabled?: () => void }) => {
   const { t } = useTranslation("settings")
   const modal = useCurrentModal()
   const user = useWhoami()
@@ -239,6 +239,7 @@ export const TwoFactorForm = () => {
           toast.success(t("profile.two_factor.enabled"))
           modal.dismiss()
           userActions.updateWhoami({ twoFactorEnabled: true })
+          onEnabled?.()
         }}
       />
     </div>
@@ -302,7 +303,7 @@ export function TwoFactor() {
           onClick={() => {
             present({
               title: actionTitle,
-              content: TwoFactorForm,
+              content: () => <TwoFactorForm />,
             })
           }}
         >

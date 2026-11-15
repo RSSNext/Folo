@@ -1,8 +1,10 @@
 import { deleteDB } from "@follow/database/db"
+import { IN_ELECTRON } from "@follow/shared/constants"
 import { clearStorage, getStorageNS } from "@follow/utils/ns"
 
 import { getAuthSessionToken, setAuthSessionToken } from "~/lib/client-session"
 import { reloadAtAppRoot } from "~/lib/reload-at-app-root"
+import { notionLocalClient } from "~/modules/integration/notion-local"
 
 import { clearImageDimensionsDb } from "../image/db"
 
@@ -21,6 +23,7 @@ export const clearLocalDataOfAnotherAccount = async () => {
   await clearLocalPersistStoreData()
   const authSessionToken = getAuthSessionToken()
   // The query cache and every setting of the account before, as a sign-out clears them
+  if (IN_ELECTRON) await notionLocalClient.clearForAccountChange().catch(() => {})
   clearStorage()
   if (authSessionToken) setAuthSessionToken(authSessionToken)
   reloadAtAppRoot()

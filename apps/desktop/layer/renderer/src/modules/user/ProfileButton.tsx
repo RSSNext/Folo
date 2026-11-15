@@ -45,10 +45,15 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   const { t } = useTranslation()
   const aiEnabled = useFeature("ai")
   const [dropdown, setDropdown] = useState(false)
-  // The wallet only decides whether the menu lists the wallet entry, so it is not requested
-  // before the menu is opened. The cached answer keeps the entry stable afterwards.
-  const wallet = useWallet({ enabled: dropdown })
+  // The wallet only decides whether the menu lists the wallet entry, so it is not requested on
+  // launch but once the pointer or focus reaches the avatar. The answer is persisted, so later
+  // launches know it before the menu opens.
+  const [walletWanted, setWalletWanted] = useState(false)
+  const wallet = useWallet({ enabled: walletWanted || dropdown })
   const hasPowerToken = !!wallet.data?.[0]?.powerToken
+  // Decided when the menu opens: an answer that arrives while it is open would insert the entry
+  // above Profile and Preferences and move them under the pointer.
+  const [showWallet, setShowWallet] = useState(false)
 
   const navigate = useNavigate()
 
@@ -75,11 +80,18 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
   }
 
   return (
-    <DropdownMenu onOpenChange={setDropdown}>
+    <DropdownMenu
+      onOpenChange={(open) => {
+        setDropdown(open)
+        if (open) setShowWallet(hasPowerToken)
+      }}
+    >
       <DropdownMenuTrigger
         asChild
         className="!outline-none focus-visible:bg-theme-item-hover data-[state=open]:bg-transparent"
         data-testid="profile-menu-trigger"
+        onPointerEnter={() => setWalletWanted(true)}
+        onFocus={() => setWalletWanted(true)}
       >
         {props.animatedAvatar ? (
           <TransitionAvatar data-testid="profile-menu-trigger" stage={dropdown ? "zoom-in" : ""} />
@@ -151,7 +163,7 @@ export const ProfileButton: FC<ProfileButtonProps> = memo((props) => {
           </DropdownMenuItem>
         )}
 
-        {!isInMASReview && hasPowerToken && (
+        {!isInMASReview && showWallet && (
           <DropdownMenuItem
             className="pl-3"
             onClick={() => {

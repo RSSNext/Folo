@@ -8,6 +8,7 @@ import { DebugService } from "./services/debug"
 import { DockService } from "./services/dock"
 import { IntegrationService } from "./services/integration"
 import { MenuService } from "./services/menu"
+import { NotionService } from "./services/notion"
 import { ReaderService } from "./services/reader"
 import { SettingService } from "./services/setting"
 
@@ -22,6 +23,7 @@ const services = createServices([
   ReaderService,
   SettingService,
   IntegrationService,
+  NotionService,
 ])
 // Extract method types automatically from services
 export type IpcServices = MergeIpcService<typeof services>
