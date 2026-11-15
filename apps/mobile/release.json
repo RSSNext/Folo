@@ -1,5 +1,5 @@
 {
-  "version": "0.6.2",
+  "version": "0.6.3",
   "mode": "ota",
   "runtimeVersion": "0.6.1",
   "channel": "production"
