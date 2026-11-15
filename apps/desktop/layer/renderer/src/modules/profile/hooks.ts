@@ -1,5 +1,6 @@
 import { isMobile } from "@follow/components/hooks/useMobile.js"
-import { usePrefetchUser, useWhoami } from "@follow/store/user/hooks"
+import { whoami } from "@follow/store/user/getters"
+import { usePrefetchUser } from "@follow/store/user/hooks"
 import { capitalizeFirstLetter } from "@follow/utils/utils"
 import { createElement, lazy, useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -110,15 +111,16 @@ export function useTOTPModalWrapper<T extends { TOTPCode?: string }>(
 ) {
   const { present } = useModalStack()
   const { t } = useTranslation("settings")
-  const user = useWhoami()
   return useCallback(
     async (input: T) => {
       const presentTOTPModal = () => {
-        if (!user?.twoFactorEnabled) {
+        // Read the latest state: callers may hold a stale reference to this callback
+        // (e.g. inside an already opened modal) after 2FA has just been enabled.
+        if (!whoami()?.twoFactorEnabled) {
           toast.error(t("profile.two_factor.enable_notice"))
           present({
             title: t("profile.two_factor.enable"),
-            content: TwoFactorForm,
+            content: () => createElement(TwoFactorForm, { onEnabled: presentTOTPModal }),
           })
           return
         }
@@ -153,6 +155,6 @@ export function useTOTPModalWrapper<T extends { TOTPCode?: string }>(
         }
       }
     },
-    [callback, options?.force, present, t, user?.twoFactorEnabled],
+    [callback, options?.force, present, t],
   )
 }
