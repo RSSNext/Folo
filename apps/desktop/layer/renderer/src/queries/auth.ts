@@ -20,6 +20,7 @@ import { ipcServices } from "~/lib/client"
 import { clearAuthSessionToken, getAuthSessionToken } from "~/lib/client-session"
 import { defineQuery } from "~/lib/defineQuery"
 import { reloadAtAppRoot } from "~/lib/reload-at-app-root"
+import { notionLocalClient } from "~/modules/integration/notion-local"
 import { clearLocalPersistStoreData } from "~/store/utils/clear"
 
 const sessionCookieRefreshInterval = 1000 * 60 * 60 * 12
@@ -209,6 +210,8 @@ export const signOut = async () => {
     // clear local store data
     await clearLocalPersistStoreData()
 
+    // Clear local credentials and legacy main-process credentials before reload.
+    if (IN_ELECTRON) await notionLocalClient.clearForAccountChange().catch(() => {})
     // Clear local storage
     clearStorage()
     // Sign out

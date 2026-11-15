@@ -1,6 +1,6 @@
 ---
 name: release-promo
-description: Announcement kit for a Folo release - the X post with the highlights, its reply with the release links, a one-sentence quote line for the second account, and a 1080p promo video rendered from real app captures. The desktop and mobile release skills end with it; also use it when the user asks for promo material for a release.
+description: Announcement of a Folo release on X - the post with the highlights and a 1080p promo video rendered from real app captures, its reply with the release links, both from @folo_is, and a quote-post from @rss3_. The desktop and mobile release skills end with it; also use it when the user asks to announce a release or for promo material.
 argument-hint: "[releases, e.g. 'desktop 1.15.0 mobile 0.5.11'; defaults to the releases this session shipped]"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 ---
@@ -13,10 +13,14 @@ The kit has four parts:
 
 - **Post**: the announcement on X in the house format, with the video attached.
 - **Reply**: the release links, posted as the first reply to the post.
-- **Quote line**: one sentence the second (matrix) account adds when it quote-posts the announcement.
+- **Quote line**: one sentence the second (matrix) account, @rss3_, adds when it quote-posts the announcement.
 - **Video**: 20–30 seconds at 1920 × 1080, rendered from real app captures by `store-assets/scripts/release-video.ts`.
 
-Everything here is a draft for the user. Never post, schedule or upload anything to X or another account; the user publishes the kit.
+## Standing authorization
+
+Running this skill as the last step of a release skill, or because the user asked to announce a release, is the user's approval to publish the kit on X once it passes its checks (§6): the post with the video and the reply from @folo_is, then the quote-post from @rss3_.
+
+Nothing beyond that: no other accounts, no likes, follows, DMs, pins or scheduled posts, and no edits or deletions of any post; ask first for those. When the user asks only for drafts or promo material, deliver drafts (§7) and offer to publish them.
 
 ## Inputs
 
@@ -68,7 +72,7 @@ Highlights:
 - No links (they go in the reply), hashtags or mentions.
 - At most 280 by X's weighting, where CJK, emoji and math bold count twice; both posts above weigh 276. Shorten the highlights rather than drop parts of the format. Check every draft:
   ```bash
-  node .agents/skills/release-promo/scripts/x-post.mjs count post.txt reply.txt quote-en.txt quote-zh.txt
+  node .agents/skills/release-promo/scripts/x-post.mjs count post.txt reply.txt quote.txt
   ```
 
 ## 3. Reply
@@ -83,14 +87,10 @@ One line per release with the plain version, then the download link. Every linke
 
 ## 4. Quote line
 
-One sentence summing up the release, in English and in Simplified Chinese; the user picks. No version numbers, links, hashtags or emoji: the quoted post carries those.
+One sentence summing up the release, in English like every @rss3_ quote so far. No version numbers, links, hashtags or emoji: the quoted post carries those.
 
 ```text
 New Folo is out: your settings follow you to every device again, long reads get text-to-speech that holds up, and every screen now speaks Chinese, Japanese and French.
-```
-
-```text
-Folo 新版上线：设置重新跨设备同步，长文朗读更稳，界面完整支持简繁中文、日文和法文。
 ```
 
 ## 5. Video
@@ -135,12 +135,26 @@ ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt,r_frame_ra
 
 Expect `h264`, 1920 × 1080, `yuv420p`, `30/1` and the timeline's length; X takes the file as it is. The video has no sound. Rendering needs Playwright's Chromium (`pnpm exec playwright install chromium`), `ffmpeg`, and network access for the web fonts.
 
-## 6. Deliver
+## 6. Publish on X
+
+Before the first post:
+
+- Every linked release is published (§3), the video rendered without `PROBLEM` lines and you looked at every still, and each draft weighs at most 280.
+- X runs in the user's browser, signed in. The account switcher at the bottom of the left sidebar holds @folo_is (Folo) and @rss3_ (RSS3) next to the user's own account. Note which account is active, to switch back at the end. If either account is missing or signed out, don't post: deliver drafts (§7) and say why.
+
+Then one step at a time, checking each result before the next:
+
+1. Switch to @folo_is. In the home composer, attach the video through the composer's file input (the "Add photos or video" button opens a native file picker), type the post and wait until the upload reads "Ready". Check the text and the character counter, then Post.
+2. Open `x.com/folo_is` and find the new post; it can take several seconds to show up, so reload rather than post again. Open it, check the text and the video, and reply with the reply text from the same account.
+3. Switch to @rss3_. Open the Folo post, choose Repost > Quote, type the quote line and Post.
+4. Check `x.com/folo_is` (the post with its video, the reply under it) and `x.com/rss3_` (the quote) and keep the three URLs. Switch back to the account that was active before and close the tab.
+
+When a Post click's result is unclear, look at the profile before trying again: a duplicate is worse than a delay. When something went out wrong (a typo, the wrong account, a missing video), stop and tell the user; never edit or delete a post on your own. When a step fails, report what is already posted and deliver the rest as drafts.
+
+## 7. Report
 
 In one message:
 
-- the post, the reply and both quote lines, each in its own code block with its weighted length
+- the URLs of the post, the reply and the quote; for anything not posted, its text in a code block with its weighted length and how to publish it (video on the post, links as the first reply, quote-post from @rss3_)
 - the video and the contact sheet
-- how to publish: attach the video to the post, reply with the links, then quote-post from the second account with one of the quote lines
-
-Name anything left out and why, such as a highlight without a capture or a claim dropped because it was not verified.
+- anything left out and why, such as a highlight without a capture or a claim dropped because it was not verified

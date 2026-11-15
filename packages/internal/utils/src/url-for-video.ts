@@ -60,3 +60,34 @@ export const transformVideoUrl = ({
   }
   return null
 }
+
+// Players that entry bodies embed directly, and the query value that keeps each one paused
+const embedPlayers: { host: RegExp; path?: RegExp; autoplayOff: string }[] = [
+  // Bilibili starts playing unless autoplay is "false"
+  { host: /^player\.bilibili\.com$/, autoplayOff: "false" },
+  { host: /^(?:www\.)?bilibili\.com$/, path: /^\/blackboard\//, autoplayOff: "false" },
+  { host: /^(?:www\.)?youtube(?:-nocookie)?\.com$/, path: /^\/embed\//, autoplayOff: "0" },
+  { host: /^player\.vimeo\.com$/, autoplayOff: "0" },
+  { host: /^player\.twitch\.tv$/, autoplayOff: "false" },
+  { host: /^(?:www\.)?pornhub\.com$/, path: /^\/embed\//, autoplayOff: "0" },
+]
+
+/**
+ * Turns autoplay off in the src of a known video player iframe. Other URLs are returned as is.
+ */
+export const disableEmbedAutoPlay = (src: string): string => {
+  let url: URL
+  try {
+    url = new URL(src.startsWith("//") ? `https:${src}` : src)
+  } catch {
+    return src
+  }
+
+  const player = embedPlayers.find(
+    ({ host, path }) => host.test(url.hostname) && (!path || path.test(url.pathname)),
+  )
+  if (!player) return src
+
+  url.searchParams.set("autoplay", player.autoplayOff)
+  return url.toString()
+}

@@ -16,10 +16,12 @@ import {
   useRef,
   useState,
 } from "react"
+import { useEventCallback } from "usehooks-ts"
 
 import { useUISettingKey } from "~/atoms/settings/ui"
 import { MediaContainerWidthProvider } from "~/components/ui/media/MediaContainerWidthProvider"
 
+import { EntryColumnShortcutHandler } from "./EntryColumnShortcutHandler"
 import { EntryItemSkeleton } from "./EntryItemSkeleton"
 import { useScrollMarkReadEndPadding } from "./hooks/useScrollMarkReadEndPadding"
 import { EntryItem } from "./item"
@@ -28,24 +30,42 @@ import type { EntryListProps } from "./list"
 import { getInitialScrollOffset, shouldApplyScrollResetSignal } from "./scroll-reset"
 
 export const EntryColumnGrid: FC<EntryListProps> = (props) => {
-  const { entriesIds, feedId, hasNextPage, view, fetchNextPage } = props
+  const { entriesIds, feedId, hasNextPage, view, fetchNextPage, refetch } = props
 
   const isMobile = useMobile()
   const masonry = useUISettingKey("pictureViewMasonry") || isMobile
+  const scrollRef = useScrollViewElement()
+
+  // Masonic keeps the items around the viewport rendered, the neighbors of the current entry
+  // among them, so the next or previous entry can be brought into view from the DOM
+  const handleMasonryScrollTo = useEventCallback((index: number) => {
+    const entryId = entriesIds[index]
+    if (!entryId) return
+    scrollRef
+      ?.querySelector(`[data-entry-id="${CSS.escape(entryId)}"]`)
+      ?.scrollIntoView({ block: "nearest" })
+  })
 
   if (masonry && view === FeedViewType.Pictures) {
     return (
-      <PictureMasonry
-        key={feedId}
-        hasNextPage={hasNextPage}
-        endReached={fetchNextPage}
-        data={entriesIds}
-        Footer={props.Footer}
-        appliedResetScrollSignal={props.appliedResetScrollSignal}
-        onResetScrollSignalConsumed={props.onResetScrollSignalConsumed}
-        resetScrollSignal={props.resetScrollSignal}
-        suspendMarkRead={props.suspendMarkRead}
-      />
+      <>
+        <PictureMasonry
+          key={feedId}
+          hasNextPage={hasNextPage}
+          endReached={fetchNextPage}
+          data={entriesIds}
+          Footer={props.Footer}
+          appliedResetScrollSignal={props.appliedResetScrollSignal}
+          onResetScrollSignalConsumed={props.onResetScrollSignalConsumed}
+          resetScrollSignal={props.resetScrollSignal}
+          suspendMarkRead={props.suspendMarkRead}
+        />
+        <EntryColumnShortcutHandler
+          refetch={refetch}
+          data={entriesIds}
+          handleScrollTo={handleMasonryScrollTo}
+        />
+      </>
     )
   }
   return <VirtualGrid {...props} entriesIds={entriesIds} />
@@ -101,6 +121,7 @@ const VirtualGridImpl: FC<
     feedId,
     onRangeChange,
     fetchNextPage,
+    refetch,
     view,
     Footer,
     hasNextPage,
@@ -265,6 +286,11 @@ const VirtualGridImpl: FC<
     // in view, and the rows can stay the same, so nothing else would trigger the remote request.
   }, [fetchNextPage, hasNextPage, rows.length, virtualItems, syncType])
 
+  // The entries fill the rows from left to right, so the row of an entry follows from its index
+  const handleScrollTo = useEventCallback((index: number) => {
+    rowVirtualizer.scrollToIndex(Math.floor(index / columns.length))
+  })
+
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -340,6 +366,12 @@ const VirtualGridImpl: FC<
           </Fragment>
         )
       })}
+
+      <EntryColumnShortcutHandler
+        refetch={refetch}
+        data={entriesIds}
+        handleScrollTo={handleScrollTo}
+      />
     </div>
   )
 }

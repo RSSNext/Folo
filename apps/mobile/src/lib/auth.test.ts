@@ -10,9 +10,15 @@ const mocks = vi.hoisted(() => {
       }),
     ],
   ])
+  class SecureStoreLockedError extends Error {}
   return {
     secureStore,
-    expoStorage: null as { setItem: (key: string, value: string) => unknown } | null,
+    SecureStoreLockedError,
+    readError: null as Error | null,
+    expoStorage: null as {
+      getItem: (key: string) => string | null
+      setItem: (key: string, value: string) => unknown
+    } | null,
     authSignOut: vi.fn(async () => {}),
     invalidateQueries: vi.fn(async () => {}),
     resetQueries: vi.fn(async () => {}),
@@ -22,7 +28,7 @@ const mocks = vi.hoisted(() => {
 })
 
 vi.mock("@better-auth/expo/client", () => ({
-  expoClient: (options: { storage: { setItem: (key: string, value: string) => unknown } }) => {
+  expoClient: (options: { storage: NonNullable<typeof mocks.expoStorage> }) => {
     mocks.expoStorage = options.storage
     return { id: "expo" }
   },
@@ -67,8 +73,12 @@ vi.mock("./query-client", () => ({
 }))
 vi.mock("./reload-app", () => ({ reloadApp: mocks.reloadApp }))
 vi.mock("./secure-store", () => ({
+  SecureStoreLockedError: mocks.SecureStoreLockedError,
   safeSecureStore: {
-    getItem: (key: string) => mocks.secureStore.get(key) ?? null,
+    getItem: (key: string) => {
+      if (mocks.readError) throw mocks.readError
+      return mocks.secureStore.get(key) ?? null
+    },
     setItem: (key: string, value: string) => void mocks.secureStore.set(key, value),
     removeItem: (key: string) => void mocks.secureStore.delete(key),
     removeItemAsync: async (key: string) => void mocks.secureStore.delete(key),
@@ -131,5 +141,27 @@ describe("signOut", () => {
     mocks.resetQueries.mockClear()
     await storeSessionCookie("next-session-token")
     expect(mocks.resetQueries).toHaveBeenCalledWith({ queryKey: ["entries"] })
+  })
+})
+
+describe("auth cookie storage", () => {
+  beforeEach(async () => {
+    mocks.readError = null
+    await storeSessionCookie("session-token")
+  })
+
+  it("fails the read while the keychain is locked instead of reporting no session", () => {
+    mocks.readError = new mocks.SecureStoreLockedError("locked")
+
+    expect(() => mocks.expoStorage!.getItem(cookieKey)).toThrow(mocks.SecureStoreLockedError)
+
+    mocks.readError = null
+    expect(mocks.expoStorage!.getItem(cookieKey)).toContain("session-token")
+  })
+
+  it("reports no session for other read errors", () => {
+    mocks.readError = new Error("Invalid key")
+
+    expect(mocks.expoStorage!.getItem(cookieKey)).toBeNull()
   })
 })

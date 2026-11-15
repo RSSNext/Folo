@@ -3,11 +3,13 @@ import { Checkbox } from "@follow/components/ui/checkbox/index.jsx"
 import { LazyKateX } from "@follow/components/ui/katex/lazy.js"
 import type { SpotlightRule } from "@follow/shared/spotlight"
 import { applySpotlightToHast, parseHtml as parseHtmlGeneral } from "@follow/utils/html"
+import { disableEmbedAutoPlay } from "@follow/utils/url-for-video"
 import type { Element, ElementContent, Root } from "hast"
 import type { Components } from "hast-util-to-jsx-runtime"
 import { createElement } from "react"
 import { renderToString } from "react-dom/server"
 
+import { useGeneralSettingKey } from "~/atoms/settings/general"
 import { ShadowDOM } from "~/components/common/ShadowDOM"
 import { ShikiHighLighter } from "~/components/ui/code-highlighter"
 import { MarkdownBlockImage, MarkdownLink, MarkdownP } from "~/components/ui/markdown/renderers"
@@ -165,35 +167,7 @@ export const parseHtml = (
         }
         return createElement("input", props)
       },
-      iframe: ({ node, ...props }) => {
-        const { width, height, src, referrerPolicy, ...rest } = props
-
-        // Apply security sandbox attributes and responsive styling
-        return createElement("iframe", {
-          ...rest,
-          src,
-          width: width || "100%",
-          height: height || "315",
-          className: "max-w-full rounded",
-          sandbox: "allow-scripts allow-same-origin allow-popups allow-forms",
-          allowFullScreen: true,
-          loading: "lazy",
-          // Avoid YouTube Error 153 https://developers.google.com/youtube/terms/required-minimum-functionality#embedded-player-api-client-identity
-          ...(typeof src === "string" &&
-            youtubeEmbedRegex.test(src) && {
-              referrerPolicy:
-                !referrerPolicy ||
-                referrerPolicy === "no-referrer" ||
-                referrerPolicy === "same-origin"
-                  ? "strict-origin-when-cross-origin"
-                  : referrerPolicy,
-            }),
-          style: {
-            aspectRatio: width && height ? `${width} / ${height}` : "16 / 9",
-            ...rest.style,
-          },
-        })
-      },
+      iframe: Iframe,
       pre: ({ node, ...props }) => {
         if (!props.children) return null
 
@@ -267,6 +241,40 @@ export const parseHtml = (
       td: ({ node, ...props }) =>
         // Workaround for Hugo's table code
         createElement("td", { ...props, className: tw`p-0` }, props.children),
+    },
+  })
+}
+
+const Iframe: Components["iframe"] = ({ node, ...props }) => {
+  const { width, height, src: originalSrc, referrerPolicy, ...rest } = props
+  const autoPlayVideo = useGeneralSettingKey("autoPlayVideo")
+  // Embedded players such as Bilibili's start on their own unless their src says otherwise
+  const src =
+    !autoPlayVideo && typeof originalSrc === "string"
+      ? disableEmbedAutoPlay(originalSrc)
+      : originalSrc
+
+  // Apply security sandbox attributes and responsive styling
+  return createElement("iframe", {
+    ...rest,
+    src,
+    width: width || "100%",
+    height: height || "315",
+    className: "max-w-full rounded",
+    sandbox: "allow-scripts allow-same-origin allow-popups allow-forms",
+    allowFullScreen: true,
+    loading: "lazy",
+    // Avoid YouTube Error 153 https://developers.google.com/youtube/terms/required-minimum-functionality#embedded-player-api-client-identity
+    ...(typeof src === "string" &&
+      youtubeEmbedRegex.test(src) && {
+        referrerPolicy:
+          !referrerPolicy || referrerPolicy === "no-referrer" || referrerPolicy === "same-origin"
+            ? "strict-origin-when-cross-origin"
+            : referrerPolicy,
+      }),
+    style: {
+      aspectRatio: width && height ? `${width} / ${height}` : "16 / 9",
+      ...rest.style,
     },
   })
 }

@@ -275,6 +275,12 @@ export const useEntryActions = ({ entryId, view }: { entryId: string; view: Feed
 
     const configs: EntryActionItem[] = [
       new EntryActionMenuItem({
+        id: COMMAND_ID.integration.saveToNotion,
+        onClick: runCmdFn(COMMAND_ID.integration.saveToNotion, [{ entryId }]),
+        hide: !IN_ELECTRON,
+        entryId,
+      }),
+      new EntryActionMenuItem({
         id: COMMAND_ID.integration.saveToEagle,
         onClick: runCmdFn(COMMAND_ID.integration.saveToEagle, [{ entryId }]),
         entryId,

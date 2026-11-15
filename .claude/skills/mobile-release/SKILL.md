@@ -1,6 +1,6 @@
 ---
 name: mobile-release
-description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, submits the iOS build for App Store review and the Android build for Google Play review, and drafts the announcement post and promo video. Use when the user asks to release, ship or publish the mobile app.
+description: Full Folo mobile release from dev to the stores. Decides between a store release and an OTA-only release, drafts the changelog, bumps the version and opens the release PR to mobile-main, verifies the PR's CI-built Android package and the iOS build on a simulator along with every change in the release, merges the PR, watches the build or OTA workflows, publishes the GitHub release, submits the iOS build for App Store review and the Android build for Google Play review, and announces the release on X with a promo video. Use when the user asks to release, ship or publish the mobile app.
 disable-model-invocation: true
 argument-hint: "[optional notes, e.g. 'ota' or 'minor bump']"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
