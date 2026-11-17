@@ -413,6 +413,10 @@ export const formatTimeToSeconds = (time?: string | number) => {
   if (typeof time === "number" || time === undefined) {
     return time
   }
+  // a plain number such as "4000" is already in seconds
+  if (time.trim() !== "" && !Number.isNaN(Number(time))) {
+    return Number(time)
+  }
 
   const formats = ["h:mm:ss", "mm:ss", "m:ss"]
 
