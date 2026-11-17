@@ -1,6 +1,7 @@
 import { FeedViewType, UserRole } from "@follow/constants"
 import { useIsEntryStarred } from "@follow/store/collection/hooks"
 import { collectionSyncService } from "@follow/store/collection/store"
+import { useIsCustomAIReady } from "@follow/store/custom-ai/store"
 import { useEntry } from "@follow/store/entry/hooks"
 import { entrySyncServices } from "@follow/store/entry/store"
 import { useFeedById } from "@follow/store/feed/hooks"
@@ -91,8 +92,11 @@ const HeaderRightActionsImpl = ({
   const [showReadability, setShowReadability] = useAtom(showReadabilityAtom)
   const translationSetting = useGeneralSettingKey("translation")
   const userRole = useUserRole()
-  // Free plans don't include AI translation, so neither the setting nor an action translates
-  const isTranslationLocked = userRole === UserRole.Free || userRole === UserRole.Trial
+  const isCustomAIReady = useIsCustomAIReady()
+  // Free plans don't include AI translation, so neither the setting nor an action translates,
+  // unless the user's own AI API translates instead of the Folo server
+  const isTranslationLocked =
+    !isCustomAIReady && (userRole === UserRole.Free || userRole === UserRole.Trial)
   const showAITranslationSetting =
     !isTranslationLocked && (translationSetting || !!entry?.settings?.translation)
   const translationMode = useGeneralSettingKey("translationMode")

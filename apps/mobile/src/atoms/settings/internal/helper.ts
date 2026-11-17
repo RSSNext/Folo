@@ -1,6 +1,7 @@
 import { UserRole } from "@follow/constants"
 import { useRefValue } from "@follow/hooks"
 import { getSettingPaidLevel, SettingPaidLevels } from "@follow/shared/settings/constants"
+import { isCustomAIReady, useIsCustomAIReady } from "@follow/store/custom-ai/store"
 import { useUserStore } from "@follow/store/user/store"
 import { createAtomHooks } from "@follow/utils"
 import { EventBus } from "@follow/utils/event-bus"
@@ -26,6 +27,14 @@ const canUsePaidLevel = (requiredLevel: SettingPaidLevels | undefined, role: Rol
   requiredLevel === SettingPaidLevels.Free ||
   requiredLevel === SettingPaidLevels.FreeLimited ||
   (role !== UserRole.Free && role !== UserRole.Trial)
+
+/** The AI settings that the user's own AI API serves, so they need no plan while it is on */
+const CUSTOM_AI_SETTING_KEYS: Partial<Record<string, readonly string[]>> = {
+  general: ["summary", "translation", "translationMode"],
+}
+
+const isServedByCustomAI = (settingKey: string, key: string) =>
+  !!CUSTOM_AI_SETTING_KEYS[settingKey]?.includes(key) && isCustomAIReady()
 
 const roleSelector = (state: { role: Role }) => state.role
 // Re-renders the setting hooks when the role changes, as the values they read depend on it
@@ -56,7 +65,9 @@ export const createSettingAtom = <T extends object>(
   )
 
   const isLocked = (key: string, role: Role) =>
-    paidSettingDefaults.has(key) && !canUsePaidLevel(getSettingPaidLevel(settingKey, key), role)
+    paidSettingDefaults.has(key) &&
+    !canUsePaidLevel(getSettingPaidLevel(settingKey, key), role) &&
+    !isServedByCustomAI(settingKey, key)
 
   /**
    * A paid setting the plan lacks reads as its default, as on desktop. The saved value is kept
@@ -107,6 +118,8 @@ export const createSettingAtom = <T extends object>(
 
     const value = useAtomValue(selectedAtom) as ReturnType<typeof getSettings>[T]
     const role = useRole()
+    // Re-renders when the user's own AI API is turned on or off, which unlocks the AI settings
+    useIsCustomAIReady()
     if (!key) return value
     return resolveAccessibleValue(String(key), value, role) as ReturnType<typeof getSettings>[T]
   }
@@ -162,6 +175,7 @@ export const createSettingAtom = <T extends object>(
   ): R => {
     const stableSelector = useRefValue(selector)
     const role = useRole()
+    const customAIReady = useIsCustomAIReady()
 
     return useAtomValue(
       useMemo(
@@ -171,14 +185,18 @@ export const createSettingAtom = <T extends object>(
             (state) => stableSelector.current(sanitizeSettings(state, role) as S),
             shallow,
           ),
-        [stableSelector, role],
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- isLocked reads it from the store
+        [stableSelector, role, customAIReady],
       ),
     )
   }
 
   /** Whether the user's plan lacks this paid setting */
-  const usePaidSettingLocked = (key: keyof ReturnType<typeof getSettings>) =>
-    isLocked(String(key), useRole())
+  const usePaidSettingLocked = (key: keyof ReturnType<typeof getSettings>) => {
+    const role = useRole()
+    useIsCustomAIReady()
+    return isLocked(String(key), role)
+  }
 
   /**
    * Saves a setting. While the plan lacks a paid setting, only its default is saved: the setting
@@ -214,7 +232,9 @@ export const createSettingAtom = <T extends object>(
   const useSettingValue = () => {
     const value = useSettingValueRaw()
     const role = useRole()
-    return useMemo(() => sanitizeSettings(value, role), [value, role])
+    const customAIReady = useIsCustomAIReady()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- isLocked reads it from the store
+    return useMemo(() => sanitizeSettings(value, role), [value, role, customAIReady])
   }
 
   const getSettings = () => sanitizeSettings(getSettingsRaw(), getRole())

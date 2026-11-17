@@ -10,6 +10,8 @@ import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
 import { readNdjsonStream } from "../../lib/stream"
+import { customAITranslateEntries } from "../custom-ai/client"
+import { isCustomAIReady } from "../custom-ai/store"
 import { getEntry } from "../entry/getter"
 import { useUserStore } from "../user/store"
 import type { EntryTranslation, TranslationFieldArray, TranslationMode } from "./types"
@@ -170,6 +172,43 @@ class TranslationSyncService {
         }
 
         try {
+          // The user's own API when they set one, otherwise the Folo server
+          if (isCustomAIReady()) {
+            await customAITranslateEntries({
+              entries: group.ids.map((id) => ({ ...getEntry(id), id })),
+              fields: group.fields.split(",") as TranslationFieldArray,
+              language: group.language,
+              mode: group.mode,
+              onTranslated: async (id, data) => {
+                const key = group.keyById[id]
+                if (!key) return
+                if (this.currentMode && this.currentMode !== group.mode) return
+
+                const translation: TranslationModel = {
+                  entryId: id,
+                  language: group.language,
+                  title: data.title ?? null,
+                  description: data.description ?? null,
+                  content: data.content ?? null,
+                  readabilityContent: data.readabilityContent ?? null,
+                }
+                const previous = results[key]
+                results[key] = previous
+                  ? {
+                      ...previous,
+                      title: translation.title ?? previous.title,
+                      description: translation.description ?? previous.description,
+                      content: translation.content ?? previous.content,
+                      readabilityContent:
+                        translation.readabilityContent ?? previous.readabilityContent,
+                    }
+                  : translation
+                await translationActions.upsertMany([translation])
+              },
+            })
+            continue
+          }
+
           const request: TranslationBatchRequest & { mode?: TranslationMode } = {
             ids: group.ids,
             language: toApiSupportedActionLanguage(group.language),
@@ -232,7 +271,8 @@ class TranslationSyncService {
   }) {
     const userRole = useUserStore.getState().role
 
-    if (userRole === UserRole.Free) return null
+    // The user's own API does not need a plan
+    if (userRole === UserRole.Free && !isCustomAIReady()) return null
     const translationMode = mode ?? "bilingual"
     await this.ensureMode(translationMode)
 

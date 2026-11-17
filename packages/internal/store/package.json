@@ -31,6 +31,11 @@
       "require": "./src/context.ts",
       "import": "./src/context.ts"
     },
+    "./custom-ai/*": {
+      "types": "./src/modules/custom-ai/*.ts",
+      "require": "./src/modules/custom-ai/*.ts",
+      "import": "./src/modules/custom-ai/*.ts"
+    },
     "./entry/*": {
       "types": "./src/modules/entry/*.ts",
       "require": "./src/modules/entry/*.ts",

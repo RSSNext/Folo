@@ -6,6 +6,8 @@ import { toApiSupportedActionLanguage } from "@follow/shared"
 import { api } from "../../context"
 import type { Hydratable, Resetable } from "../../lib/base"
 import { createImmerSetter, createTransaction, createZustandStore } from "../../lib/helper"
+import { customAISummarize } from "../custom-ai/client"
+import { isCustomAIReady } from "../custom-ai/store"
 import { getEntry } from "../entry/getter"
 import { SummaryGeneratingStatus } from "./enum"
 import type { StatusID } from "./utils"
@@ -131,13 +133,23 @@ class SummarySyncService {
       state.generatingStatus[statusID] = SummaryGeneratingStatus.Pending
     })
 
-    // Use Our AI to generate summary
-    const pendingPromise = api()
-      .ai.summary({
-        id: entryId,
-        language: toApiSupportedActionLanguage(actionLanguage),
-        target,
-      })
+    // The user's own API when they set one, otherwise the Folo server
+    const request: Promise<{ data?: string | null }> = isCustomAIReady()
+      ? customAISummarize({
+          title: entry.title,
+          content:
+            (target === "readabilityContent" ? entry.readabilityContent : entry.content) ||
+            entry.content ||
+            entry.description ||
+            "",
+          language: actionLanguage,
+        }).then((data) => ({ data }))
+      : api().ai.summary({
+          id: entryId,
+          language: toApiSupportedActionLanguage(actionLanguage),
+          target,
+        })
+    const pendingPromise = request
       .then((summary) => {
         const generatedSummary = summary.data?.trim() ? summary.data : null
 

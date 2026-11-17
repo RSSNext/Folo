@@ -8,6 +8,7 @@ import { nativeApplicationVersion } from "expo-application"
 
 import { migrateLegacyApiSession } from "../lib/auth-cookie-migration"
 import { applyStoredAppColorScheme } from "../lib/color-scheme"
+import { loadCustomAIConfig } from "../lib/custom-ai"
 import { pruneUnusedTtsFiles } from "../modules/player/entry-tts"
 import { settingSyncQueue } from "../modules/settings/sync-queue"
 import { initAnalytics } from "./analytics"
@@ -52,6 +53,7 @@ export const initializeApp = async () => {
   initializeDayjs()
 
   await apm("hydrateSettings", hydrateSettings)
+  loadCustomAIConfig()
   let dataHydratedTime = Date.now()
   await apm("hydrateDatabaseToStore", () => {
     return hydrateDatabaseToStore()

@@ -14,6 +14,7 @@ import {
   GroupedInsetListNavigationLinkIcon,
 } from "@/src/components/ui/grouped/GroupedList"
 import { Text } from "@/src/components/ui/typography/Text"
+import { AiCuteFiIcon } from "@/src/icons/ai_cute_fi"
 import { CertificateCuteFiIcon } from "@/src/icons/certificate_cute_fi"
 import { DatabaseIcon } from "@/src/icons/database"
 import { ExitCuteFiIcon } from "@/src/icons/exit_cute_fi"
@@ -38,6 +39,7 @@ import { AboutScreen } from "./routes/About"
 import { AccountScreen } from "./routes/Account"
 import { ActionsScreen } from "./routes/Actions"
 import { AppearanceScreen } from "./routes/Appearance"
+import { CustomAIScreen } from "./routes/CustomAI"
 import { DataScreen } from "./routes/Data"
 import { FeedsScreen } from "./routes/Feeds"
 import { GeneralScreen } from "./routes/General"
@@ -92,6 +94,14 @@ const SettingGroupNavigationLinks: GroupNavigationLink[] = [
     },
     iconBackgroundColor: "#F43F5E",
     testID: "settings-general-link",
+  },
+  {
+    label: "自定义 AI",
+    icon: AiCuteFiIcon,
+    onPress: ({ navigation }) => {
+      navigation.pushControllerView(CustomAIScreen)
+    },
+    iconBackgroundColor: "#A855F7",
   },
   {
     translationKey: "titles.notifications",
