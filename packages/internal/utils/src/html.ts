@@ -324,7 +324,7 @@ function prependMissingCoverImage(tree: Root, coverImageUrl: string, baseUrl?: s
 }
 
 // A URL in prose ends at whitespace or at CJK and fullwidth punctuation such as "，" or "。"
-const urlRegex = /https?:\/\/[^\s\u3000-\u303F\uFF01-\uFF0F\uFF1A-\uFF20]+/g
+const urlRegex = /https?:\/\/[^\s\u3001-\u303F\uFF01-\uFF0F\uFF1A-\uFF20]+/g
 
 // Like GFM autolinks, leave out the punctuation that ends a sentence, and a ")" that closes a
 // parenthesis opened before the URL
