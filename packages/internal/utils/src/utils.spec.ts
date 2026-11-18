@@ -1,6 +1,16 @@
+import dayjs from "dayjs"
+import customParseFormat from "dayjs/plugin/customParseFormat"
 import { describe, expect, test } from "vitest"
 
-import { doesTextContainHTML, isBizId, omitShallow, toScientificNotation } from "./utils"
+import {
+  doesTextContainHTML,
+  formatTimeToSeconds,
+  isBizId,
+  omitShallow,
+  toScientificNotation,
+} from "./utils"
+
+dayjs.extend(customParseFormat)
 
 describe("utils", () => {
   test("isBizId", () => {
@@ -92,5 +102,14 @@ describe("utils", () => {
     expect(doesTextContainHTML("<p> </p>")).toBe(false)
     expect(doesTextContainHTML("Test <p> </p>")).toBe(false)
     expect(doesTextContainHTML("Test <br/>")).toBe(false)
+  })
+
+  test("formatTimeToSeconds", () => {
+    expect(formatTimeToSeconds(4000)).toBe(4000)
+    expect(formatTimeToSeconds("4000")).toBe(4000)
+    expect(formatTimeToSeconds("3600")).toBe(3600)
+    expect(formatTimeToSeconds("90")).toBe(90)
+    expect(formatTimeToSeconds("1:30:00")).toBe(5400)
+    expect(formatTimeToSeconds("45:10")).toBe(2710)
   })
 })
