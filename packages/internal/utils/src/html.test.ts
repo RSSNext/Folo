@@ -74,3 +74,38 @@ describe("entry cover images", () => {
     ).toEqual([])
   })
 })
+
+describe("links in plain text", () => {
+  const linkOf = (html: string) => {
+    const result = parseHtml(html)
+    const links: Array<{ href: unknown; text: string }> = []
+    const walk = (node: any) => {
+      if (node.type === "element" && node.tagName === "a") {
+        links.push({ href: node.properties.href, text: node.children[0]?.value })
+      }
+      node.children?.forEach(walk)
+    }
+    walk(result.hastTree)
+    return { links, text: result.toText() }
+  }
+
+  it.each([
+    ["<p>Read it at https://example.com/post.</p>", "https://example.com/post"],
+    ["<p>Is it https://example.com/post?</p>", "https://example.com/post"],
+    ["<p>Sources: https://example.com/a, https://example.com/b</p>", "https://example.com/a"],
+    ["<p>The paper (https://example.com/paper) says so</p>", "https://example.com/paper"],
+    ["<p>原文链接：https://example.com/post，欢迎阅读。</p>", "https://example.com/post"],
+    ["<p>详见https://example.com/post。</p>", "https://example.com/post"],
+  ])("leaves the punctuation after the URL out of the link: %s", (html, href) => {
+    const { links, text } = linkOf(html)
+
+    expect(links[0]).toEqual({ href, text: href })
+    expect(text).toBe(html.replaceAll(/<\/?p>/g, ""))
+  })
+
+  it("keeps parentheses that belong to the URL", () => {
+    const href = "https://en.wikipedia.org/wiki/Rust_(programming_language)"
+
+    expect(linkOf(`<p>See ${href}.</p>`).links).toEqual([{ href, text: href }])
+  })
+})

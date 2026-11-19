@@ -323,6 +323,31 @@ function prependMissingCoverImage(tree: Root, coverImageUrl: string, baseUrl?: s
   }
 }
 
+// A URL in prose ends at whitespace or at CJK and fullwidth punctuation such as "，" or "。"
+const urlRegex = /https?:\/\/[^\s\u3001-\u303F\uFF01-\uFF0F\uFF1A-\uFF20]+/g
+
+// Like GFM autolinks, leave out the punctuation that ends a sentence, and a ")" that closes a
+// parenthesis opened before the URL
+const trimUrlTrailingPunctuation = (url: string) => {
+  let end = url.length
+  while (end > 0) {
+    const char = url[end - 1]!
+    if (/[.,:;!?'"*_~\u2018-\u201F\u2026]/.test(char)) {
+      end -= 1
+      continue
+    }
+    if (char === ")") {
+      const head = url.slice(0, end)
+      if (head.split(")").length > head.split("(").length) {
+        end -= 1
+        continue
+      }
+    }
+    break
+  }
+  return url.slice(0, end)
+}
+
 function rehypeUrlToAnchor(tree: CompatibleVisitParentsTree) {
   const tagsShouldNotBeWrapped = new Set(["a", "pre", "code"])
   // https://chatgpt.com/share/37e0ceec-5c9e-4086-b9d6-5afc1af13bb0
@@ -341,7 +366,6 @@ function rehypeUrlToAnchor(tree: CompatibleVisitParentsTree) {
 
     const parent = typedAncestors.at(-1)
 
-    const urlRegex = /https?:\/\/\S+/g
     const text = textNode.value
     const matches = [...text.matchAll(urlRegex)]
 
@@ -355,7 +379,7 @@ function rehypeUrlToAnchor(tree: CompatibleVisitParentsTree) {
     let lastIndex = 0
 
     matches.forEach((match) => {
-      const [url] = match
+      const url = trimUrlTrailingPunctuation(match[0])
       const urlIndex = match.index || 0
 
       if (urlIndex > lastIndex) {
