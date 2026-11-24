@@ -141,8 +141,6 @@ export class CustomIntegrationManager {
       jsonEscape?: boolean
     } = {},
   ): string {
-    let result = template
-
     // Define placeholder mapping
     const placeholders: Record<string, string> = {
       "[title]": context.title,
@@ -155,9 +153,14 @@ export class CustomIntegrationManager {
       "[description]": context.description,
     }
 
-    // Replace each placeholder
-    Object.entries(placeholders).forEach(([placeholder, value]) => {
-      let processedValue = value
+    // Replace all placeholders in one pass, so that a placeholder-like text in a value is kept.
+    // The replacer function also keeps `$` in a value from being read as a replacement pattern.
+    return template.replaceAll(/\[[a-z_]+\]/g, (placeholder) => {
+      let processedValue = placeholders[placeholder]
+
+      if (processedValue === undefined) {
+        return placeholder
+      }
 
       if (options.urlEncode) {
         processedValue = encodeURIComponent(processedValue)
@@ -177,10 +180,8 @@ export class CustomIntegrationManager {
         processedValue = JSON.stringify(processedValue).slice(1, -1)
       }
 
-      result = result.replaceAll(placeholder, processedValue)
+      return processedValue
     })
-
-    return result
   }
 
   /**
